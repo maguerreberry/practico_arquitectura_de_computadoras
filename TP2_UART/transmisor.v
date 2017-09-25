@@ -57,14 +57,14 @@ localparam [3:0] START 	= 4'b 0100;
 localparam [3:0] DATA	= 4'b 0010;
 localparam [3:0] STOP 	= 4'b 0001;
 
-assign tx = tx_reg;
-
 // declaracion de registros auxiliares
 reg [3:0] state_reg, state_next;
 reg [LEN_NUM_TICKS_COUNTER-1:0] acc_tick, acc_tick_next;
 reg [LEN_DATA_COUNTER-1:0] num_bits, num_bits_next;
 reg [NBITS-1:0] buffer, buffer_next;
 reg tx_reg, tx_next;
+
+assign tx = tx_reg;
 
 // parte sincrona con el clock
 always @(posedge clk, posedge reset)

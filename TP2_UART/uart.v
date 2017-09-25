@@ -62,7 +62,7 @@ module uart
 				  .data_in(data_in),
 
 				  .tx_done_tick(tx_done_tick),
-				  .tx(rx)
+				  .tx(tx)
     			);
 endmodule	
 			

@@ -66,5 +66,9 @@ module interface_circuit
 			data_out = alu_data_in; 			
 			tx_start = 1'b 1;
 		end
+		else 
+		begin
+			tx_start = 1'b 0;
+		end
 	end
 endmodule
