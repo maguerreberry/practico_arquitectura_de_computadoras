@@ -21,21 +21,33 @@
 
 `define NBITS 8
 `define NUM_TICKS 16
+`define LEN_DATA 8
 
 module tb_interface();
-	
-    reg clk,
-    reg reset,
-    reg rx_done_tick,
-//  reg tx_done_tick,
-    reg [LEN_DATA-1:0] rx_data_in,
-    reg [LEN_DATA-1:0] alu_data_in,
+    
 
-    wire tx_start,
-    wire [LEN_DATA-1 : 0] A,
-    wire [LEN_DATA-1 : 0] B,
-    wire [5 : 0] OPCODE,
-    wire [LEN_DATA-1:0] data_out 
+    reg clk;
+    reg reset;
+    reg rx_done_tick;
+//  reg tx_done_tick;
+    reg [`LEN_DATA-1:0] rx_data_in;
+    wire [`LEN_DATA-1:0] alu_data_in;
+
+    wire tx_start;
+    wire [`LEN_DATA-1 : 0] A;
+    wire [`LEN_DATA-1 : 0] B;
+    wire [5 : 0] OPCODE;
+    wire [`LEN_DATA-1:0] data_out;
+
+    alu #()
+        u_alu
+        (
+            .A(A),
+            .B(B),
+            .OPCODE(OPCODE),
+            .RESULT_OUT(alu_data_in)  
+        );
+    
 
 	interface_circuit #()
     u_interface_circuit(
@@ -51,37 +63,34 @@ module tb_interface();
             .OPCODE(OPCODE),
             .data_out(data_out) 
 		);
-
-	initial
-	begin
-    	clk = 0;
-    	reset = 1;
-    	#10
-    	reset = 0;
+    
+    
+    initial
+    begin
+        clk = 0;
+        reset = 1;
+        #10
+        reset = 0;
         
-        rx_data_in = 8'b00000001;
+        rx_data_in = 8'b00111000;
         rx_done_tick = 1;
         #10
 
         rx_done_tick = 0;
-        rx_data_in = 8'b00000010;
+        rx_data_in = 8'b00111001;
         rx_done_tick = 1;
         #10        
 
         rx_done_tick = 0;
-        rx_data_in = 8'b00100000;
+        rx_data_in = 8'b00100100;
         rx_done_tick = 1;
+
         #10
 
         rx_done_tick = 0;
+    end
 
-        #10
-
-        data_out = 8'b00000011;
-
-	end
-
-	always 
+    always 
 		#5 clk = ~clk;
 
 

@@ -36,9 +36,11 @@ module interface_circuit
 	output reg [LEN_DATA-1 : 0] A,
 	output reg [LEN_DATA-1 : 0] B,
 	output reg [5 : 0] OPCODE,
- 	output reg [LEN_DATA-1:0] data_out 
+ 	output [LEN_DATA-1:0] data_out 
 ); 
 	reg [1 : 0] counter_in = 2'b 00;
+	
+	assign data_out = alu_data_in;
 	
 	always @(posedge clk , posedge reset) 
 	begin
@@ -49,7 +51,7 @@ module interface_circuit
 				OPCODE = 0;
 				counter_in = 0;
 				tx_start = 1'b 0;	
-				data_out = 0;		
+				// data_out = 0;		
 			end 
 		
 		else
@@ -67,7 +69,7 @@ module interface_circuit
 				if (counter_in == 2'b 11)
 					begin
 						counter_in = 0;
-						data_out = alu_data_in; 			
+						// data_out = alu_data_in; 			
 						tx_start = 1'b 1;
 					end
 				else

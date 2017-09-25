@@ -41,7 +41,8 @@ module uart
 	wire connect_baud_rate_rx_tx; 
 
     baud_rate_gen #(.BAUD_RATE(BAUD_RATE)) 
-    u_baud_rate_gen (.CLK_100MHZ(CLK_100MHZ),
+    u_baud_rate_gen (.reset(reset),
+    	.CLK_100MHZ(CLK_100MHZ),
     	.CLK_TICK(connect_baud_rate_rx_tx));
 
     receiver #(.LEN_DATA(NBITS), .NUM_TICKS(NUM_TICKS)) 

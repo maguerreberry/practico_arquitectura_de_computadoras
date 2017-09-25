@@ -3,20 +3,21 @@ import serial
 ser = serial.Serial('COM4')
 
 print ser.name
-sent = ser.write('8')
-print bin(ord('8'))
-print sent
 
-sent = ser.write('9')
-print bin(ord('9'))
-print sent
+a = 0b10000000
+sent = ser.write(chr(a))
+print "a =", bin(a)
 
-sent = ser.write('$')
-print bin(ord('$'))
-print sent
+b = 0b1
+sent = ser.write(chr(b))
+print "b =", bin(b)
 
-x = ser.read()          # read one byte
+op = 0b11
+sent = ser.write(chr(op))
+print "op =", bin(op)
 
-print bin(ord(x))
+x = ser.read()         
+
+print "result =", bin(ord(x))
 
 ser.close()

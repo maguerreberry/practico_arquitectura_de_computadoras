@@ -22,9 +22,9 @@
 
 module baud_rate_gen(
 	input CLK_100MHZ,
-	
-	output reg CLK_TICK = 1'b 0
-    );
+	input reset,	
+	output reg CLK_TICK
+);
 
 parameter BAUD_RATE = 9600;
 parameter CLK_RATE = 100000000;
@@ -37,15 +37,23 @@ reg [LEN_ACUM - 1 : 0] acumulator = 0;
 
 always @(posedge CLK_100MHZ) 
 begin
-	acumulator = acumulator + 1;
-	
-	if (acumulator == (RATE_CLK_OUT)) 
-	begin
-		CLK_TICK = 1;
-		acumulator = 0;
-	end
+	if (reset)
+		begin
+			acumulator = 0;
+			CLK_TICK = 0;
+		end
 	else
-	   CLK_TICK = 0;
+		begin			
+			acumulator = acumulator + 1;
+			
+			if (acumulator == (RATE_CLK_OUT)) 
+				begin
+					CLK_TICK = 1;
+					acumulator = 0;
+				end
+			else
+			   CLK_TICK = 0;
+		end
 end
 
 endmodule
