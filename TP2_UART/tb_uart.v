@@ -30,10 +30,12 @@ module tb_uart(
 	reg reset;
 	reg tx_start;
 	reg [`NBITS-1 : 0] data_in;
+	reg rx;
 
 	wire [`NBITS-1 : 0] data_out;
 	wire rx_done_tick;
 	wire tx_done_tick;
+	wire tx;
 	
 	uart #()
 	u_uart(
@@ -43,7 +45,9 @@ module tb_uart(
 			.data_in(data_in),
 			.data_out(data_out),
 			.rx_done_tick(rx_done_tick),
-			.tx_done_tick(tx_done_tick)
+			.tx_done_tick(tx_done_tick),
+			.rx(rx),
+			.tx(tx)
 		);
 
 	initial
