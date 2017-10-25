@@ -22,7 +22,7 @@
 
 module signal_extend(
     input [11:0] In,
-    output [16:0] Out
+    output reg [16:0] Out
     );
 
     always@(*)

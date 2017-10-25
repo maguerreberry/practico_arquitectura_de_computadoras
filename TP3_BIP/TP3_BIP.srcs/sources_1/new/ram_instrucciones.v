@@ -11,14 +11,14 @@ module ram_instrucciones #(
   parameter INIT_FILE = ""                        // Specify name/location of RAM initialization file if using one (leave blank if not)
 ) (
   input [clogb2(RAM_DEPTH-1)-1:0] addra,  // Address bus, width determined from RAM_DEPTH
-  input [RAM_WIDTH-1:0] dina,           // RAM input data
   input clka,                           // Clock
-  input wea,                            // Write enable
   input ena,                            // RAM Enable, for additional power savings, disable port when not in use
-  input rsta,                           // Output reset (does not affect memory contents)
-  input regcea,                         // Output register enable
   output [RAM_WIDTH-1:0] douta          // RAM output data
 );
+  wire wea = 0;                            // Write enable
+  wire rsta = 0;                           // Output reset (does not affect memory contents)
+  wire regcea = 1;                         // Output register enable
+  wire [RAM_WIDTH-1:0] dina = 0;           // RAM input data
 
   reg [RAM_WIDTH-1:0] BRAM [RAM_DEPTH-1:0];
   reg [RAM_WIDTH-1:0] ram_data = {RAM_WIDTH{1'b0}};

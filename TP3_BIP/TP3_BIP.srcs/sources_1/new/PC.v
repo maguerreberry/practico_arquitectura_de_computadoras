@@ -24,13 +24,14 @@ module PC(
     input [10:0] In,
     input enable,
     input clk,
-    output [10:0] Out
+
+    output reg [10:0] Out
     );
 
     always @(posedge clk) begin
-	if (enable) begin
-		assign Out = In;
+		if (enable) begin
+			Out = In;
+		end
 	end
-end
 
 endmodule

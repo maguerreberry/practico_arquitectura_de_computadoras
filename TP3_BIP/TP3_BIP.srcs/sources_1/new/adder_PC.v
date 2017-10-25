@@ -21,16 +21,16 @@
 
 
 module adder_PC(
-    input [10:0] one,
     input [10:0] In,
     output reg [10:0] Out
     );
 
+    wire [10:0] one;     
     assign one = 11'b00000000001;
 
     always@(*)
-        begin
-          assign Out = one + In;
-        end
+    begin
+      Out = one + In;
+    end
 
 endmodule

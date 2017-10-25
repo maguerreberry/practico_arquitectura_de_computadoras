@@ -1,0 +1,35 @@
+#-----------------------------------------------------------
+# Vivado v2017.2 (64-bit)
+# SW Build 1909853 on Thu Jun 15 18:39:09 MDT 2017
+# IP Build 1909766 on Thu Jun 15 19:58:00 MDT 2017
+# Start of session at: Wed Oct 25 16:12:13 2017
+# Process ID: 2612
+# Current directory: E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP3_BIP
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent12508 E:\Drive\Facultad\quinto\Arquitectura_de_Computadoras\TP3_BIP\TP3_BIP.xpr
+# Log file: E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP3_BIP/vivado.log
+# Journal file: E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP3_BIP\vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP3_BIP/TP3_BIP.xpr
+update_compile_order -fileset sources_1
+close [ open E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP3_BIP/TP3_BIP.srcs/sources_1/new/top.v w ]
+add_files E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP3_BIP/TP3_BIP.srcs/sources_1/new/top.v
+update_compile_order -fileset sources_1
+update_compile_order -fileset sources_1
+update_compile_order -fileset sim_1
+update_compile_order -fileset sources_1
+update_compile_order -fileset sources_1
+update_compile_order -fileset sim_1
+update_compile_order -fileset sources_1
+synth_design -rtl -name rtl_1
+refresh_design
+remove_files  -fileset sim_1 E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP3_BIP/TP3_BIP.srcs/sim_1/new/tb_accumulator.v
+set_property SOURCE_SET sources_1 [get_filesets sim_1]
+close [ open E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP3_BIP/TP3_BIP.srcs/sim_1/new/tb_top.v w ]
+add_files -fileset sim_1 E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP3_BIP/TP3_BIP.srcs/sim_1/new/tb_top.v
+update_compile_order -fileset sim_1
+update_compile_order -fileset sim_1
+launch_simulation
+source tb_top.tcl
+add_wave {{/tb_top/u_top/u_decoder/opcode}} {{/tb_top/u_top/u_decoder/WrPC}} {{/tb_top/u_top/u_decoder/SelA}} {{/tb_top/u_top/u_decoder/SelB}} {{/tb_top/u_top/u_decoder/WrAcc}} {{/tb_top/u_top/u_decoder/Op}} {{/tb_top/u_top/u_decoder/WrRam}} {{/tb_top/u_top/u_decoder/RdRam}} 
+relaunch_sim

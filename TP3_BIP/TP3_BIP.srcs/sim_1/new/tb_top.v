@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 10/18/2017 06:19:10 PM
+// Create Date: 10/25/2017 05:47:04 PM
 // Design Name: 
-// Module Name: tb_accumulator
+// Module Name: tb_top
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,7 +20,14 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module tb_accumulator();
+module tb_top(
 
+    );
+	
+	reg clk = 0;
+	
+	top #()
+	u_top(.CLK100MHZ(clk));
 
+	always #5 clk = ~clk;
 endmodule
