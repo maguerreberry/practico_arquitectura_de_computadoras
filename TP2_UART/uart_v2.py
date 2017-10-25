@@ -2,20 +2,20 @@ def getOperando():
 
     while True:
         # python 3
-        a = input("Ingrese el operando: ")
+        # a = input("Ingrese el operando: ")
         # python 2
-        # a = raw_input("Ingrese el operando: ")
+        a = raw_input("Ingrese el operando: ")
 
         try:
-            if int(a) > 127 or int(a) < -128:
+            if int(a,2) not in range(256):
                 print("Error, \"{}\" es un valor fuera de rango".format(a))
                 
             else:
-                # print("Operando: {}".format(bin(int(a))))
-                return bin(int(a))
+                # print("Operando: {}".format((a)))
+                return int(a,2)
 
         except:
-            print ("Error, \"{}\" no es un valor válido".format(a))
+            print ("Error, %s no es un valor valido" %a)
 
 def getOperador():
 
@@ -32,14 +32,24 @@ def getOperador():
     
     
     while True:
+        print(" ADD : + \n "
+              " SUB : - \n "
+              " AND : & \n "
+              " OR  : | \n "
+              " XOR : ^ \n "
+              " SRA : } \n "
+              " SRL : ] \n "
+              " NOR : ~")
         # python 3
-        a = input("Ingrese el operador: ")
+        # a = input("Ingrese el operador: ")
         # python 2
-        # a = raw_input("Ingrese el operador: ")
+        
+        a = raw_input("Ingrese el operador: ")
+
 
         if(a in codigos):
             # print(bin(codigos[a]))
-            return bin(codigos[a])
+            return codigos[a]
         else:
             print("Operando incorrecto, los valores posibles son:")
             print(" ADD : + \n "
@@ -52,11 +62,9 @@ def getOperador():
                   " NOR : ~"
             )
 
-
-
 import serial
 
-ser = serial.Serial('COM4')
+ser = serial.Serial('COM6')
 
 print (ser.name)
 
@@ -64,7 +72,7 @@ a = getOperando()
 b = getOperando()
 op = getOperador()
 
-print(" a = {} \n b = {} \n op = {}".format(a,b,op))
+print(" a = {} \n b = {} \n op = {}".format(bin(a),bin(b),bin(op)))
 
 sent = ser.write(chr(a))
 sent = ser.write(chr(b))
@@ -72,6 +80,6 @@ sent = ser.write(chr(op))
 
 x = ser.read()         
 
-print ("Resultado = ", bin(ord(x)))
+print "Resultado = ", bin(ord(x))
 
 ser.close()

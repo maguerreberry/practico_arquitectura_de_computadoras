@@ -1,10 +1,11 @@
 import serial
 
-ser = serial.Serial('COM4')
+ser = serial.Serial('COM6')
 
 print ser.name
 
-a = 0b10000000
+# while True:
+a = 0b01110000
 sent = ser.write(chr(a))
 print "a =", bin(a)
 
@@ -12,12 +13,12 @@ b = 0b1
 sent = ser.write(chr(b))
 print "b =", bin(b)
 
-op = 0b11
+op = 0b100000
 sent = ser.write(chr(op))
 print "op =", bin(op)
 
-x = ser.read()         
+# x = ser.read()         
 
-print "result =", bin(ord(x))
+# print "result =", bin(ord(x))
 
 ser.close()

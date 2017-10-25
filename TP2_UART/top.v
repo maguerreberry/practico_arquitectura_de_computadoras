@@ -26,7 +26,8 @@ module top
 	input CLK100MHZ,
 	input reset,
 	input UART_TXD_IN,
-	output UART_RXD_OUT
+//	output UART_RXD_OUT
+	output JC
 );
 
 	wire [`LEN_DATA-1 : 0]connect_A;
@@ -38,6 +39,8 @@ module top
 	wire connect_tx_start;
 	wire connect_rx_done_tick;
 
+//    assign JC = UART_RXD_OUT;
+    
 	alu #(
 		.lenghtIN(`LEN_DATA),
 		.lenghtOP(6)
@@ -83,7 +86,7 @@ module top
 			
 				.data_out(connect_data_rx),
 				.rx_done_tick(connect_rx_done_tick),
-				.tx(UART_RXD_OUT),
+				.tx(JC),
 				.tx_done_tick()
 			);
 
