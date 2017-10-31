@@ -1,2 +1,6 @@
 *.ini
 Arquitectura Teóricos/
+TP3_BIP/TP3_BIP.sim
+TP3_BIP/TP3_BIP.hw
+TP3_BIP/TP3_BIP.cache
+TP3_BIP/TP3_BIP.ip_user_files
