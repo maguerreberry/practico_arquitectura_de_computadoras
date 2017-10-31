@@ -8,7 +8,7 @@ module ram_instrucciones #(
   parameter RAM_WIDTH = 16,                       // Specify RAM data width
   parameter RAM_DEPTH = 2048,                     // Specify RAM depth (number of entries)
   parameter RAM_PERFORMANCE = "HIGH_PERFORMANCE", // Select "HIGH_PERFORMANCE" or "LOW_LATENCY" 
-  parameter INIT_FILE = ""                        // Specify name/location of RAM initialization file if using one (leave blank if not)
+  parameter INIT_FILE = ""                        // Specify name/location of RAM initialization file if using one (leave blank if not
 ) (
   input [clogb2(RAM_DEPTH-1)-1:0] addra,  // Address bus, width determined from RAM_DEPTH
   input clka,                           // Clock

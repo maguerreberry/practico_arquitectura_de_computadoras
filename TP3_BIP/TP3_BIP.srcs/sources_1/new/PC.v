@@ -25,7 +25,7 @@ module PC(
     input enable,
     input clk,
 
-    output reg [10:0] Out
+    output reg [10:0] Out = 10'b00000000000
     );
 
     always @(posedge clk) begin
