@@ -24,6 +24,10 @@ module arithmetic_unit(
     input Op,
     input [15:0] A,
     input [15:0] B,
+
     output [15:0] Out
     );
+	
+	assign Out = Op ? (A-B) : (A+B);
+	
 endmodule

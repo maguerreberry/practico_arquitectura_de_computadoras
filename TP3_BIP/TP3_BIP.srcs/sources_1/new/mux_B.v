@@ -24,6 +24,7 @@ module mux_B(
     input [15:0] out_ram,
     input [15:0] out_sign_extend,
     input SelB,
+    
     output [15:0] Out
     );
 

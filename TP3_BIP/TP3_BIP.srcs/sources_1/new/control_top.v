@@ -20,25 +20,34 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module top(
-	input CLK100MHZ
+module control_top(
+	input CLK100MHZ,
+    output [1:0] SelA,
+    output SelB,
+    output WrAcc,
+    output Op,
+    output WrRam,
+    output RdRam,
+    output [10:0] operand
     );
     
 	wire [15:0] output_program_mem;
 	wire connect_WrPC;
 	wire [10:0] connect_PC_adder;
-	wire [10:0] connect_adder_PC;	
+	wire [10:0] connect_adder_PC;
+
+	assign operand = output_program_mem [10:0]; 	
 	
 	decoder #()
 		u_decoder(
 			.opcode(output_program_mem[15:11]),
 			.WrPC(connect_WrPC),
-			.SelA(),
-			.SelB(),
-			.WrAcc(),
-			.Op(),
-			.WrRam(),
-			.RdRam()
+			.SelA(SelA),
+			.SelB(SelB),
+			.WrAcc(WrAcc),
+			.Op(Op),
+			.WrRam(WrRam),
+			.RdRam(RdRam)
 			);
 
 	ram_instrucciones #(
@@ -46,7 +55,7 @@ module top(
 			.RAM_DEPTH(2048),
 			.RAM_PERFORMANCE("HIGH_PERFORMANCE"),
 			// .INIT_FILE("program.hex")
-			.INIT_FILE("C:/Users/Facundo/Desktop/practico_arquitectura_de_computadoras/TP3_BIP/TP3_BIP.srcs/sources_1/new/program.hex")
+			.INIT_FILE("E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP3_BIP/TP3_BIP.srcs/sources_1/new/program.hex")
 			)
 		u_ram_instrucciones(
 			.addra(connect_PC_adder),

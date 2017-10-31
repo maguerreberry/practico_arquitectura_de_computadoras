@@ -20,14 +20,14 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module tb_top(
+module tb_control_top(
 
     );
 	
 	reg clk = 0;
 	
-	top #()
-	u_top(.CLK100MHZ(clk));
+	control_top #()
+	u_control_top(.CLK100MHZ(clk));
 
 	always #5 clk = ~clk;
 endmodule

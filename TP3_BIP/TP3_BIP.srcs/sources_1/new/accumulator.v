@@ -24,6 +24,14 @@ module accumulator(
     input [15:0] In,
     input clk,
     input WrAcc,
-    output [15:0] Out
+    output reg [15:0] Out = 0
     );
+
+	always @(posedge clk)
+	begin
+		if (WrAcc) begin
+			Out = In;
+		end
+	end
+
 endmodule

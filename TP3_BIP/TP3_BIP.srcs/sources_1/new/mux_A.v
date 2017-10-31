@@ -25,7 +25,8 @@ module mux_A(
     input [15:0] out_alu,
     input [15:0] out_sign_extend,
     input [1:0] SelA,
-    output [15:0] Out
+
+    output reg [15:0] Out
     );
 
     always @(*)
@@ -33,7 +34,7 @@ module mux_A(
          2'b00: Out = out_memory;
          2'b01: Out = out_sign_extend;
          2'b10: Out = out_alu;
-         2'b11: Out = 16'b0;
+         2'b11: Out = 0;
       endcase
 					
 endmodule

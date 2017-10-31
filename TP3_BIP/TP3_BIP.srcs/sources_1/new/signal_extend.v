@@ -21,13 +21,14 @@
 
 
 module signal_extend(
-    input [11:0] In,
-    output reg [16:0] Out
+    input signed [11:0] In,
+    output reg signed [15:0] Out
     );
 
     always@(*)
     begin 
-        Out <= $signed(In);
+        // Out <= $signed(In);
+        Out <= In;
     end
 
 endmodule
