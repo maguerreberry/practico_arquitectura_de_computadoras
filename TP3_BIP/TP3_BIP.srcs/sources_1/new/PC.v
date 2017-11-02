@@ -20,12 +20,14 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module PC(
-    input [10:0] In,
+module PC#(
+    parameter len = 16
+    ) (
+    input [len-1:0] In,
     input enable,
     input clk,
 
-    output reg [10:0] Out = 11'b00000000000
+    output reg [len-1:0] Out = 0
     );
 
     always @(negedge clk) begin

@@ -20,13 +20,15 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module mux_A(
-    input [15:0] out_memory,
-    input [15:0] out_alu,
-    input [15:0] out_sign_extend,
+module mux_A#(
+    parameter len = 16
+    ) (
+    input [len-1:0] out_memory,
+    input [len-1:0] out_alu,
+    input [len-1:0] out_sign_extend,
     input [1:0] SelA,
 
-    output reg [15:0] Out
+    output reg [len-1:0] Out
     );
 
     always @(*)

@@ -20,15 +20,17 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module signal_extend(
-    input [10:0] In,
-    output reg [15:0] Out
+module signal_extend#(
+	parameter len_in = 11,
+	parameter len_out = 16
+	) (
+    input [len_in-1:0] In,
+    output reg [len_out-1:0] Out
     );
 
     always@(*)
     begin 
         Out <= $signed(In);
-        // Out <= In;
     end
 
 endmodule

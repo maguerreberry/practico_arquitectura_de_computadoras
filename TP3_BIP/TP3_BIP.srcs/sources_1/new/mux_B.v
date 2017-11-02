@@ -20,12 +20,14 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module mux_B(
-    input [15:0] out_ram,
-    input [15:0] out_sign_extend,
+module mux_B#(
+	parameter len = 16
+	) (
+    input [len-1:0] out_ram,
+    input [len-1:0] out_sign_extend,
     input SelB,
     
-    output [15:0] Out
+    output [len-1:0] Out
     );
 
     assign Out = (SelB) ? out_sign_extend : out_ram;

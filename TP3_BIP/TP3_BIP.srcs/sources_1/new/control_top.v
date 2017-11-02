@@ -64,7 +64,8 @@ module control_top(
 			.douta(output_program_mem)
 			);
 
-	PC #()
+	PC #(
+		.len(11))
 		u_PC(
 			.In(connect_adder_PC),
 			.enable(connect_WrPC),
@@ -72,7 +73,10 @@ module control_top(
 			.Out(connect_PC_adder)
 			);
 
-	adder_PC #()
+	adder_PC #(
+		.len(11),
+		.sumando(1)
+		)
 		u_adder_PC(
 			.In(connect_PC_adder),
 			.Out(connect_adder_PC)
