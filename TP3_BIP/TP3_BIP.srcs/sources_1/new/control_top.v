@@ -53,9 +53,9 @@ module control_top(
 	ram_instrucciones #(
 			.RAM_WIDTH(16),
 			.RAM_DEPTH(2048),
-			.RAM_PERFORMANCE("HIGH_PERFORMANCE"),
+			.RAM_PERFORMANCE("LOW_LATENCY"),
 			// .INIT_FILE("program.hex")
-			.INIT_FILE("E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP3_BIP/TP3_BIP.srcs/sources_1/new/program.hex")
+			.INIT_FILE("/home/facundo/Desktop/practico_arquitectura_de_computadoras/TP3_BIP/TP3_BIP.srcs/sources_1/new/program.hex")
 			)
 		u_ram_instrucciones(
 			.addra(connect_PC_adder),
@@ -63,7 +63,8 @@ module control_top(
 			.douta(output_program_mem)
 			);
 
-	PC #()
+	PC #(
+		.len(11))
 		u_PC(
 			.In(connect_adder_PC),
 			.enable(connect_WrPC),
@@ -71,7 +72,10 @@ module control_top(
 			.Out(connect_PC_adder)
 			);
 
-	adder_PC #()
+	adder_PC #(
+		.len(11),
+		.sumando(1)
+		)
 		u_adder_PC(
 			.In(connect_PC_adder),
 			.Out(connect_adder_PC)

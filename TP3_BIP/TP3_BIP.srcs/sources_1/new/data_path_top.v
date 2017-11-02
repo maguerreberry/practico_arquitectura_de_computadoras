@@ -44,7 +44,9 @@ module data_path_top(
 			.Out(connect_out_sign_extend)
 			);
 
-	mux_A #()
+	mux_A #(
+		.len(16)
+		)
 		u_mux_A(
 			.out_memory(connect_out_mem),
 			.out_alu(connect_out_alu),
@@ -53,7 +55,9 @@ module data_path_top(
 			.Out(connect_muxA_acc)
 			);
 
-	mux_B #()
+	mux_B #(
+		.len(16)
+		)
 		u_mux_B(
 			.out_ram(connect_out_mem),
 			.out_sign_extend(connect_out_sign_extend),
@@ -61,7 +65,9 @@ module data_path_top(
 			.Out(connect_muxB_alu)
 			);	
 
-	accumulator #()
+	accumulator #(
+		.len(16)
+		)
 		u_accumulator(
 			.In(connect_muxA_acc),
 			.clk(CLK100MHZ),
@@ -69,7 +75,9 @@ module data_path_top(
 			.Out(connect_out_acc)
 			);
 
-	arithmetic_unit #()
+	arithmetic_unit #(
+		.len(16)
+		)
 		u_arithmetic_unit(
 			.Op(Op),
 			.A(connect_out_acc),
@@ -77,7 +85,11 @@ module data_path_top(
 			.Out(connect_out_alu)
 			);
 
-	ram_datos #()
+	ram_datos #(
+		.RAM_WIDTH(16),
+		.RAM_DEPTH(1024),
+		.RAM_PERFORMANCE("LOW_LATENCY")		
+		)
 		u_ram_datos (
 			.addra(operand),
 			.dina(connect_out_acc),

@@ -20,11 +20,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module accumulator(
-    input [15:0] In,
+module accumulator #(
+	parameter len = 16
+	)(
+    input [len-1:0] In,
     input clk,
     input WrAcc,
-    output reg [15:0] Out = 0
+    output reg [len-1:0] Out = 0
     );
 
 	always @(posedge clk)

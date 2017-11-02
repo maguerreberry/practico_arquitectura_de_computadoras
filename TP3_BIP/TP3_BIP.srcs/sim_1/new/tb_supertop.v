@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 10/18/2017 05:01:09 PM
+// Create Date: 11/02/2017 02:44:26 PM
 // Design Name: 
-// Module Name: arithmetic_unit
+// Module Name: tb_supertop
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,16 +20,15 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module arithmetic_unit#(
-	parameter len = 16
-	) (
-    input Op,
-    input [len-1:0] A,
-    input [len-1:0] B,
+module tb_supertop(
 
-    output [len-1:0] Out
     );
-	
-	assign Out = Op ? (A-B) : (A+B);
-	
+
+	reg clk = 0;
+
+	super_top #()
+		u_super_top(.CLK100MHZ(clk));
+
+	always #5 clk = ~clk;
+
 endmodule

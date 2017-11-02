@@ -20,17 +20,17 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module adder_PC(
-    input [10:0] In,
-    output reg [10:0] Out
+module adder_PC #(
+	parameter len = 16,
+	parameter sumando = 1
+	) (
+    input [len-1:0] In,
+    output reg [len-1:0] Out
     );
-
-    wire [10:0] one;     
-    assign one = 11'b00000000001;
 
     always@(*)
     begin
-      Out = one + In;
+      Out = sumando + In;
     end
 
 endmodule
