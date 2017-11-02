@@ -7,7 +7,7 @@
 module ram_datos #(
   parameter RAM_WIDTH = 16,                       // Specify RAM data width
   parameter RAM_DEPTH = 1024,                     // Specify RAM depth (number of entries)
-  parameter RAM_PERFORMANCE = "HIGH_PERFORMANCE", // Select "HIGH_PERFORMANCE" or "LOW_LATENCY" 
+  parameter RAM_PERFORMANCE = "LOW_LATENCY", // Select "HIGH_PERFORMANCE" or "LOW_LATENCY" 
   parameter INIT_FILE = ""                        // Specify name/location of RAM initialization file if using one (leave blank if not)
 ) (
   input [clogb2(RAM_DEPTH-1)-1:0] addra,  // Address bus, width determined from RAM_DEPTH
@@ -56,7 +56,7 @@ module ram_datos #(
 
       reg [RAM_WIDTH-1:0] douta_reg = {RAM_WIDTH{1'b0}};
 
-      always @(posedge clka)
+      always @(negedge clka)
         if (rsta)
           douta_reg <= {RAM_WIDTH{1'b0}};
         else if (regcea)

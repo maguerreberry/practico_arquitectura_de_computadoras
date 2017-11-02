@@ -53,9 +53,9 @@ module control_top(
 	ram_instrucciones #(
 			.RAM_WIDTH(16),
 			.RAM_DEPTH(2048),
-			.RAM_PERFORMANCE("HIGH_PERFORMANCE"),
+			.RAM_PERFORMANCE("LOW_LATENCY"),
 			// .INIT_FILE("program.hex")
-			.INIT_FILE("E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP3_BIP/TP3_BIP.srcs/sources_1/new/program.hex")
+			.INIT_FILE("/home/facundo/Desktop/practico_arquitectura_de_computadoras/TP3_BIP/TP3_BIP.srcs/sources_1/new/program.hex")
 			)
 		u_ram_instrucciones(
 			.addra(connect_PC_adder),

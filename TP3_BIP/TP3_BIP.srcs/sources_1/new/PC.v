@@ -25,10 +25,10 @@ module PC(
     input enable,
     input clk,
 
-    output reg [10:0] Out = 10'b00000000000
+    output reg [10:0] Out = 11'b00000000000
     );
 
-    always @(posedge clk) begin
+    always @(negedge clk) begin
 		if (enable) begin
 			Out = In;
 		end

@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 10/18/2017 05:11:11 PM
+// Create Date: 11/02/2017 02:44:26 PM
 // Design Name: 
-// Module Name: signal_extend
+// Module Name: tb_supertop
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,15 +20,15 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module signal_extend(
-    input [10:0] In,
-    output reg [15:0] Out
+module tb_supertop(
+
     );
 
-    always@(*)
-    begin 
-        Out <= $signed(In);
-        // Out <= In;
-    end
+	reg clk = 0;
+
+	super_top #()
+		u_super_top(.CLK100MHZ(clk));
+
+	always #5 clk = ~clk;
 
 endmodule
