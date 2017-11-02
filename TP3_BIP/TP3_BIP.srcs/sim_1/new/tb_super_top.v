@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 10/18/2017 05:13:55 PM
+// Create Date: 11/01/2017 04:15:54 PM
 // Design Name: 
-// Module Name: PC
+// Module Name: tb_super_top
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,18 +20,17 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module PC(
-    input [10:0] In,
-    input enable,
-    input clk,
+module tb_super_top(
 
-    output reg [10:0] Out = 11'b11111111111
     );
 
-    always @(negedge clk) begin
-		if (enable) begin
-			Out = In;
-		end
-	end
+	reg clk = 0;
+	
+	super_top #()
+		u_super_top(
+			.CLK100MHZ(clk)
+			);
+		
+	always #5 clk = ~clk;
 
 endmodule

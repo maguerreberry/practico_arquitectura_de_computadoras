@@ -60,7 +60,6 @@ module control_top(
 		u_ram_instrucciones(
 			.addra(connect_PC_adder),
 			.clka(CLK100MHZ),
-			.ena(1),
 			.douta(output_program_mem)
 			);
 
