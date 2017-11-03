@@ -22,13 +22,15 @@
 
 module control_top(
 	input CLK100MHZ,
+	input [15:0] Data,
     output [1:0] SelA,
     output SelB,
     output WrAcc,
     output Op,
     output WrRam,
     output RdRam,
-    output [10:0] operand
+    output [10:0] operand,
+    output [10:0] Addr
     );
     
 	wire [15:0] output_program_mem;
@@ -36,11 +38,16 @@ module control_top(
 	wire [10:0] connect_PC_adder;
 	wire [10:0] connect_adder_PC;
 
-	assign operand = output_program_mem [10:0]; 	
+	wire [10:0] connect_operand_Data;
+	assign connect_operand_Data = Data [10:0];
+	assign operand = connect_operand_Data;
+
+	// assign operand = Data [10:0];
+	assign Addr = connect_PC_adder; 	
 	
 	decoder #()
 		u_decoder(
-			.opcode(output_program_mem[15:11]),
+			.opcode(Data[15:11]),
 			.WrPC(connect_WrPC),
 			.SelA(SelA),
 			.SelB(SelB),
@@ -48,19 +55,6 @@ module control_top(
 			.Op(Op),
 			.WrRam(WrRam),
 			.RdRam(RdRam)
-			);
-
-	ram_instrucciones #(
-			.RAM_WIDTH(16),
-			.RAM_DEPTH(2048),
-			.RAM_PERFORMANCE("LOW_LATENCY"),
-			// .INIT_FILE("program.hex")
-			.INIT_FILE("/home/facundo/Desktop/practico_arquitectura_de_computadoras/TP3_BIP/TP3_BIP.srcs/sources_1/new/program.hex")
-			)
-		u_ram_instrucciones(
-			.addra(connect_PC_adder),
-			.clka(CLK100MHZ),
-			.douta(output_program_mem)
 			);
 
 	PC #(
