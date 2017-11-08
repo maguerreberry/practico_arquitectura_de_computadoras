@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 11/02/2017 02:44:26 PM
+// Create Date: 10/18/2017 05:12:21 PM
 // Design Name: 
-// Module Name: tb_supertop
+// Module Name: adder_PC
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,15 +20,24 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module tb_supertop(
+module io #(
+	parameter len_opcode = 5,
+    parameter len_acc = 16
+	) (
+    input clk,
+    input [len_opcode-1:0] in_opcode,
+    input [len_acc-1:0] in_acc,
+    input 
 
+    output reg [len_pc-1:0] ciclos = 0,
+    output [len_acc-1:0] acc
     );
 
-	reg clk = 0;
+    assign acc = in_acc;
 
-	super_top #()
-		u_super_top(.CLK100MHZ(clk));
-
-	always #5 clk = ~clk;
+    always @(negedge clk) begin
+        if (in_opcode != 0) begin
+            ciclos = ciclos + 1;
+		end
 
 endmodule

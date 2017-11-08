@@ -26,12 +26,16 @@ module PC#(
     input [len-1:0] In,
     input enable,
     input clk,
+    input reset,
 
     output reg [len-1:0] Out = 0
     );
 
     always @(negedge clk) begin
-		if (enable) begin
+		if (reset) begin
+      Out = 0;
+    end
+    else if (enable) begin
 			Out = In;
 		end
 	end
