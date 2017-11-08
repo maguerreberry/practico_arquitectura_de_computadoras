@@ -26,17 +26,19 @@ module data_path_top(
     input SelB,
     input WrAcc,
     input Op,
-    input WrRam,
-    input RdRam,
-    input [10:0] operand
+    input [10:0] operand,
+    input [15:0] out_ram_data,
+    output [15:0] in_ram_data,
+    output [10:0] Addr
     );
 	
 	wire [15:0] connect_out_sign_extend;
-	wire [15:0] connect_out_mem;
 	wire [15:0] connect_out_alu;
 	wire [15:0] connect_muxA_acc;
 	wire [15:0] connect_muxB_alu;
-	wire [15:0] connect_out_acc;
+
+	// assign operand = Addr;
+	assign Addr = operand;
 
 	signal_extend #()
 		u_signal_extend(
@@ -48,7 +50,7 @@ module data_path_top(
 		.len(16)
 		)
 		u_mux_A(
-			.out_memory(connect_out_mem),
+			.out_memory(out_ram_data),
 			.out_alu(connect_out_alu),
 			.out_sign_extend(connect_out_sign_extend),
 			.SelA(SelA),
@@ -59,7 +61,7 @@ module data_path_top(
 		.len(16)
 		)
 		u_mux_B(
-			.out_ram(connect_out_mem),
+			.out_ram(out_ram_data),
 			.out_sign_extend(connect_out_sign_extend),
 			.SelB(SelB),
 			.Out(connect_muxB_alu)
@@ -72,7 +74,7 @@ module data_path_top(
 			.In(connect_muxA_acc),
 			.clk(CLK100MHZ),
 			.WrAcc(WrAcc),
-			.Out(connect_out_acc)
+			.Out(in_ram_data)
 			);
 
 	arithmetic_unit #(
@@ -80,23 +82,23 @@ module data_path_top(
 		)
 		u_arithmetic_unit(
 			.Op(Op),
-			.A(connect_out_acc),
+			.A(in_ram_data),
 			.B(connect_muxB_alu),
 			.Out(connect_out_alu)
 			);
 
-	ram_datos #(
-		.RAM_WIDTH(16),
-		.RAM_DEPTH(1024),
-		.RAM_PERFORMANCE("LOW_LATENCY")		
-		)
-		u_ram_datos (
-			.addra(operand),
-			.dina(connect_out_acc),
-			.clka(CLK100MHZ),
-			.wea(WrRam),
-			.regcea(RdRam),
-			.douta(connect_out_mem)
-			);
+	// ram_datos #(
+	// 	.RAM_WIDTH(16),
+	// 	.RAM_DEPTH(1024),
+	// 	.RAM_PERFORMANCE("LOW_LATENCY")		
+	// 	)
+	// 	u_ram_datos (
+	// 		.addra(operand),
+	// 		.dina(connect_out_acc),
+	// 		.clka(CLK100MHZ),
+	// 		.wea(WrRam),
+	// 		.regcea(RdRam),
+	// 		.douta(connect_out_mem)
+	// 		);
 
 endmodule
