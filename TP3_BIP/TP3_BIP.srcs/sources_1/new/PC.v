@@ -33,11 +33,11 @@ module PC#(
 
     always @(negedge clk) begin
 		if (reset) begin
-      Out = 0;
-    end
-    else if (enable) begin
-			Out = In;
-		end
+          Out = 0;
+        end
+        else if (enable) begin
+	   		Out = In;
+	   	end
 	end
 
 endmodule

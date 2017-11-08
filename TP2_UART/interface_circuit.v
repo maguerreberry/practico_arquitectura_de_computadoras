@@ -28,7 +28,6 @@ module interface_circuit
 	input clk,
  	input reset,
  	input rx_done_tick,
-// 	input tx_done_tick,
  	input [LEN_DATA-1:0] rx_data_in,
  	input [LEN_DATA-1:0] alu_data_in,
 

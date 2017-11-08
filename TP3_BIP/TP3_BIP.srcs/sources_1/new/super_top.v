@@ -21,7 +21,8 @@
 
 
 module super_top(
-	input CLK100MHZ
+	input CLK100MHZ,
+	input reset
     );
 
 	wire [10:0] connect_addr_instrucciones;
@@ -31,7 +32,19 @@ module super_top(
 	wire [15:0] connect_datos_in;
 	wire connect_Rd;
 	wire connect_Wr;
-
+    
+    io #()
+        u_io (
+                .clk(CLK100MHZ),
+        		.reset(reset),
+        		.in_opcode(connect_instrucciones[15:11]),
+        		.in_acc(connect_datos_out),    
+        		.tx_done(),
+    
+        		.tx_start(),
+        		.data_out() 
+        );       
+    
 	cpu_top #()
 		u_cpu_top(
 			 .CLK100MHZ(CLK100MHZ),
@@ -49,8 +62,8 @@ module super_top(
 			.RAM_WIDTH(16),
 			.RAM_DEPTH(2048),
 			.RAM_PERFORMANCE("LOW_LATENCY"),
-			// .INIT_FILE("program.hex")
-			.INIT_FILE("/home/facundo/Desktop/practico_arquitectura_de_computadoras/TP3_BIP/TP3_BIP.srcs/sources_1/new/program.hex")
+			//.INIT_FILE("/home/facundo/Desktop/practico_arquitectura_de_computadoras/TP3_BIP/TP3_BIP.srcs/sources_1/new/program.hex")
+            .INIT_FILE("E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP3_BIP/TP3_BIP.srcs/sources_1/new/program.hex")
 			)
 		u_ram_instrucciones(
 			.addra(connect_addr_instrucciones),
