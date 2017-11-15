@@ -33,17 +33,17 @@ module super_top(
 	wire connect_Rd;
 	wire connect_Wr;
     
-    io #()
-        u_io (
-                .clk(CLK100MHZ),
-        		.reset(reset),
-        		.in_opcode(connect_instrucciones[15:11]),
-        		.in_acc(connect_datos_out),    
-        		.tx_done(),
+//    io #()
+//        u_io (
+//                .clk(CLK100MHZ),
+//        		.reset(reset),
+//        		.in_opcode(connect_instrucciones[15:11]),
+//        		.in_acc(connect_datos_out),    
+//        		.tx_done(),
     
-        		.tx_start(),
-        		.data_out() 
-        );       
+//        		.tx_start(),
+//        		.data_out() 
+//        );       
     
 	cpu_top #()
 		u_cpu_top(
