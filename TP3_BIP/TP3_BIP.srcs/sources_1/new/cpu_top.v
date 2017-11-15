@@ -24,7 +24,8 @@ module cpu_top(
 	input CLK100MHZ,
     input [15:0] instruction_memory,
     input [15:0] data_memory,
-
+    input reset,
+    
     output [10:0] addr_instruction,
     output [10:0] addr_data,
     output Rd,
@@ -43,6 +44,7 @@ module cpu_top(
 	control_top #()
 		u_control_top(
 			.CLK100MHZ(CLK100MHZ),
+			.reset(reset),
 			.Data(instruction_memory),
 			.SelA(connect_selA),
 		    .SelB(connect_selB),

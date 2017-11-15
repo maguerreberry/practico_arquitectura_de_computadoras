@@ -22,6 +22,7 @@
 
 module control_top(
 	input CLK100MHZ,
+	input reset,
 	input [15:0] Data,
     output [1:0] SelA,
     output SelB,
@@ -62,6 +63,7 @@ module control_top(
 		u_PC(
 			.In(connect_adder_PC),
 			.enable(connect_WrPC),
+			.reset(reset),
 			.clk(CLK100MHZ),
 			.Out(connect_PC_adder)
 			);

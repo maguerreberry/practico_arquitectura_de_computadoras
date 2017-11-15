@@ -37,12 +37,12 @@ module io #(
 
     );
 
-    localparam [5:0] TX4          = 6'b 100000;
-    localparam [5:0] TX3          = 6'b 010000;
-    localparam [5:0] IDLE         = 6'b 001000;
+    localparam [5:0] IDLE         = 6'b 000001;
+    localparam [5:0] PROCCESING   = 6'b 000010;
     localparam [5:0] TX1          = 6'b 000100;
-    localparam [5:0] TX2          = 6'b 000010;
-    localparam [5:0] PROCCESING   = 6'b 000001;
+    localparam [5:0] TX2          = 6'b 001000;
+    localparam [5:0] TX3          = 6'b 010000;
+    localparam [5:0] TX4          = 6'b 100000;
 
     reg [5:0] state;
     reg [len_pc-1:0] ciclos;
@@ -69,7 +69,7 @@ module io #(
                     end
                 TX1:
                     begin
-                        data_out = ciclos[0:LEN_DATA-1];
+                        data_out = ciclos[LEN_DATA-1:0];
                         tx_start = 1;
                         if (tx_done) begin
                             state = TX2;
@@ -78,7 +78,7 @@ module io #(
                     end
                 TX2:
                     begin
-                        data_out = ciclos[LEN_DATA:len_pc-1];
+                        data_out = ciclos[len_pc-1:LEN_DATA];
                         tx_start = 1;
                         if (tx_done) begin
                             state = TX3;
@@ -87,7 +87,7 @@ module io #(
                     end
                 TX3:
                     begin
-                        data_out = acc[0:LEN_DATA-1];
+                        data_out = acc[LEN_DATA-1:0];
                         tx_start = 1;
                         if (tx_done) begin
                             state = TX4;
@@ -96,7 +96,7 @@ module io #(
                     end                
                 TX4:
                     begin
-                        data_out = acc[LEN_DATA:len_acc-1];
+                        data_out = acc[len_acc-1:LEN_DATA];
                         tx_start = 1;
                         if (tx_done) begin
                             state = IDLE;

@@ -41,6 +41,25 @@ module top
 
 //    assign JC = UART_RXD_OUT;
     
+	uart #(
+		.NBITS(`LEN_DATA),
+		.NUM_TICKS(16),
+		.BAUD_RATE(9600)
+		)
+		u_uart
+			(
+				.CLK_100MHZ(CLK100MHZ),
+				.reset(reset),
+				.tx_start(connect_tx_start),
+				.rx(UART_TXD_IN),
+				.data_in(connect_data_tx),
+			
+				.data_out(connect_data_rx),
+				.rx_done_tick(connect_rx_done_tick),
+				.tx(JC),
+				.tx_done_tick()
+			);
+			
 	alu #(
 		.lenghtIN(`LEN_DATA),
 		.lenghtOP(6)
@@ -71,23 +90,5 @@ module top
 		 	.data_out(connect_data_tx) 
 		); 
 
-	uart #(
-		.NBITS(`LEN_DATA),
-		.NUM_TICKS(16),
-		.BAUD_RATE(9600)
-		)
-		u_uart
-			(
-				.CLK_100MHZ(CLK100MHZ),
-				.reset(reset),
-				.tx_start(connect_tx_start),
-				.rx(UART_TXD_IN),
-				.data_in(connect_data_tx),
-			
-				.data_out(connect_data_rx),
-				.rx_done_tick(connect_rx_done_tick),
-				.tx(JC),
-				.tx_done_tick()
-			);
 
 endmodule
