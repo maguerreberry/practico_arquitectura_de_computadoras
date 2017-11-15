@@ -1,21 +1,14 @@
 import serial
 
-ser = serial.Serial('COM6')
-
-print ser.name
-
 while True:
-# a = 0b01110000
-# sent = ser.write(chr(a))
-# print "a =", bin(a)
 
-# b = 0b1
-# sent = ser.write(chr(b))
-# print "b =", bin(b)
+	raw_input("Presione cualquier tecla para reiniciar...")
 
-# op = 0b100000
-# sent = ser.write(chr(op))
-# print "op =", bin(op)
+	ser = serial.Serial('COM6')
+
+	a = 0b01010101
+	sent = ser.write(chr(a))
+	print "Señal de inicio enviada"
 
 	x = ser.read()         
 	print "baja pc =", bin(ord(x))
@@ -29,4 +22,4 @@ while True:
 	x = ser.read()         
 	print "alta acc =", bin(ord(x))
 
-ser.close()
+	ser.close()
