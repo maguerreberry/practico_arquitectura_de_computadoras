@@ -24,10 +24,11 @@
 
 module super_top(
 	input CLK100MHZ,
-	input SWITCH_RESET,
+//	input SWITCH_RESET,
 	input UART_TXD_IN,
 
-	output UART_RXD_OUT
+	output UART_RXD_OUT,
+	output LED
     );
 
 	wire [10:0] connect_addr_instrucciones;
@@ -44,10 +45,11 @@ module super_top(
 
 	wire connect_Rd;
 	wire connect_Wr;
-    wire reset;
+    reg reset;
+    
+    assign LED = reset;
     
 //    assign reset = SWITCH_RESET;
-    assign reset = (connect_data_rx == 8'b 01010101) ? 1 : 0;
     
 	uart #(
 		.NBITS(`LEN_DATA),
@@ -119,5 +121,19 @@ module super_top(
 			.regcea(connect_Rd),
 			.douta(connect_datos_in)
 			);
-
+			
+	always @(connect_data_rx)
+	begin
+	   if (connect_data_rx == 8'b01010101)
+	   begin
+	       reset = 1'b1;
+	   end
+	   
+	   else
+	   begin 
+	       reset = 1'b0;
+	   end
+	end
+    
+    
 endmodule
