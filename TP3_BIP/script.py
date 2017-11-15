@@ -1,7 +1,6 @@
 import serial
 
 while True:
-
 	raw_input("Presione una tecla para iniciar")
 
 	ser = serial.Serial('COM6')
