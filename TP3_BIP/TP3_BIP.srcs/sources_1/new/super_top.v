@@ -23,7 +23,7 @@
 `define LEN_DATA 8
 
 module super_top(
-	input CLK100MHZ,
+	input BOARD_CLK100MHZ,
 //	input SWITCH_RESET,
 	input UART_TXD_IN,
 
@@ -46,10 +46,22 @@ module super_top(
 	wire connect_Rd;
 	wire connect_Wr;
     reg reset;
+    wire CLK100MHZ;
     
     assign LED = reset;
     
 //    assign reset = SWITCH_RESET;
+    
+ clk_wiz_0 
+    u_clk_wiz_0 (
+                    // Clock out ports
+                    .clk_out1(CLK100MHZ),     // output clk_out1
+                    // Status and control signals
+                    .reset(reset), // input reset
+                    .locked(),       // output locked
+                    // Clock in ports
+                    .clk_in1(BOARD_CLK100MHZ)
+                    );      // input clk_in1
     
 	uart #(
 		.NBITS(`LEN_DATA),
