@@ -27,8 +27,6 @@ module tb_decode(
 	
 	reg clk;
 	reg reset;
-	reg in_pc_enable;
-	reg in_pc_src;
 	reg [`LEN-1:0] in_pc_jump = `LEN'b11111111000000001111111100000000;
 	reg [`LEN-1:0] in_instruccion;
 	reg [`LEN-1:0] datos_a_escribir;

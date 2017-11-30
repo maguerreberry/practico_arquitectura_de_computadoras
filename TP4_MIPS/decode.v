@@ -79,12 +79,15 @@ module decode #(
 
 	always @(*) 
 	begin
-		out_sign_extend <= $signed(in_instruccion[15:0]);
 		out_pc_jump <= in_pc_jump;
-		out_rt <= in_instruccion [20:16];
-		out_rd <= in_instruccion [15:11];
 		out_reg1 <= connect_out_reg1; 
 		out_reg2 <= connect_out_reg2;
+		out_sign_extend <= $signed(in_instruccion[15:0]);
+		out_rt <= in_instruccion [20:16];
+		out_rd <= in_instruccion [15:11];
+		execute_bus <= connect_execute_bus;
+		memory_bus <= connect_memory_bus;
+		writeBack_bus <= connect_writeBack_bus;
 	end
 
 endmodule
