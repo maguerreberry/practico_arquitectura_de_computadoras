@@ -22,80 +22,59 @@
 
 module control(
     input [5:0] opcode,
-    output reg RegDst,
-    output reg [1:0] ALUOp,
-    output reg ALUSrc,
-    output reg Branch,
-    output reg MemRead,
-    output reg MemWrite,
-    output reg RegWrite,
-    output reg MemtoReg
+    input reset,
+
+    // junto las salidas en buses para mas prolijidad
+    output reg [3:0] execute_bus,
+    	// RegDst, ALUOp [2], ALUSrc
+    output reg [2:0] memory_bus,
+    	// Branch, MemRead, MemWrite
+    output reg [1:0] writeBack_bus
+    	// RegWrite, MemtoReg
     );
 
 	always @(*) 
 	begin
-		case(opcode)
-			6'b 000000: 
-			begin //R-type
-				RegDst = 1;
-				ALUOp[1] = 1;
-				ALUOp[0] = 0;
-				ALUSrc = 0;
-				Branch = 0;
-				MemRead = 0;
-				MemWrite = 0;
-				RegWrite = 1;
-				MemtoReg = 0;
-			end			
-			6'b 100011: 
-			begin //LOAD
-				RegDst = 0;
-				ALUOp[1] = 0;
-				ALUOp[0] = 0;
-				ALUSrc = 1;
-				Branch = 0;
-				MemRead = 1;
-				MemWrite = 0;
-				RegWrite = 1;
-				MemtoReg = 1;
-			end
-			6'b 101011: 
-			begin //STORE
-				RegDst = 0;
-				ALUOp[1] = 0;
-				ALUOp[0] = 0;
-				ALUSrc = 1;
-				Branch = 0;
-				MemRead = 0;
-				MemWrite = 1;
-				RegWrite = 0;
-				MemtoReg = 0;
-			end
-			6'b 000100: 
-			begin //BRANCH
-				RegDst = 0;
-				ALUOp[1] = 0;
-				ALUOp[0] = 1;
-				ALUSrc = 0;
-				Branch = 1;
-				MemRead = 0;
-				MemWrite = 0;
-				RegWrite = 0;
-				MemtoReg = 0;			
-			end
-			default: 
-			begin
-				RegDst = 0;
-				ALUOp[1] = 0;
-				ALUOp[0] = 0;
-				ALUSrc = 0;
-				Branch = 0;
-				MemRead = 0;
-				MemWrite = 0;
-				RegWrite = 0;
-				MemtoReg = 0;			
-			end		
-		endcase
+		if(reset)
+		begin
+			execute_bus <= 4'b0000;
+			memory_bus <= 3'b000;
+			writeBack_bus <= 2'b00;
+		end
+		else begin
+			case(opcode)
+				6'b 000000: 
+				begin //R-type
+					execute_bus <= 4'b1100;
+					memory_bus <= 3'b000;
+					writeBack_bus <= 2'b10;
+				end			
+				6'b 100011: 
+				begin //LOAD
+					execute_bus <= 4'b0001;
+					memory_bus <= 3'b010;
+					writeBack_bus <= 2'b11;
+				end
+				6'b 101011: 
+				begin //STORE
+					execute_bus <= 4'b0001;
+					memory_bus <= 3'b001;
+					writeBack_bus <= 2'b00;
+				end
+				6'b 000100: 
+				begin //BRANCH
+					execute_bus <= 4'b0010;
+					memory_bus <= 3'b100;
+					writeBack_bus <= 2'b00;
+				end
+				default: 
+				begin
+					execute_bus <= 4'b0000;
+					memory_bus <= 3'b000;
+					writeBack_bus <= 2'b00;
+				end		
+			endcase
+		end
 	end
 
 endmodule
