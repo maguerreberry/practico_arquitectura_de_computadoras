@@ -74,11 +74,11 @@ module instruction_fetch #(
 
 	sumador #(
 		.len1(len),
-		.len2(1)
+		.len2(3)
 		)
 		u_sumador(
 			.In1(connect_pc_sumador_mem),
-			.In2(1),
+			.In2(4),
 			.Out(connect_sumador_mux)
 			); 
 
