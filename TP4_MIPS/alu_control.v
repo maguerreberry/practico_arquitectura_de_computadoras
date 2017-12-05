@@ -55,6 +55,7 @@ module alu_control(
 			3'b100 : alu_code <= 4'b0111; //xor
 			3'b101 : alu_code <= 4'b0000; //shift left
 			3'b110 : alu_code <= 4'b0100; //restar 
+			3'b111 : alu_code <= 4'b1001; // INSTRUCCION LUI -> SHIFT 16 IZQUIERDA
 			default: alu_code <= 4'bxxxx;	
 		endcase
 	end

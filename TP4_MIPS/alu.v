@@ -64,6 +64,7 @@ module alu #(
 			4'b 0110: RESULT_OUT = A | B; //or
 			4'b 0111: RESULT_OUT = A ^ B; //xor
 			4'b 1000: RESULT_OUT = ~(A | B); //nor
+			4'b 1001: RESULT_OUT = B << 16;
 			default: RESULT_OUT = 0;
 		endcase	
 	end
