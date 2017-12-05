@@ -27,6 +27,7 @@ module top#(
 	input reset
     );
 
+    wire [LEN-1:0] connect_in_pc_branch;
     wire [LEN-1:0] connect_in_pc_jump;
     wire [LEN-1:0] connect_instruccion;
 
@@ -37,9 +38,10 @@ module top#(
 			.clk(clk),
 			.reset(reset),
 			.in_pc_src(0),
-			.in_pc_jump(),
+			.in_pc_jump(connect_in_pc_jump),
+			.in_pc_branch(),
 
-			.out_pc_jump(connect_pc_jump),
+			.out_pc_branch(connect_in_pc_branch),
 			.out_instruction(connect_instruccion)
 		);
 
@@ -49,13 +51,14 @@ module top#(
 		u_decode(
 			.clk(clk),
 			.reset(reset),
-			.in_pc_jump(connect_pc_jump),
+			.in_pc_branch(connect_in_pc_branch),
 			.in_instruccion(connect_instruccion),
 			.RegWrite(),
 			.write_data(),
 			.write_register(),
 			
-			.out_pc_jump(),
+			.out_pc_branch(),
+			.out_pc_jump(connect_in_pc_jump),
 			.out_reg1(),
 			.out_reg2(),
 			.out_sign_extend(),
