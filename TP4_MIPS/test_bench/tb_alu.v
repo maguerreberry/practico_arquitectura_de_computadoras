@@ -86,11 +86,24 @@ module tb_alu(
 		B = `lenghtIN'h64;
 		OPCODE = `lenghtOP'b0111; //xor
 
+
+		#10
+
+		A = `lenghtIN'hFF;
+		B = `lenghtIN'hFF;
+		OPCODE = `lenghtOP'b0100; //sub
+
+
 		#10
 
 		A = `lenghtIN'hF0;
 		B = `lenghtIN'h31;
 		OPCODE = `lenghtOP'b1000; //nor
+		#10
+
+		A = `lenghtIN'h4;
+		B = `lenghtIN'h5;
+		OPCODE = `lenghtOP'b0100; //sub
 
 	end
 
