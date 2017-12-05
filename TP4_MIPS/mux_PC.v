@@ -27,17 +27,17 @@ module mux_PC #(
 	input [len-1:0] branch,
 	input [len-1:0] register,
 	input [len-1:0] pc,
-	input [1:0] select,
+	input [2:0] select,
 	output reg [len-1:0] out_mux_PC
     );
 
     always @(*) 
     begin
     	case (select)
-    		2'b 00: out_mux_PC <= pc; 
-    		2'b 01: out_mux_PC <= branch;
-    		2'b 10: out_mux_PC <= register;
-    		2'b 11: out_mux_PC <= jump;
+    		3'b 100: out_mux_PC <= jump;
+    		3'b 010: out_mux_PC <= register;
+    		3'b 001: out_mux_PC <= branch;
+    		default: out_mux_PC <= pc; 
     	endcase
    	end
 	    

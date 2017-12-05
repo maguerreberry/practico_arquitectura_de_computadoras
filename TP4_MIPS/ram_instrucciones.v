@@ -10,7 +10,7 @@ module ram_instrucciones #(
   parameter RAM_PERFORMANCE = "HIGH_PERFORMANCE", // Select "HIGH_PERFORMANCE" or "LOW_LATENCY" 
   parameter INIT_FILE = ""                        // Specify name/location of RAM initialization file if using one (leave blank if not
 ) (
-  input [RAM_WIDTH:0] addra,  // Address bus, width determined from RAM_DEPTH
+  input [RAM_WIDTH-1:0] addra,  // Address bus, width determined from RAM_DEPTH
   input clka,                           // Clock
   output [RAM_WIDTH-1:0] douta          // RAM output data
 );
@@ -42,6 +42,7 @@ module ram_instrucciones #(
         BRAM[addra] <= dina;
       else
         ram_data <= BRAM[addra >> 2];
+
   //  The following code generates HIGH_PERFORMANCE (use output register) or LOW_LATENCY (no output register)
   generate
     if (RAM_PERFORMANCE == "LOW_LATENCY") begin: no_output_register

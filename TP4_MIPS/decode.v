@@ -42,12 +42,12 @@ module decode #(
 	output reg [NB-1:0] out_shamt,
 
 	// señales de control
-	output reg [3:0] execute_bus,
+	output reg [8:0] execute_bus,
 	output reg [2:0] memory_bus,
 	output reg [1:0] writeBack_bus
     );
 
-	wire [3:0] connect_execute_bus;
+	wire [8:0] connect_execute_bus;
 	wire [2:0] connect_memory_bus ;
 	wire [1:0] connect_writeBack_bus;	
 
@@ -56,6 +56,7 @@ module decode #(
 
 	control #()
 		u_control(
+			.clk(clk),
 			.opcode(in_instruccion[31:26]),
 			.execute_bus(connect_execute_bus),
 			.memory_bus(connect_memory_bus),

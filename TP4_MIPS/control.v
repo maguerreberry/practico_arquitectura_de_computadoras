@@ -21,6 +21,7 @@
 
 
 module control(
+	input clk,
     input [5:0] opcode,
     input reset,
     input [5:0] opcode_lsb,
@@ -39,9 +40,9 @@ module control(
 
 	alu_control #()
 	u_alu_control (.opcode_lsb(opcode_lsb), .aluop(aluop), 
-				   .alu_code(alu_code));
+				   .alu_code(alu_code), .clk(clk));
 
-	always @(*) 
+	always @(posedge clk) 
 	begin
 
 		execute_bus[3:0] = alu_code;
@@ -60,19 +61,19 @@ module control(
 						6'b000000, 6'b000010, 6'b000011 :
 						begin //SHIFT CON SHAMT
 							execute_bus[8:4] <= 5'b11000;
-							aluop = 3'b000;
+							aluop <= 3'b000;
 							// memory_bus <= 3'b000;
 							// writeBack_bus <= 2'b10;
 						end
 						6'b001000, 6'b001001 :
 						begin //JR, OJO VER JALR
 							execute_bus[8:4] <= 5'bxxxx01;
-							aluop = 3'bxxx;
+							aluop <= 3'bxxx;
 						end
 						default:
 						begin
-							execute_bus[8:4] <= 5'b11000;
-							aluop = 3'b000;
+							execute_bus[8:4] <= 5'b10000;
+							aluop <= 3'b000;
 							// memory_bus <= 3'b000;
 							// writeBack_bus <= 2'b10;
 						end
@@ -82,58 +83,63 @@ module control(
 				6'b100000, 6'b100001, 6'b100011, 6'b100100, 6'b100101 :
 				begin //LOAD
 					execute_bus[8:4] <= 5'b00100;
-					aluop = 3'b001;
+					aluop <= 3'b001;
 					// memory_bus <= 3'b010;
 					// writeBack_bus <= 2'b11;
 				end
 				6'b101000, 6'b101001, 6'b101011 :
 				begin //STORE
 					execute_bus[8:4] <= 5'b00100;
-					aluop = 3'b001;
+					aluop <= 3'b001;
 					// memory_bus <= 3'b001;
 					// writeBack_bus <= 2'b00;
 				end
 				6'b001000 :
 				begin //ADDI
 					execute_bus[8:4] <= 5'b00100;
-					aluop = 3'b001;
+					aluop <= 3'b001;
 				end
 				6'b001100 :
 				begin //ANDI
 					execute_bus[8:4] <= 5'b00100;
-					aluop = 3'b010;
+					aluop <= 3'b010;
 				end
 				6'b001101 :
 				begin //ORI
 					execute_bus[8:4] <= 5'b00100;
-					aluop = 3'b011;
+					aluop <= 3'b011;
 				end
 				6'b001110 :
 				begin //XORI
 					execute_bus[8:4] <= 5'b00100;
-					aluop = 3'b100;
+					aluop <= 3'b100;
 				end
 				6'b001111 :
 				begin //LUI
 					execute_bus[8:4] <= 5'b0x100;
-					aluop = 3'b111;
+					aluop <= 3'b111;
 				end
 				6'b001010 :
 				begin //SLTI
 					execute_bus[8:4] <= 5'b00100;
-					aluop = 3'b110;
+					aluop <= 3'b110;
 				end
 				6'b 000100, 6'b 000101 :
 				begin //BRANCH
 					execute_bus[8:4] <= 5'bx0000;
-					aluop = 3'b110;
+					aluop <= 3'b110;
 					// memory_bus <= 3'b100;
 					// writeBack_bus <= 2'b00;
+				end
+				6'b000010 :
+				begin //JUMP
+					execute_bus[8:4] <= 5'bxxx10;
+					aluop <= 3'bxxx;
 				end
 				default: 
 				begin
 					execute_bus[8:4] <= 5'bxxxxx;
-					aluop = 3'bxxx;
+					aluop <= 3'bxxx;
 					// memory_bus <= 3'b000;
 					// writeBack_bus <= 2'b00;
 				end		

@@ -42,7 +42,7 @@ module registers#(
 		integer ii;		
 		initial
         for (ii = 0; ii < lenght; ii = ii + 1)
-          registers_mips[ii] = {width{1'b0}};
+          registers_mips[ii] = {width{1'b0+ii}};
 	endgenerate
 
 	always @(posedge clk)

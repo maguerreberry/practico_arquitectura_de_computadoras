@@ -25,7 +25,7 @@ module instruction_fetch #(
 	) (
 	input clk,
 	input reset,
-	input [1:0] in_pc_src,
+	input [2:0] in_pc_src,
 	input [len-1:0] in_pc_jump,
 	input [len-1:0] in_pc_branch,
 	input [len-1:0] in_pc_register,
