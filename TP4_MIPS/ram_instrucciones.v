@@ -41,7 +41,7 @@ module ram_instrucciones #(
       if (wea)
         BRAM[addra] <= dina;
       else
-        ram_data <= BRAM[addra];
+        ram_data <= BRAM[addra[clogb2(RAM_DEPTH-1)-1:2]];
 
   //  The following code generates HIGH_PERFORMANCE (use output register) or LOW_LATENCY (no output register)
   generate
@@ -96,5 +96,5 @@ endmodule
   );
 
 */
-						
-						
+            
+            

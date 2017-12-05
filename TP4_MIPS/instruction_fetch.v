@@ -63,8 +63,8 @@ module instruction_fetch #(
 		.RAM_WIDTH(len),
 		.RAM_DEPTH(2048),
 		.RAM_PERFORMANCE("LOW_LATENCY"),
-		// .INIT_FILE("/home/facundo/Documents/Facultad/Arqui/TP4_MIPS/program.hex")
-        .INIT_FILE("E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP4_MIPS/program.hex")
+		.INIT_FILE("/home/facundo/Documents/Facultad/Arqui/TP4_MIPS/program.hex")
+        // .INIT_FILE("E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP4_MIPS/program.hex")
 		)
 		u_ram_instrucciones(
 			.addra(connect_pc_sumador_mem),
@@ -74,11 +74,11 @@ module instruction_fetch #(
 
 	sumador #(
 		.len1(len),
-		.len2(1)
+		.len2(3)
 		)
 		u_sumador(
 			.In1(connect_pc_sumador_mem),
-			.In2(1),
+			.In2(4),
 			.Out(connect_sumador_mux)
 			); 
 

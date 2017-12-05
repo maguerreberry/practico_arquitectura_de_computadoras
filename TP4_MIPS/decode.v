@@ -38,7 +38,9 @@ module decode #(
 	output reg [len-1:0] out_sign_extend,
 	output reg [NB-1:0] out_rt,
 	output reg [NB-1:0] out_rd,
+	output reg [NB-1:0] out_shamt,
 
+	// señales de control
 	output reg [3:0] execute_bus,
 	output reg [2:0] memory_bus,
 	output reg [1:0] writeBack_bus
@@ -85,6 +87,7 @@ module decode #(
 		out_sign_extend <= $signed(in_instruccion[15:0]);
 		out_rt <= in_instruccion [20:16];
 		out_rd <= in_instruccion [15:11];
+		out_shamt <= in_instruccion [10:6];
 		execute_bus <= connect_execute_bus;
 		memory_bus <= connect_memory_bus;
 		writeBack_bus <= connect_writeBack_bus;
