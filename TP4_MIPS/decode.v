@@ -26,12 +26,13 @@ module decode #(
 	)(
 	input clk,
 	input reset,
-	input [len-1:0] in_pc_jump,
+	input [len-1:0] in_pc_branch,
 	input [len-1:0] in_instruccion,
 	input RegWrite,
 	input [len-1:0] write_data,
 	input [NB-1:0] write_register,
 
+	output reg [len-1:0] out_pc_branch,
 	output reg [len-1:0] out_pc_jump,
 	output reg [len-1:0] out_reg1,
 	output reg [len-1:0] out_reg2,
@@ -81,7 +82,7 @@ module decode #(
 
 	always @(*) 
 	begin
-		out_pc_jump <= in_pc_jump;
+		out_pc_branch <= in_pc_branch;
 		out_reg1 <= connect_out_reg1; 
 		out_reg2 <= connect_out_reg2;
 		out_sign_extend <= $signed(in_instruccion[15:0]);
@@ -91,6 +92,9 @@ module decode #(
 		execute_bus <= connect_execute_bus;
 		memory_bus <= connect_memory_bus;
 		writeBack_bus <= connect_writeBack_bus;
+		
+		out_pc_jump <= {in_pc_branch[31:28], (in_instruccion[25:0] << 2)};
+		
 	end
 
 endmodule
