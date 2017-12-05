@@ -42,7 +42,6 @@ module ram_instrucciones #(
         BRAM[addra] <= dina;
       else
         ram_data <= BRAM[addra >> 2];
-
   //  The following code generates HIGH_PERFORMANCE (use output register) or LOW_LATENCY (no output register)
   generate
     if (RAM_PERFORMANCE == "LOW_LATENCY") begin: no_output_register
