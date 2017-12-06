@@ -28,7 +28,7 @@ module alu_control(
     output reg [3:0] alu_code
     );
 
-	always @(posedge clk) 
+	always @(*) 
 	begin
 		case(aluop)
 			3'b000 : 

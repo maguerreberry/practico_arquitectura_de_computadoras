@@ -82,7 +82,7 @@ module decode #(
 			.read_data_2(connect_out_reg2)
 			);
 
-	always @(*) 
+	always @(posedge clk) 
 	begin
 		out_pc_branch <= in_pc_branch;
 		out_reg1 <= connect_out_reg1; 

@@ -65,8 +65,8 @@ module instruction_fetch #(
 		.RAM_WIDTH(len),
 		.RAM_DEPTH(2048),
 		.RAM_PERFORMANCE("LOW_LATENCY"),
-		//.INIT_FILE("/home/facundo/Documents/Facultad/Arqui/TP4_MIPS/program.hex")
-        .INIT_FILE("E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP4_MIPS/program.hex")
+		.INIT_FILE("/home/facundo/Desktop/practico_arquitectura_de_computadoras/TP4_MIPS/program.hex")
+        // .INIT_FILE("E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP4_MIPS/program.hex")
 		)
 		u_ram_instrucciones(
 			.addra(connect_pc_sumador_mem),
@@ -84,7 +84,7 @@ module instruction_fetch #(
 			.Out(connect_sumador_mux)
 			); 
 
-	always @(*) 
+	always @(posedge clk) 
 	begin
 		out_pc_branch <= connect_sumador_mux;
 		out_instruction <= connect_mem_out;

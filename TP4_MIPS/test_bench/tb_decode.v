@@ -27,7 +27,7 @@ module tb_decode(
 	
 	reg clk;
 	reg reset;
-	reg [`LEN-1:0] in_pc_jump = `LEN'b11111111000000001111111100000000;
+	reg [`LEN-1:0] in_pc_branch = `LEN'b11111111000000001111111100000000;
 	reg [`LEN-1:0] in_instruccion;
 	reg [`LEN-1:0] datos_a_escribir;
 	reg write_enable;
@@ -38,7 +38,7 @@ module tb_decode(
 		)
 		u_decode (
 			.clk(clk),
-			.in_pc_jump(in_pc_jump),
+			.in_pc_branch(in_pc_branch),
 			.in_instruccion(in_instruccion),
 			.RegWrite(write_enable),
 			.write_data(datos_a_escribir),
@@ -65,12 +65,14 @@ module tb_decode(
 		#30
 
 		write_enable = 0;
-		in_instruccion = `LEN'b10001100000000011101100100000101;
-		// elijo el registro 0 y 1 para ver su salida. 
-		// en los 16 lsb pongo bits aleatorios para ver que extienda el signo
+		in_instruccion = `LEN'b00000000001000100010000000100001;
 
-		#20
-		reset = 1;
+		#15
+
+		in_instruccion = `LEN'b00000000011001100011000000100001;
+
+		// #20
+		// reset = 1;
 	end
 
 	always 

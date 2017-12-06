@@ -27,6 +27,8 @@ module tb_top(
 	reg clk;
 	reg reset;
 
+	reg flag = 0;
+
     top#(
     	.LEN(32)
  		)
@@ -41,9 +43,16 @@ module tb_top(
 		reset = 1;
 		#10
 		reset = 0;
+		#30
+		flag = 1;
 	end
 
 	always 
+	begin
+		if(flag == 0)
+		#5 clk = clk;
+		else
 		#5 clk = ~clk;
+	end
     
 endmodule
