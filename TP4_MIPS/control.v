@@ -42,7 +42,7 @@ module control(
 	u_alu_control (.opcode_lsb(opcode_lsb), .aluop(aluop), 
 				   .alu_code(alu_code), .clk(clk));
 
-	always @(posedge clk) 
+	always @(*) 
 	begin
 
 		execute_bus[3:0] = alu_code;

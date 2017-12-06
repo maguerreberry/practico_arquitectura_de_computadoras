@@ -36,12 +36,14 @@ module ram_instrucciones #(
     end
   endgenerate
 
-  always @(negedge clka)
+  always @(posedge clka)
     if (ena)
       if (wea)
         BRAM[addra] <= dina;
       else
         ram_data <= BRAM[addra >> 2];
+
+  // assign douta = BRAM[addra >> 2];
 
   //  The following code generates HIGH_PERFORMANCE (use output register) or LOW_LATENCY (no output register)
   generate
@@ -56,7 +58,7 @@ module ram_instrucciones #(
 
       reg [RAM_WIDTH-1:0] douta_reg = {RAM_WIDTH{1'b0}};
 
-      always @(negedge clka)
+      always @(posedge clka)
         if (rsta)
           douta_reg <= {RAM_WIDTH{1'b0}};
         else if (regcea)

@@ -45,13 +45,13 @@ module registers#(
           registers_mips[ii] = {width{1'b0+ii}};
 	endgenerate
 
-	always @(posedge clk)
+	always @(negedge clk)
 	begin
 		read_data_1 <= registers_mips[read_register_1];
 		read_data_2 <= registers_mips[read_register_2];
 	end
 
-	always @(negedge clk)
+	always @(posedge clk)
 	begin
 		if (RegWrite) 
 		begin
