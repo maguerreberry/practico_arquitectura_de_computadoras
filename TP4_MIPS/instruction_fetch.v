@@ -31,13 +31,12 @@ module instruction_fetch #(
 	input [len-1:0] in_pc_register,
 
 	output reg [len-1:0] out_pc_branch,
-	output reg [len-1:0] out_instruction
+	output [len-1:0] out_instruction
     );
 
     wire [len-1:0] connect_sumador_mux; 
     wire [len-1:0] connect_mux_pc;
     wire [len-1:0] connect_pc_sumador_mem;
-    wire [len-1:0] connect_mem_out;
 
 	mux_PC #(
 		.len(len)
@@ -65,13 +64,14 @@ module instruction_fetch #(
 		.RAM_WIDTH(len),
 		.RAM_DEPTH(2048),
 		.RAM_PERFORMANCE("LOW_LATENCY"),
-		.INIT_FILE("/home/facundo/Desktop/practico_arquitectura_de_computadoras/TP4_MIPS/program.hex")
-        // .INIT_FILE("E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP4_MIPS/program.hex")
+//		.INIT_FILE("/home/facundo/Desktop/practico_arquitectura_de_computadoras/TP4_MIPS/program.hex")
+        .INIT_FILE("E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP4_MIPS/program.hex")
 		)
 		u_ram_instrucciones(
 			.addra(connect_pc_sumador_mem),
 			.clka(clk),
-			.douta(connect_mem_out)
+			.ena(!reset),
+			.douta(out_instruction)
 			); 
 
 	sumador #(
@@ -87,7 +87,6 @@ module instruction_fetch #(
 	always @(posedge clk) 
 	begin
 		out_pc_branch <= connect_sumador_mux;
-		out_instruction <= connect_mem_out;
 	end
 	
 endmodule

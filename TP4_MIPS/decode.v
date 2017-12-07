@@ -33,7 +33,7 @@ module decode #(
 	input [NB-1:0] write_register,
 
 	output reg [len-1:0] out_pc_branch,
-	output reg [len-1:0] out_pc_jump,
+	output [len-1:0] out_pc_jump,
 	output reg [len-1:0] out_reg1,
 	output reg [len-1:0] out_reg2,
 	output reg [len-1:0] out_sign_extend,
@@ -43,6 +43,8 @@ module decode #(
 
 	// señales de control
 	output reg [8:0] execute_bus,
+	output flag_jump,
+	output flag_jump_register,
 	output reg [2:0] memory_bus,
 	output reg [1:0] writeBack_bus
     );
@@ -53,6 +55,11 @@ module decode #(
 
 	wire [len-1:0] connect_out_reg1;
 	wire [len-1:0] connect_out_reg2;
+
+	assign flag_jump = connect_execute_bus[5];
+	assign flag_jump_register = connect_execute_bus[4];
+	
+	assign out_pc_jump = {in_pc_branch[31:28], (in_instruccion[25:0] << 2)};
 
 	control #()
 		u_control(
@@ -95,7 +102,6 @@ module decode #(
 		memory_bus <= connect_memory_bus;
 		writeBack_bus <= connect_writeBack_bus;
 		
-		out_pc_jump <= {in_pc_branch[31:28], (in_instruccion[25:0] << 2)};
 		
 	end
 
