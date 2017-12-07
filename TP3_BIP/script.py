@@ -1,11 +1,11 @@
 import serial
 
 def concat_bin(msb,lsb):
-	return msb * pow(2,8) + lsb
+	return (ord(msb) << 8) + ord(lsb)
 
 # con switch
 
-ser = serial.Serial('COM6')
+ser = serial.Serial('COM4')
 
 pc_1 = ser.read()
 pc_2 = ser.read()
@@ -14,11 +14,11 @@ acc_2 = ser.read()
 
 ser.close()
 
-pc = concat_bin(pow_2, pow_1)
+pc = concat_bin(pc_2, pc_1)
 acc = concat_bin(acc_2, acc_1)
 
-print "Ciclos de clock empleados: ", bin(ord(pc))
-print "Valor del acumulador: ", bin(ord(acc))
+print "Ciclos de clock empleados: ", bin(pc)
+print "Valor del acumulador: ", bin(acc)
 
 
 # con teclado
