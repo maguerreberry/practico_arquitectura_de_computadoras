@@ -28,22 +28,43 @@ module top#(
 	input reset
     );
 
-    wire [LEN-1:0] connect_in_pc_branch_1_2;
-    wire [LEN-1:0] connect_in_pc_branch_2_3;
-    wire [LEN-1:0] connect_in_pc_branch_3_1;
-    wire [LEN-1:0] connect_in_pc_jump;
-    wire [LEN-1:0] connect_instruccion;
+    wire [LEN-1:0] connect_in_pc_branch_1_2,
+				   connect_in_pc_branch_2_3,
+				   connect_in_pc_branch_3_1,
+				   connect_in_pc_jump,
+				   connect_instruccion,
+				   connect_reg1,
+				   connect_reg2,
+				   connect_sign_extend,
+				   connect_alu_out,
+				   connect_write_data_5_2,
+				   connect_read_data,
+				   connect_out_addr_mem,
+				   connect_write_data_3_4,
+				   connect_in_pc_branch_3_4,
+				   connect_in_pc_branch_4_1;
+
+	wire [NB-1:0] connect_rt,
+				  connect_rd,
+				  connect_shamt,
+				  connect_write_reg_3_4,
+				  connect_write_reg_4_2;
+
     wire [8:0] connect_execute_bus;
-    wire connect_flag_jump;
-    wire connect_flag_jump_register;
-    wire [LEN-1:0] connect_reg1;
-	wire [LEN-1:0] connect_reg2;
-	wire [LEN-1:0] connect_sign_extend;
-	wire [NB-1:0] connect_rt;
-	wire [NB-1:0] connect_rd;
-	wire [NB-1:0] connect_shamt;
-	wire [2:0] connect_memory_bus;
-	wire [1:0] connect_writeBack_bus;
+	
+	wire [2:0] connect_memory_bus_2_3,
+			   connect_memory_bus_3_4;
+	
+	wire [1:0] connect_writeBack_bus_2_3,
+			   connect_out_writeBack_bus,
+			   connect_writeBack_bus_3_4;
+    
+    wire connect_flag_jump,
+         connect_flag_jump_register,
+	     connect_zero_flag,
+	     connect_branch_flag;
+
+	assign connect_write_data_5_2 = (connect_out_writeBack_bus[0]) ? connect_read_data : connect_out_addr_mem;
 
 	instruction_fetch #(
 		.len(LEN)
@@ -51,9 +72,9 @@ module top#(
 		u_instruction_fetch(
 			.clk(clk),
 			.reset(reset),
-			.in_pc_src({connect_flag_jump, connect_flag_jump_register, 1'b 0}), //falta agregar el pc src del branch
+			.in_pc_src({connect_flag_jump, connect_flag_jump_register, connect_branch_flag}),
 			.in_pc_jump(connect_in_pc_jump),
-			.in_pc_branch(),
+			.in_pc_branch(connect_in_pc_branch_4_1),
 			.in_pc_register(),
 
 			.out_pc_branch(connect_in_pc_branch_1_2),
@@ -68,9 +89,9 @@ module top#(
 			.reset(reset),
 			.in_pc_branch(connect_in_pc_branch_1_2),
 			.in_instruccion(connect_instruccion),
-			.RegWrite(),
-			.write_data(),
-			.write_register(),
+			.RegWrite(connect_out_writeBack_bus[1]),
+			.write_data(connect_write_data_5_2),
+			.write_register(connect_write_reg_4_2),
 			
 			.out_pc_branch(connect_in_pc_branch_2_3),
 			.out_pc_jump(connect_in_pc_jump),
@@ -84,8 +105,8 @@ module top#(
 			.execute_bus(connect_execute_bus),
 			.flag_jump(connect_flag_jump),
 			.flag_jump_register(connect_flag_jump_register),
-			.memory_bus(connect_memory_bus),
-			.writeBack_bus(connect_writeBack_bus)
+			.memory_bus(connect_memory_bus_2_3),
+			.writeBack_bus(connect_writeBack_bus_2_3)
 		);
 
 	execute #(
@@ -103,19 +124,42 @@ module top#(
 			.in_shamt(connect_shamt),
 		
 			.execute_bus(connect_execute_bus),
-			.memory_bus(connect_memory_bus),
-			.writeBack_bus(connect_writeBack_bus), 
+			.memory_bus(connect_memory_bus_2_3),
+			.writeBack_bus(connect_writeBack_bus_2_3), 
 		
-			.out_pc_branch(connect_in_pc_branch_3_1),
-			.out_alu(),
-			.zero_flag(),
+			.out_pc_branch(connect_in_pc_branch_3_4),
+			.out_alu(connect_alu_out),
+			.zero_flag(connect_zero_flag),
 			.neg_flag(),
-			.out_reg2(),
-			.out_write_reg(),
+			.out_reg2(connect_write_data_3_4),
+			.out_write_reg(connect_write_reg_3_4),
 		
 			// señales de control
-			.memory_bus_out(),
-			.writeBack_bus_out()
-	);
+			.memory_bus_out(connect_memory_bus_3_4),
+			.writeBack_bus_out(connect_writeBack_bus_3_4)
+			);
+
+	memory #(
+		.len(LEN)
+		)
+		u_memory(
+			.clk(clk),
+			.in_addr_mem(connect_alu_out),
+			.write_data(connect_write_data_3_4),
+			
+			.memory_bus(connect_memory_bus_3_4),
+		    .in_writeBack_bus(connect_writeBack_bus_3_4),
+			.in_write_reg(connect_write_reg_3_4),			
+			.zero_flag(connect_zero_flag),
+			.in_pc_branch(connect_in_pc_branch_3_4),
+
+			//outputs		
+			.read_data(connect_read_data),
+			.pc_src(connect_branch_flag),
+			.out_pc_branch(connect_in_pc_branch_4_1),
+		    .out_writeBack_bus(connect_out_writeBack_bus),
+			.out_addr_mem(connect_out_addr_mem),
+			.out_write_reg(connect_write_reg_4_2)	
+			);
 
 endmodule

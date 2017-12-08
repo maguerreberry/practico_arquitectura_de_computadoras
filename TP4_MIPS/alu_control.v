@@ -21,7 +21,6 @@
 
 
 module alu_control(
-	input clk,
     input [5:0] opcode_lsb,
     input [2:0] aluop,
 

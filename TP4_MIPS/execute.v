@@ -39,7 +39,6 @@ module execute #(
 	input [2:0] memory_bus,
 	input [1:0] writeBack_bus, 
 
-	output reg [len-1:0] out_pc_jump,
 	output reg [len-1:0] out_pc_branch,
 	output reg [len-1:0] out_alu,
 	output reg zero_flag,

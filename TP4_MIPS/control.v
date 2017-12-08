@@ -40,7 +40,7 @@ module control(
 
 	alu_control #()
 	u_alu_control (.opcode_lsb(opcode_lsb), .aluop(aluop), 
-				   .alu_code(alu_code), .clk(clk));
+				   .alu_code(alu_code));
 
 	always @(*) 
 	begin
