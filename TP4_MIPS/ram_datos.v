@@ -32,17 +32,17 @@ module ram_datos #(
       integer ram_index;
       initial
         for (ram_index = 0; ram_index < RAM_DEPTH; ram_index = ram_index + 1)
-          BRAM[ram_index] = {RAM_WIDTH{1'b0}};
+          BRAM[ram_index] = {RAM_WIDTH{1'b0}}+ram_index;
     end
   endgenerate
 
   always @(negedge clka)
+  begin
+    if (wea)
+      BRAM[addra] <= dina;
     if (ena)
-      if (wea)
-        BRAM[addra] <= dina;
-      else
-        ram_data <= BRAM[addra];
-
+      ram_data <= BRAM[addra];
+  end
   //  The following code generates HIGH_PERFORMANCE (use output register) or LOW_LATENCY (no output register)
   generate
     if (RAM_PERFORMANCE == "LOW_LATENCY") begin: no_output_register
