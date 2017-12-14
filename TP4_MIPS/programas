@@ -173,3 +173,27 @@ r4 = [r1]
 
 430821
 8C240000
+
+
+
+
+-----------------------------------------
+load byte
+
+Carga en el registro 2 el contenido del primer byte (con signo) de la memoria en 0
+
+80020001
+
+------------------------------------------
+store byte 
+
+Carga en la posicion de memoria 1 el primer byte(con signo) del registro 2
+
+a0020001
+
+------------------------------------------
+store half word
+
+Carga en la posicion de memoria 1 media palabra(con signo) del registro 2
+
+a4020001

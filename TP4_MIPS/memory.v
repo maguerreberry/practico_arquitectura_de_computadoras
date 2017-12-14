@@ -91,26 +91,26 @@ module memory #(
 	begin
 		if (control_LH) 
 		begin
-			connect_mux_in_mem <= write_data;
+			// connect_mux_in_mem <= write_data;
 			if (control_unsigned) 
 			begin
-				connect_mux_in_mem <= {{16{1'b 0}},connect_mux_in_mem[15:0]};
+				connect_mux_in_mem <= {{16{1'b 0}},write_data[15:0]};
 			end
 			else 
 			begin
-				connect_mux_in_mem <= {{16{connect_mux_in_mem[15]}},connect_mux_in_mem[15:0]};				
+				connect_mux_in_mem <= {{16{write_data[15]}},write_data[15:0]};				
 			end
 		end
 		else if (control_LB) 
 		begin
-			connect_mux_in_mem <= write_data;
+			// connect_mux_in_mem <= write_data;
 			if (control_unsigned) 
 			begin
-				connect_mux_in_mem <= {{24{1'b 0}},connect_mux_in_mem[7:0]};
+				connect_mux_in_mem <= {{24{1'b 0}},write_data[7:0]};
 			end
 			else 
 			begin
-				connect_mux_in_mem <= {{24{connect_mux_in_mem[7]}},connect_mux_in_mem[7:0]};				
+				connect_mux_in_mem <= {{24{write_data[7]}},write_data[7:0]};				
 			end
 		end
 		else 
