@@ -11,15 +11,19 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="889633334fs"></ZoomStartTime>
-      <ZoomEndTime time="971933335fs"></ZoomEndTime>
-      <Cursor1Time time="897933000fs"></Cursor1Time>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="122400001fs"></ZoomEndTime>
+      <Cursor1Time time="25000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="168"></NameColumnWidth>
-      <ValueColumnWidth column_width="113"></ValueColumnWidth>
+      <NameColumnWidth column_width="249"></NameColumnWidth>
+      <ValueColumnWidth column_width="125"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="6" />
+   <WVObjectSize size="7" />
+   <wave_markers>
+      <marker time="15000000" label="" />
+      <marker time="55000000" label="" />
+   </wave_markers>
    <wvobject fp_name="/tb_top/clk" type="logic">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
@@ -49,6 +53,7 @@
    <wvobject fp_name="group36" type="group">
       <obj_property name="label">2da Etapa</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/tb_top/u_top/u_decode/in_instruccion" type="array">
          <obj_property name="ElementShortName">in_instruccion[31:0]</obj_property>
          <obj_property name="ObjectShortName">in_instruccion[31:0]</obj_property>
@@ -80,6 +85,52 @@
          <obj_property name="ObjectShortName">alu_code[3:0]</obj_property>
          <obj_property name="CustomSignalColor">#FFFF00</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="group40" type="group">
+         <obj_property name="label">Registers</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject type="divider" fp_name="divider39">
+            <obj_property name="label">Registers</obj_property>
+            <obj_property name="DisplayName">label</obj_property>
+            <obj_property name="BkColor">#FFFF00</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_top/u_top/u_decode/u_registers/registers_mips[5]" type="array">
+            <obj_property name="ElementShortName">[5][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[5][31:0]</obj_property>
+            <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_top/u_top/u_decode/u_registers/registers_mips[4]" type="array">
+            <obj_property name="ElementShortName">[4][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[4][31:0]</obj_property>
+            <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_top/u_top/u_decode/u_registers/registers_mips[3]" type="array">
+            <obj_property name="ElementShortName">[3][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[3][31:0]</obj_property>
+            <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_top/u_top/u_decode/u_registers/registers_mips[2]" type="array">
+            <obj_property name="ElementShortName">[2][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[2][31:0]</obj_property>
+            <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_top/u_top/u_decode/u_registers/registers_mips[1]" type="array">
+            <obj_property name="ElementShortName">[1][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[1][31:0]</obj_property>
+            <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_top/u_top/u_decode/u_registers/registers_mips[0]" type="array">
+            <obj_property name="ElementShortName">[0][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[0][31:0]</obj_property>
+            <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
       </wvobject>
    </wvobject>
    <wvobject fp_name="group37" type="group">
@@ -135,28 +186,76 @@
          <obj_property name="CustomSignalColor">#0000FF</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
-      <wvobject type="divider" fp_name="divider31">
+      <wvobject fp_name="group41" type="group">
          <obj_property name="label">Ram Datos</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="BkColor">#0000FF</obj_property>
+         <wvobject type="divider" fp_name="divider31">
+            <obj_property name="label">Ram Datos</obj_property>
+            <obj_property name="DisplayName">label</obj_property>
+            <obj_property name="BkColor">#0000FF</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_top/u_top/u_memory/u_ram_datos/BRAM[5]" type="array">
+            <obj_property name="ElementShortName">[5][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[5][31:0]</obj_property>
+            <obj_property name="CustomSignalColor">#0000FF</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_top/u_top/u_memory/u_ram_datos/BRAM[4]" type="array">
+            <obj_property name="ElementShortName">[4][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[4][31:0]</obj_property>
+            <obj_property name="CustomSignalColor">#0000FF</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_top/u_top/u_memory/u_ram_datos/BRAM[3]" type="array">
+            <obj_property name="ElementShortName">[3][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[3][31:0]</obj_property>
+            <obj_property name="CustomSignalColor">#0000FF</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_top/u_top/u_memory/u_ram_datos/BRAM[2]" type="array">
+            <obj_property name="ElementShortName">[2][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[2][31:0]</obj_property>
+            <obj_property name="CustomSignalColor">#0000FF</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_top/u_top/u_memory/u_ram_datos/BRAM[1]" type="array">
+            <obj_property name="ElementShortName">[1][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[1][31:0]</obj_property>
+            <obj_property name="CustomSignalColor">#0000FF</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_top/u_top/u_memory/u_ram_datos/BRAM[0]" type="array">
+            <obj_property name="ElementShortName">[0][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[0][31:0]</obj_property>
+            <obj_property name="CustomSignalColor">#0000FF</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
       </wvobject>
-      <wvobject fp_name="/tb_top/u_top/u_memory/u_ram_datos/BRAM[2]" type="array">
-         <obj_property name="ElementShortName">[2][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[2][31:0]</obj_property>
-         <obj_property name="CustomSignalColor">#0000FF</obj_property>
+   </wvobject>
+   <wvobject fp_name="group67" type="group">
+      <obj_property name="label">5ta Etapa</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/tb_top/u_top/connect_out_writeBack_bus" type="array">
+         <obj_property name="ElementShortName">connect_out_writeBack_bus[1:0]</obj_property>
+         <obj_property name="ObjectShortName">connect_out_writeBack_bus[1:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FF0080</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
       </wvobject>
-      <wvobject fp_name="/tb_top/u_top/u_memory/u_ram_datos/BRAM[1]" type="array">
-         <obj_property name="ElementShortName">[1][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[1][31:0]</obj_property>
-         <obj_property name="CustomSignalColor">#0000FF</obj_property>
+      <wvobject fp_name="/tb_top/u_top/connect_write_reg_4_2" type="array">
+         <obj_property name="ElementShortName">connect_write_reg_4_2[4:0]</obj_property>
+         <obj_property name="ObjectShortName">connect_write_reg_4_2[4:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FF0080</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
       </wvobject>
-      <wvobject fp_name="/tb_top/u_top/u_memory/u_ram_datos/BRAM[0]" type="array">
-         <obj_property name="ElementShortName">[0][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[0][31:0]</obj_property>
-         <obj_property name="CustomSignalColor">#0000FF</obj_property>
+      <wvobject fp_name="/tb_top/u_top/connect_write_data_5_2" type="array">
+         <obj_property name="ElementShortName">connect_write_data_5_2[31:0]</obj_property>
+         <obj_property name="ObjectShortName">connect_write_data_5_2[31:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FF0080</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       </wvobject>
    </wvobject>
 </wave_config>
