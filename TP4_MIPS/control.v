@@ -29,8 +29,8 @@ module control(
     // junto las salidas en buses para mas prolijidad
     output reg [8:0] execute_bus,
     	// RegDst, ALUSrc1, ALUSrc2, jump, jump register, ALUCode [4]
-    output reg [2:0] memory_bus,
-    	// Branch, MemRead, MemWrite
+    output reg [7:0] memory_bus,
+    	// SB, SH, LB, LH, Unsigned, Branch, MemRead, MemWrite
     output reg [1:0] writeBack_bus
     	// RegWrite, MemtoReg
     );
@@ -50,7 +50,7 @@ module control(
 		if(reset)
 		begin
 			execute_bus <= 9'b000000000;
-			memory_bus <= 3'b000;
+			memory_bus <= 8'b00000000;
 			writeBack_bus <= 2'b00;
 		end
 		else begin
@@ -62,108 +62,155 @@ module control(
 						begin //SHIFT CON SHAMT
 							execute_bus[8:4] <= 5'b11000;
 							aluop <= 3'b000;
-							memory_bus <= 3'b000;
+							memory_bus <= 8'b00000000;
 							writeBack_bus <= 2'b10;
 						end
 						6'b001000, 6'b001001 :
 						begin //JR, OJO VER JALR
 							execute_bus[8:4] <= 5'b00001;
 							aluop <= 3'b000;
-							// memory_bus <= 3'b000;
-							// writeBack_bus <= 2'b10;
+							memory_bus <= 8'b00000000;
+							writeBack_bus <= 2'b10;
 						end
 						default:
 						begin
 							execute_bus[8:4] <= 5'b10000;
 							aluop <= 3'b000;
-							memory_bus <= 3'b000;
+							memory_bus <= 8'b00000000;
 							writeBack_bus <= 2'b10;
 						end
 					endcase
 				end
-				
-				6'b100000, 6'b100001, 6'b100011, 6'b100100, 6'b100101, 6'b100111:
-				begin //LOAD
+
+				// LOADS
+				6'b100000:
+				begin //LB
 					execute_bus[8:4] <= 5'b00100;
 					aluop <= 3'b001;
-					memory_bus <= 3'b010;
+					memory_bus <= 8'b00100010;
 					writeBack_bus <= 2'b11;
 				end
-				6'b101000, 6'b101001, 6'b101011 :
-				begin //STORE
+				6'b100001:
+				begin //LH
 					execute_bus[8:4] <= 5'b00100;
 					aluop <= 3'b001;
-					memory_bus <= 3'b001;
+					memory_bus <= 8'b00010010;
+					writeBack_bus <= 2'b11;
+				end
+				6'b100011, 6'b100111:
+				begin //LW, LWU
+					execute_bus[8:4] <= 5'b00100;
+					aluop <= 3'b001;
+					memory_bus <= 8'b00000010;
+					writeBack_bus <= 2'b11;
+				end
+				6'b100100:
+				begin //LBU
+					execute_bus[8:4] <= 5'b00100;
+					aluop <= 3'b001;
+					memory_bus <= 8'b00101010;
+					writeBack_bus <= 2'b11;
+				end
+				6'b100101:
+				begin //LHU
+					execute_bus[8:4] <= 5'b00100;
+					aluop <= 3'b001;
+					memory_bus <= 8'b00011010;
+					writeBack_bus <= 2'b11;
+				end
+
+				//STORES
+				6'b101000:
+				begin //SB
+					execute_bus[8:4] <= 5'b00100;
+					aluop <= 3'b001;
+					memory_bus <= 8'b10000001;
 					writeBack_bus <= 2'b00;
 				end
+				6'b101001:
+				begin //SH
+					execute_bus[8:4] <= 5'b00100;
+					aluop <= 3'b001;
+					memory_bus <= 8'b01000001;
+					writeBack_bus <= 2'b00;
+				end
+				6'b101011 :
+				begin //SW
+					execute_bus[8:4] <= 5'b00100;
+					aluop <= 3'b001;
+					memory_bus <= 8'b00000001;
+					writeBack_bus <= 2'b00;
+				end
+
+
 				6'b001000 :
 				begin //ADDI
 					execute_bus[8:4] <= 5'b00100;
 					aluop <= 3'b001;
-					memory_bus <= 3'b000;
+					memory_bus <= 8'b00000100;
 					writeBack_bus <= 2'b10;
 				end
 				6'b001100 :
 				begin //ANDI
 					execute_bus[8:4] <= 5'b00100;
 					aluop <= 3'b010;
-					memory_bus <= 3'b000;
+					memory_bus <= 8'b00000100;
 					writeBack_bus <= 2'b10;
 				end
 				6'b001101 :
 				begin //ORI
 					execute_bus[8:4] <= 5'b00100;
 					aluop <= 3'b011;
-					memory_bus <= 3'b000;
+					memory_bus <= 8'b00000100;
 					writeBack_bus <= 2'b10;
 				end
 				6'b001110 :
 				begin //XORI
 					execute_bus[8:4] <= 5'b00100;
 					aluop <= 3'b100;
-					memory_bus <= 3'b000;
+					memory_bus <= 8'b00000100;
 					writeBack_bus <= 2'b10;
 				end
 				6'b001111 :
 				begin //LUI
 					execute_bus[8:4] <= 5'b00100;
 					aluop <= 3'b111;
-					memory_bus <= 3'b000;
+					memory_bus <= 8'b00000100;
 					writeBack_bus <= 2'b10;
 				end
 				6'b001010 :
 				begin //SLTI
 					execute_bus[8:4] <= 5'b00100;
 					aluop <= 3'b110;
-					memory_bus <= 3'b000;
+					memory_bus <= 8'b00000000;
 					writeBack_bus <= 2'b10;
 				end
 				6'b 000100, 6'b 000101 :
 				begin //BRANCH
 					execute_bus[8:4] <= 5'b00000;
 					aluop <= 3'b110;
-					memory_bus <= 3'b100;
+					memory_bus <= 8'b00000100;
 					writeBack_bus <= 2'b00;
 				end
 				6'b000010 :
 				begin //JUMP
 					execute_bus[8:4] <= 5'b00010;
 					aluop <= 3'b000;
-					memory_bus <= 3'b100;
+					memory_bus <= 8'b00000100;
 					writeBack_bus <= 2'b00;
 				end
 				6'b000011 :
 				begin //JAL
 					execute_bus[8:4] <= 5'b00010;
 					aluop <= 3'b000;
-					memory_bus <= 3'b100;
+					memory_bus <= 8'b00000100;
 					writeBack_bus <= 2'b10;
 				end
 				default: 
 				begin
 					execute_bus[8:4] <= 5'b00000;
 					aluop <= 3'b000;
-					memory_bus <= 3'b000;
+					memory_bus <= 8'b00000000;
 					writeBack_bus <= 2'b00;
 				end		
 			endcase
