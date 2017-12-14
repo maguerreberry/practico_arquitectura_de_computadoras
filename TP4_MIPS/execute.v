@@ -37,7 +37,17 @@ module execute #(
 
 	input [8:0] execute_bus,
 	input [2:0] memory_bus,
-	input [1:0] writeBack_bus, 
+	input [1:0] writeBack_bus,
+
+	// entradas para cortocircuito
+	input register_write_3_4,	// flag
+	input register_write_4_5,	// flag
+	input [NB-1:0] rd_3_4,		// registro ya calculado, a forwardear
+	input [NB-1:0] rd_4_5,		// registro ya calculado, a forwardear
+	input [NB-1:0] in_rs,		// registro de instr siguiente que puede necesitar forwarding
+
+	input [len-1:0] in_mem_forw,
+	input [len-1:0] in_wb_forw,
 
 	output reg [len-1:0] out_pc_branch,
 	output reg [len-1:0] out_alu,
@@ -51,8 +61,13 @@ module execute #(
 	output reg [1:0] writeBack_bus_out
     );
 
-	wire [len-1:0] connect_aluop1 = execute_bus[7] ? ({{27{1'b 0}}, in_shamt}) : in_reg1;
-	wire [len-1:0] connect_aluop2 = execute_bus[6] ? in_sign_extend : in_reg2;
+	wire [1:0] connect_mux1_forwarding;
+    wire [len-1:0] mux1_alu_forwarding;
+	wire [1:0] connect_mux2_forwarding;
+    wire [len-1:0] mux2_alu_forwarding;
+
+	wire [len-1:0] connect_aluop1 = execute_bus[7] ? ({{27{1'b 0}}, in_shamt}) : mux1_alu_forwarding;
+	wire [len-1:0] connect_aluop2 = execute_bus[6] ? in_sign_extend : mux2_alu_forwarding;
 	wire [len-1:0] connect_alu_out;
 	wire connect_zero_flag;
 	wire connect_neg_flag;
@@ -71,6 +86,39 @@ module execute #(
 			.zero_flag(connect_zero_flag),
 			.neg_flag(connect_neg_flag)
 		);
+
+	forwarding_unit #(
+		.len(len)
+		)
+		u_forwarding_unit(
+			.register_write_3_4(register_write_3_4),	// flag
+			.register_write_4_5(register_write_4_5),	// flag
+			.rd_3_4(rd_3_4),		// registro ya calculado, a forwardear
+			.rd_4_5(rd_4_5),		// registro ya calculado, a forwardear
+			.rs_2_3(in_rs),		// registro de instr siguiente que puede necesitar forwarding
+			.rt_2_3(in_rt),		// registro de instr siguiente que puede necesitar forwarding
+
+			.control_muxA(connect_mux1_forwarding),
+			.control_muxB(connect_mux2_forwarding)
+		);
+
+	mux_forwarding #(.len(32))
+		u_mux_forwarding1(
+			.in_reg(in_reg1),			//entrada desde registros
+			.in_mem_forw(in_mem_forw),	//salida de alu de clock anterior
+			.in_wb_forw(in_wb_forw),	//salida del mux final de writeback
+			.select(connect_mux1_forwarding),
+			.out_mux(mux1_alu_forwarding)
+			);
+	
+	mux_forwarding #(.len(32))
+		u_mux_forwarding2(
+			.in_reg(in_reg2),			//entrada desde registros
+			.in_mem_forw(in_mem_forw),	//salida de alu de clock anterior
+			.in_wb_forw(in_wb_forw),	//salida del mux final de writeback
+			.select(connect_mux2_forwarding),
+			.out_mux(mux2_alu_forwarding)
+			);
 
 	always @(posedge clk) 
 	begin

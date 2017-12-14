@@ -25,7 +25,7 @@ module sumador #(
     parameter len2 = 32
     ) (
     input [len1-1:0] In1,
-    input [len2-1:0] In2,
+    input [3-1:0] In2,
     output [len1-1:0] Out
     );
 

@@ -20,15 +20,17 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module mux #(
+module mux_forwarding #(
 	parameter len = 32
 	) (
-	input [len-1:0] in1,
-	input [len-1:0] in2,
-	input select,
+	input [len-1:0] in_reg,			//entrada desde registros
+	input [len-1:0] in_mem_forw,	//salida de alu de clock anterior
+	input [len-1:0] in_wb_forw,		//salida del mux final de writeback
+	input [1:0] select,
 	output [len-1:0] out_mux
     );
 
-    assign out_mux = (select) ? (in1) : (in2);    
-
+    assign out_mux 	= (select == 2'b00) ? in_reg
+    				: (select == 2'b01) ? in_mem_forw
+    									: in_wb_forw;    
 endmodule

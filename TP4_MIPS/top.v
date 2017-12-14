@@ -46,6 +46,7 @@ module top#(
 
 	wire [NB-1:0] connect_rt,
 				  connect_rd,
+				  connect_rs,
 				  connect_shamt,
 				  connect_write_reg_3_4,
 				  connect_write_reg_4_2;
@@ -100,6 +101,7 @@ module top#(
 			.out_sign_extend(connect_sign_extend),
 			.out_rt(connect_rt),
 			.out_rd(connect_rd),
+			.out_rs(connect_rs),
 			.out_shamt(connect_shamt),
 
 			.execute_bus(connect_execute_bus),
@@ -126,6 +128,15 @@ module top#(
 			.execute_bus(connect_execute_bus),
 			.memory_bus(connect_memory_bus_2_3),
 			.writeBack_bus(connect_writeBack_bus_2_3), 
+
+			.register_write_3_4(connect_writeBack_bus_3_4[1]),
+			.register_write_4_5(connect_out_writeBack_bus[1]),
+			.rd_3_4(connect_write_reg_3_4),
+			.rd_4_5(connect_write_reg_4_2),
+			.in_rs(connect_rs),
+
+			.in_mem_forw(connect_alu_out),
+			.in_wb_forw(connect_write_data_5_2),
 		
 			.out_pc_branch(connect_in_pc_branch_3_4),
 			.out_alu(connect_alu_out),
