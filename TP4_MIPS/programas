@@ -1,0 +1,91 @@
+test cortocircuito 1
+	prueba cortocircuito con instruccion i+1
+
+000000 sssss ttttt ddddd ----- 100001
+000000 00011 00001 00010 00000 100001
+r2 = r1 + r3
+
+000000 sssss ttttt ddddd ----- 100001
+000000 00010 00010 00100 00000 100001
+r4 = r2 + r2
+
+	resultado esperado:
+	r2 = 1 + 3 = 4
+	r4 = 4 + 4 = 8
+
+611021
+422021
+----------------------------------------------
+
+test cortocircuito 2
+	prueba cortocircuito con instruccion i+2
+
+000000 sssss ttttt ddddd ----- 100011
+000000 01000 00010 00001 00000 100011
+r1 = r8 - r2
+
+001101 sssss ttttt CCCCCCCCCCCCCCCC
+001101 00111 00111 0000000000000000
+r7 = r7 or FFFF //nop
+
+000000 sssss ttttt ddddd ----- 100011
+000000 00001 00011 00100 00000 100011
+r4 = r1 - r3
+
+	resultado esperado:
+	r1 = 8 - 2 = 6
+	r7 = r7
+	r4 = 6 - 3 = 3
+
+1020823
+34E70000
+232023
+----------------------------------------------
+
+test store y load
+	prueba guardar registro en memoria y cargar el valor en otro registro
+
+101011 sssss ttttt CCCCCCCCCCCCCCCC
+101011 00001 00101 0000000000000001
+[r1 + 1] = r5
+
+100011 sssss ttttt CCCCCCCCCCCCCCCC
+100011 00001 00011 0000000000000001
+r3 = [r1 + 1]
+
+	resultado esperado:
+	[2] = 5
+	r3 = 5
+
+AC250001
+8C230001
+
+----------------------------------------------
+
+test escribir registro antes de leer
+	prueba que una instruccion lea el valor actualizado de un registro, y no el viejo
+
+000000 sssss ttttt ddddd ----- 100001
+000000 00001 00010 00100 00000 100001
+r4 = r1 + r2
+
+001101 sssss ttttt CCCCCCCCCCCCCCCC
+001101 00111 00111 0000000000000000
+r7 = r7 or FFFF //nop
+
+001101 sssss ttttt CCCCCCCCCCCCCCCC
+001101 00111 00111 0000000000000000
+r7 = r7 or FFFF //nop
+
+000000 sssss ttttt ddddd ----- 100001
+000000 00100 00010 00011 00000 100001
+r3 = r4 + r2
+
+	resultado esperado:
+	r4 = 1 + 2 = 3
+	r3 = 3 + 2 = 5
+
+222021
+34E70000
+34E70000
+821821
