@@ -89,3 +89,87 @@ r3 = r4 + r2
 34E70000
 34E70000
 821821
+
+----------------------------------------------
+
+test instrucciones 
+	prueba el funcionamiento de cada instruccion independientemente
+
+000000 ----- ttttt ddddd SSSSS 000000
+000000 00000 00010 00001 00011 000000
+r1 = r2 << 3 = 16
+
+208C0
+
+000000 ----- ttttt ddddd SSSSS 000010
+000000 00000 01001 00100 00010 000010
+r4 = r9 >> 2 = 2
+
+92082
+
+000000 ----- ttttt ddddd SSSSS 000011
+000000 00000 01001 00100 00010 000011
+r4 = r9 >>> 2 = 2 (signado)
+
+92083
+
+----------------------------------------------
+
+test cortocircuito 3
+	instrucciones del libro teorico pagina C18
+
+000000 sssss ttttt ddddd ----- 100001
+000000 00010 00011 00001 00000 100001
+
+000000 sssss ttttt ddddd ----- 100011
+000000 00001 00101 00100 00000 100011
+
+000000 sssss ttttt ddddd ----- 100100
+000000 00001 00111 00110 00000 100100
+
+000000 sssss ttttt ddddd ----- 100101
+000000 00001 01001 01000 00000 100101
+
+000000 sssss ttttt ddddd ----- 100110
+000000 00001 01011 01010 00000 100110
+
+r1 = r2 + r3
+r4 = r1 - r5
+r6 = r1 & r7
+r8 = r1 | r9
+r10 = r1 ^ r11
+
+	resultado esperado:
+	r1 = 5
+	r4 = 0
+	r6 = 5
+	r8 = 13 (D)
+	r10 = 14 (E)
+
+430821
+252023
+273024
+294025
+2B5026
+
+----------------------------------------------
+
+test cortocircuito 4
+	instrucciones del libro teorico pagina C19
+
+000000 sssss ttttt ddddd ----- 100001
+000000 00010 00011 00001 00000 100001
+
+100011 sssss ttttt CCCCCCCCCCCCCCCC
+100011 00001 00100 0000000000000000
+
+r1 = r2 + r3
+r4 = [r1]
+[r1 + 4] = r4 //este store no funciona porque no hay forwarding en etapa 4
+
+	resultado esperado:
+	r1 = 5
+	r4 = 5
+
+430821
+8C240000
