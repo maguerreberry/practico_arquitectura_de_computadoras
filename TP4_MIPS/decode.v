@@ -46,12 +46,12 @@ module decode #(
 	output reg [8:0] execute_bus,
 	output flag_jump,
 	output flag_jump_register,
-	output reg [2:0] memory_bus,
+	output reg [7:0] memory_bus,
 	output reg [1:0] writeBack_bus
     );
 
 	wire [8:0] connect_execute_bus;
-	wire [2:0] connect_memory_bus ;
+	wire [7:0] connect_memory_bus ;
 	wire [1:0] connect_writeBack_bus;	
 
 	wire [len-1:0] connect_out_reg1;

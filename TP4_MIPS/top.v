@@ -53,7 +53,7 @@ module top#(
 
     wire [8:0] connect_execute_bus;
 	
-	wire [2:0] connect_memory_bus_2_3,
+	wire [7:0] connect_memory_bus_2_3,
 			   connect_memory_bus_3_4;
 	
 	wire [1:0] connect_writeBack_bus_2_3,

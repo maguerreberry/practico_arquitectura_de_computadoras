@@ -36,7 +36,7 @@ module execute #(
 	input [NB-1:0] in_shamt,
 
 	input [8:0] execute_bus,
-	input [2:0] memory_bus,
+	input [7:0] memory_bus,
 	input [1:0] writeBack_bus,
 
 	// entradas para cortocircuito
@@ -57,7 +57,7 @@ module execute #(
 	output reg [NB-1:0] out_write_reg,
 
 	// señales de control
-	output reg [2:0] memory_bus_out,
+	output reg [7:0] memory_bus_out,
 	output reg [1:0] writeBack_bus_out
     );
 
