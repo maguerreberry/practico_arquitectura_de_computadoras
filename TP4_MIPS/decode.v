@@ -34,8 +34,8 @@ module decode #(
 
 	output reg [len-1:0] out_pc_branch,
 	output [len-1:0] out_pc_jump,
-	output reg [len-1:0] out_reg1,
-	output reg [len-1:0] out_reg2,
+	output [len-1:0] out_reg1,
+	output [len-1:0] out_reg2,
 	output reg [len-1:0] out_sign_extend,
 	output reg [NB-1:0] out_rt,
 	output reg [NB-1:0] out_rd,
@@ -60,6 +60,9 @@ module decode #(
 	assign flag_jump_register = connect_execute_bus[4];
 	
 	assign out_pc_jump = {in_pc_branch[31:28], (in_instruccion[25:0] << 2)};
+	
+    assign out_reg1 = connect_out_reg1; 
+    assign out_reg2 = connect_out_reg2;
 
 	control #()
 		u_control(
@@ -92,8 +95,6 @@ module decode #(
 	always @(posedge clk) 
 	begin
 		out_pc_branch <= in_pc_branch;
-		out_reg1 <= connect_out_reg1; 
-		out_reg2 <= connect_out_reg2;
 		out_sign_extend <= $signed(in_instruccion[15:0]);
 		out_rt <= in_instruccion [20:16];
 		out_rd <= in_instruccion [15:11];

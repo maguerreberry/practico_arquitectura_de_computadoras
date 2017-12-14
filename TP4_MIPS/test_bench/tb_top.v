@@ -41,7 +41,7 @@ module tb_top(
 	begin
 		clk = 0;
 		reset = 1;
-		#12
+		#8
 		reset = 0;
 		#30
 		flag = 1;
