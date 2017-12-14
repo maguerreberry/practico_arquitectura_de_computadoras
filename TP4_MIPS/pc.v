@@ -26,8 +26,9 @@ module pc#(
     input [len-1:0] In,
     input clk,
     input reset,
+    input enable,
 
-    output reg [len-1:0] Out = 0
+    output reg [len-1:0] Out
     );
 
     always @(posedge clk) begin
@@ -35,6 +36,7 @@ module pc#(
           Out = 0;
         end
         else begin
+        if(enable)
 	   		Out = In;
 	   	end
 	end

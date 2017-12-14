@@ -77,6 +77,7 @@ module top#(
 			.in_pc_jump(connect_in_pc_jump),
 			.in_pc_branch(connect_in_pc_branch_4_1),
 			.in_pc_register(),
+			.in_pc_enable(1),
 
 			.out_pc_branch(connect_in_pc_branch_1_2),
 			.out_instruction(connect_instruccion)

@@ -29,6 +29,7 @@ module instruction_fetch #(
 	input [len-1:0] in_pc_jump,
 	input [len-1:0] in_pc_branch,
 	input [len-1:0] in_pc_register,
+	input in_pc_enable,
 
 	output reg [len-1:0] out_pc_branch,
 	output [len-1:0] out_instruction
@@ -57,6 +58,7 @@ module instruction_fetch #(
 			.In(connect_mux_pc),
 			.clk(clk),
 			.reset(reset),
+			.enable(in_pc_enable),
 			.Out(connect_pc_sumador_mem)
 			);
 
