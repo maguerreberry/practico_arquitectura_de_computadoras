@@ -85,50 +85,48 @@ module memory #(
 		out_writeBack_bus <= in_writeBack_bus;
 		out_addr_mem <= in_addr_mem;
 		out_write_reg <= in_write_reg;
-	end
 
-	always @(*)
-	begin
 		if (control_LH) 
 		begin
-			// connect_mux_in_mem <= write_data;
 			if (control_unsigned) 
 			begin
-				connect_mux_in_mem <= {{16{1'b 0}},write_data[15:0]};
+				read_data <= {{16{1'b 0}},connect_out_mem[15:0]};
 			end
 			else 
 			begin
-				connect_mux_in_mem <= {{16{write_data[15]}},write_data[15:0]};				
+				read_data <= {{16{connect_out_mem[15]}},connect_out_mem[15:0]};				
 			end
 		end
 		else if (control_LB) 
 		begin
-			// connect_mux_in_mem <= write_data;
 			if (control_unsigned) 
 			begin
-				connect_mux_in_mem <= {{24{1'b 0}},write_data[7:0]};
+				read_data <= {{24{1'b 0}},connect_out_mem[7:0]};
 			end
 			else 
 			begin
-				connect_mux_in_mem <= {{24{write_data[7]}},write_data[7:0]};				
+				read_data <= {{24{connect_out_mem[7]}},connect_out_mem[7:0]};				
 			end
-		end
-		else 
-		begin
-			connect_mux_in_mem <= write_data;				
-		end
-
-		if (control_SH) 
-		begin
-			read_data <= {{16{connect_out_mem[15]}},connect_out_mem[15:0]};				
-		end
-		else if (control_SB) 
-		begin
-			read_data <= {{24{connect_out_mem[7]}},connect_out_mem[7:0]};				
 		end
 		else 
 		begin
 			read_data <= connect_out_mem;				
+		end
+	end
+
+	always @(*)
+	begin
+		if (control_SH) 
+		begin
+			connect_mux_in_mem <= {{16{write_data[15]}},write_data[15:0]};				
+		end
+		else if (control_SB) 
+		begin
+			connect_mux_in_mem <= {{24{write_data[7]}},write_data[7:0]};				
+		end
+		else 
+		begin
+			connect_mux_in_mem <= write_data;				
 		end
 
 

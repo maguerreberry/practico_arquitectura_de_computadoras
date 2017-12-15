@@ -37,11 +37,12 @@ module ram_instrucciones #(
   endgenerate
 
   always @(posedge clka)
-    if (ena)
+  begin
       if (wea)
         BRAM[addra] <= dina;
-      else
+      if (ena)
         ram_data <= BRAM[addra >> 2];
+  end
 
   // assign douta = BRAM[addra >> 2];
 

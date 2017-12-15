@@ -11,13 +11,13 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="878500000fs"></ZoomStartTime>
-      <ZoomEndTime time="1024300001fs"></ZoomEndTime>
-      <Cursor1Time time="1000000000fs"></Cursor1Time>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="181600001fs"></ZoomEndTime>
+      <Cursor1Time time="140800000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="249"></NameColumnWidth>
-      <ValueColumnWidth column_width="117"></ValueColumnWidth>
+      <ValueColumnWidth column_width="113"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="7" />
    <wave_markers>
@@ -35,6 +35,7 @@
    <wvobject fp_name="group35" type="group">
       <obj_property name="label">1er Etapa</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/tb_top/u_top/u_instruction_fetch/u_pc/Out" type="array">
          <obj_property name="DisplayName">label</obj_property>
          <obj_property name="ElementShortName">Out[31:0]</obj_property>
@@ -160,6 +161,12 @@
       <obj_property name="label">4ta Etapa</obj_property>
       <obj_property name="DisplayName">label</obj_property>
       <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/tb_top/u_top/u_memory/control_unsigned" type="logic">
+         <obj_property name="ElementShortName">control_unsigned</obj_property>
+         <obj_property name="ObjectShortName">control_unsigned</obj_property>
+         <obj_property name="CustomSignalColor">#0000FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
       <wvobject fp_name="/tb_top/u_top/u_memory/in_addr_mem" type="array">
          <obj_property name="ElementShortName">in_addr_mem[31:0]</obj_property>
          <obj_property name="ObjectShortName">in_addr_mem[31:0]</obj_property>
@@ -170,6 +177,12 @@
       <wvobject fp_name="/tb_top/u_top/u_memory/write_data" type="array">
          <obj_property name="ElementShortName">write_data[31:0]</obj_property>
          <obj_property name="ObjectShortName">write_data[31:0]</obj_property>
+         <obj_property name="CustomSignalColor">#0000FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_top/u_top/u_memory/read_data" type="array">
+         <obj_property name="ElementShortName">read_data[31:0]</obj_property>
+         <obj_property name="ObjectShortName">read_data[31:0]</obj_property>
          <obj_property name="CustomSignalColor">#0000FF</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
@@ -229,6 +242,7 @@
             <obj_property name="ObjectShortName">[0][31:0]</obj_property>
             <obj_property name="CustomSignalColor">#0000FF</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
          </wvobject>
       </wvobject>
    </wvobject>
@@ -255,7 +269,6 @@
          <obj_property name="ObjectShortName">connect_write_data_5_2[31:0]</obj_property>
          <obj_property name="CustomSignalColor">#FF0080</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       </wvobject>
    </wvobject>
 </wave_config>

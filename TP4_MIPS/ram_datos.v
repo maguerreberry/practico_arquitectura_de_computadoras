@@ -30,9 +30,10 @@ module ram_datos #(
         $readmemh(INIT_FILE, BRAM, 0, RAM_DEPTH-1);
     end else begin: init_bram_to_zero
       integer ram_index;
+      integer valor = 128;
       initial
         for (ram_index = 0; ram_index < RAM_DEPTH; ram_index = ram_index + 1)
-          BRAM[ram_index] = {RAM_WIDTH{1'b0}}+(ram_index);
+          BRAM[ram_index] = {RAM_WIDTH{1'b0}}+(ram_index)+valor;
     end
   endgenerate
 
