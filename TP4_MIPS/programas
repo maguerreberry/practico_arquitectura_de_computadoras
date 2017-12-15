@@ -174,26 +174,52 @@ r4 = [r1]
 430821
 8C240000
 
-
-
-
 -----------------------------------------
-load byte
 
-Carga en el registro 2 el contenido del primer byte (con signo) de la memoria en 0
+test load byte
+
+	Carga en r2 el contenido de la posicion de memoria [r0 + 1]
+
+100000 sssss ttttt CCCCCCCCCCCCCCCC
+100000 00000 00010 0000000000000001
 
 80020001
 
 ------------------------------------------
 store byte 
 
-Carga en la posicion de memoria 1 el primer byte(con signo) del registro 2
+Carga en la posicion de memoria [r2 + 1] el primer byte(con signo) del registro 1
 
-a0020001
+101000 sssss ttttt CCCCCCCCCCCCCCCC
+101000 00010 00001 0000000000000001
+
+A0410001
 
 ------------------------------------------
 store half word
 
-Carga en la posicion de memoria 1 media palabra(con signo) del registro 2
+Carga en la posicion de memoria [r1 + 1] media palabra(con signo) del registro 0
 
-a4020001
+101001 sssss ttttt CCCCCCCCCCCCCCCC
+101001 00001 00000 0000000000000001
+
+A4200001
+
+------------------------------------------
+
+test hazard detection
+
+100011 sssss ttttt CCCCCCCCCCCCCCCC
+100011 00000 00010 0000000000000001
+r2 = [r0 + 1]
+
+000000 sssss ttttt ddddd ----- 100001
+000000 00010 00011 00001 00000 100001
+r1 = r2 + r3
+
+	resultado esperado:
+	r2 = 1
+	r1 = 1 + 3 = 4
+
+8C020001
+430821

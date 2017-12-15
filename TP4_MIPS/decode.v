@@ -43,11 +43,14 @@ module decode #(
 	output reg [NB-1:0] out_shamt,
 
 	// señales de control
-	output reg [8:0] execute_bus,
 	output flag_jump,
 	output flag_jump_register,
+	output reg [8:0] execute_bus,
 	output reg [7:0] memory_bus,
-	output reg [1:0] writeBack_bus
+	output reg [1:0] writeBack_bus,
+
+	//señal de control de riesgos
+	output stall_flag
     );
 
 	wire [8:0] connect_execute_bus;
@@ -64,6 +67,11 @@ module decode #(
 	
     assign out_reg1 = connect_out_reg1; 
     assign out_reg2 = connect_out_reg2;
+
+    wire mux_control;
+    wire [18:0] mux_out = mux_control ? 0 : {connect_execute_bus, connect_memory_bus, connect_writeBack_bus};
+
+    assign stall_flag = mux_control;
 
 	control #()
 		u_control(
@@ -93,6 +101,18 @@ module decode #(
 			.read_data_2(connect_out_reg2)
 			);
 
+	hazard_detection_unit #(
+		.len(32)
+		)
+		u_hazard(
+			.mem_read_2_3(memory_bus[1]),
+			.rt_2_3(out_rt),
+			.rs_1_2(in_instruccion [25:21]),
+			.rt_1_2(in_instruccion [20:16]),
+
+			.stall_flag(mux_control)
+			);
+
 	always @(posedge clk) 
 	begin
 		out_pc_branch <= in_pc_branch;
@@ -101,9 +121,9 @@ module decode #(
 		out_rd <= in_instruccion [15:11];
 		out_rs <= in_instruccion [25:21];
 		out_shamt <= in_instruccion [10:6];
-		execute_bus <= connect_execute_bus;
-		memory_bus <= connect_memory_bus;
-		writeBack_bus <= connect_writeBack_bus;
+		execute_bus <= mux_out[18:10];
+		memory_bus <= mux_out[9:2];
+		writeBack_bus <= mux_out[1:0];
 		
 		
 	end

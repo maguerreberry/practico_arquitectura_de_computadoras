@@ -63,7 +63,8 @@ module top#(
     wire connect_flag_jump,
          connect_flag_jump_register,
 	     connect_zero_flag,
-	     connect_branch_flag;
+	     connect_branch_flag,
+	     connect_stall_flag;
 
 	assign connect_write_data_5_2 = (connect_out_writeBack_bus[0]) ? connect_read_data : connect_out_addr_mem;
 
@@ -77,7 +78,7 @@ module top#(
 			.in_pc_jump(connect_in_pc_jump),
 			.in_pc_branch(connect_in_pc_branch_4_1),
 			.in_pc_register(),
-			.in_pc_enable(1),
+			.stall_flag(!connect_stall_flag),
 
 			.out_pc_branch(connect_in_pc_branch_1_2),
 			.out_instruction(connect_instruccion)
@@ -109,7 +110,9 @@ module top#(
 			.flag_jump(connect_flag_jump),
 			.flag_jump_register(connect_flag_jump_register),
 			.memory_bus(connect_memory_bus_2_3),
-			.writeBack_bus(connect_writeBack_bus_2_3)
+			.writeBack_bus(connect_writeBack_bus_2_3),
+
+			.stall_flag(connect_stall_flag)
 		);
 
 	execute #(
