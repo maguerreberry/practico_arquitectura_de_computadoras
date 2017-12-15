@@ -11,13 +11,13 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0fs"></ZoomStartTime>
-      <ZoomEndTime time="181600001fs"></ZoomEndTime>
-      <Cursor1Time time="140800000fs"></Cursor1Time>
+      <ZoomStartTime time="531510635fs"></ZoomStartTime>
+      <ZoomEndTime time="2293417028fs"></ZoomEndTime>
+      <Cursor1Time time="1000000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="249"></NameColumnWidth>
-      <ValueColumnWidth column_width="113"></ValueColumnWidth>
+      <ValueColumnWidth column_width="109"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="7" />
    <wave_markers>
@@ -137,6 +137,7 @@
    <wvobject fp_name="group37" type="group">
       <obj_property name="label">3er Etapa</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/tb_top/u_top/u_execute/u_alu/A" type="array">
          <obj_property name="ElementShortName">A[31:0]</obj_property>
          <obj_property name="ObjectShortName">A[31:0]</obj_property>
@@ -150,6 +151,30 @@
       <wvobject fp_name="/tb_top/u_top/u_execute/u_alu/OPCODE" type="array">
          <obj_property name="ElementShortName">OPCODE[3:0]</obj_property>
          <obj_property name="ObjectShortName">OPCODE[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_top/u_top/u_execute/u_forwarding_unit/register_write_3_4" type="logic">
+         <obj_property name="ElementShortName">register_write_3_4</obj_property>
+         <obj_property name="ObjectShortName">register_write_3_4</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_top/u_top/u_execute/u_forwarding_unit/register_write_4_5" type="logic">
+         <obj_property name="ElementShortName">register_write_4_5</obj_property>
+         <obj_property name="ObjectShortName">register_write_4_5</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_top/u_top/u_execute/u_forwarding_unit/rd_3_4" type="array">
+         <obj_property name="ElementShortName">rd_3_4[4:0]</obj_property>
+         <obj_property name="ObjectShortName">rd_3_4[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_top/u_top/u_execute/u_forwarding_unit/rd_4_5" type="array">
+         <obj_property name="ElementShortName">rd_4_5[4:0]</obj_property>
+         <obj_property name="ObjectShortName">rd_4_5[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_top/u_top/u_execute/u_forwarding_unit/rs_2_3" type="array">
+         <obj_property name="ElementShortName">rs_2_3[4:0]</obj_property>
+         <obj_property name="ObjectShortName">rs_2_3[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_top/u_top/u_execute/u_forwarding_unit/rt_2_3" type="array">
+         <obj_property name="ElementShortName">rt_2_3[4:0]</obj_property>
+         <obj_property name="ObjectShortName">rt_2_3[4:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/tb_top/u_top/u_execute/u_alu/RESULT_OUT" type="array">
          <obj_property name="ElementShortName">RESULT_OUT[31:0]</obj_property>

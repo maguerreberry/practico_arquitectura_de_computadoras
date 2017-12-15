@@ -185,6 +185,17 @@ test load byte
 
 80020001
 
+-----------------------------------------
+
+test load byte unsigned
+
+	Carga en r2 el contenido de la posicion de memoria [r0 + 1]
+
+100000 sssss ttttt CCCCCCCCCCCCCCCC
+100100 00000 00010 0000000000000001
+
+90020001
+
 ------------------------------------------
 store byte 
 
@@ -247,8 +258,8 @@ r1 = r2 + r3
 	resultado esperado:
 	r2 = 1
 	r4 = r2 & r5 = 1
-	r3 = r2 | r6 = 7
-	r1 = r2 + r3 = 4
+	r3 = r2 | r6 = 	
+	r1 = r2 + r3 = 8
 
 8C020001
 452024
