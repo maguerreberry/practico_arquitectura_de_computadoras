@@ -22,7 +22,10 @@
 
 module decode #(
 	parameter len = 32,
-	parameter NB =  $clog2(len)
+	parameter NB =  $clog2(len),
+	parameter len_exec_bus = 9,
+	parameter len_mem_bus = 9,
+	parameter len_wb_bus = 2
 	)(
 	input clk,
 	input reset,
@@ -45,17 +48,17 @@ module decode #(
 	// señales de control
 	output flag_jump,
 	output flag_jump_register,
-	output reg [8:0] execute_bus,
-	output reg [7:0] memory_bus,
-	output reg [1:0] writeBack_bus,
+	output reg [len_exec_bus-1:0] execute_bus,
+	output reg [len_mem_bus-1:0] memory_bus,
+	output reg [len_wb_bus-1:0] writeBack_bus,
 
 	//señal de control de riesgos
 	output stall_flag
     );
 
-	wire [8:0] connect_execute_bus;
-	wire [7:0] connect_memory_bus ;
-	wire [1:0] connect_writeBack_bus;	
+	wire [len_exec_bus-1:0] connect_execute_bus;
+	wire [len_mem_bus-1:0] connect_memory_bus ;
+	wire [len_wb_bus-1:0] connect_writeBack_bus;	
 
 	wire [len-1:0] connect_out_reg1;
 	wire [len-1:0] connect_out_reg2;
@@ -63,13 +66,13 @@ module decode #(
 	assign flag_jump = connect_execute_bus[5];
 	assign flag_jump_register = connect_execute_bus[4];
 	
-	assign out_pc_jump = {in_pc_branch[31:28], (in_instruccion[25:0] << 2)};
+	assign out_pc_jump = {in_pc_branch[31:28], {2'b 00, (in_instruccion[25:0])}};
 	
     assign out_reg1 = connect_out_reg1; 
     assign out_reg2 = connect_out_reg2;
 
     wire mux_control;
-    wire [18:0] mux_out = mux_control ? 0 : {connect_execute_bus, connect_memory_bus, connect_writeBack_bus};
+    wire [(len_exec_bus+len_wb_bus+len_mem_bus)-1:0] mux_out = mux_control ? 0 : {connect_execute_bus, connect_memory_bus, connect_writeBack_bus};
 
     assign stall_flag = mux_control;
 
@@ -121,9 +124,9 @@ module decode #(
 		out_rd <= in_instruccion [15:11];
 		out_rs <= in_instruccion [25:21];
 		out_shamt <= in_instruccion [10:6];
-		execute_bus <= mux_out[18:10];
-		memory_bus <= mux_out[9:2];
-		writeBack_bus <= mux_out[1:0];
+		execute_bus <= mux_out[(len_mem_bus+len_wb_bus+len_exec_bus)-1:len_mem_bus+len_wb_bus];
+		memory_bus <= mux_out[(len_mem_bus+len_wb_bus)-1:len_wb_bus];
+		writeBack_bus <= mux_out[len_wb_bus-1:0];
 		
 		
 	end

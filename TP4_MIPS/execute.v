@@ -22,7 +22,10 @@
 
 module execute #(
 	parameter len = 32,
-	parameter NB =  $clog2(len)
+	parameter NB =  $clog2(len),
+	parameter len_exec_bus = 9,
+	parameter len_mem_bus = 9,
+	parameter len_wb_bus = 2
 	)(
 	input clk,
 	// input reset,
@@ -35,9 +38,9 @@ module execute #(
 	input [NB-1:0] in_rd,
 	input [NB-1:0] in_shamt,
 
-	input [8:0] execute_bus,
-	input [7:0] memory_bus,
-	input [1:0] writeBack_bus,
+	input [len_exec_bus-1:0] execute_bus,
+	input [len_mem_bus-1:0] memory_bus,
+	input [len_wb_bus-1:0] writeBack_bus,
 
 	// entradas para cortocircuito
 	input register_write_3_4,	// flag
@@ -57,8 +60,8 @@ module execute #(
 	output reg [NB-1:0] out_write_reg,
 
 	// señales de control
-	output reg [7:0] memory_bus_out,
-	output reg [1:0] writeBack_bus_out
+	output reg [len_mem_bus-1:0] memory_bus_out,
+	output reg [len_wb_bus-1:0] writeBack_bus_out
     );
 
 	wire [1:0] connect_mux1_forwarding;
@@ -124,7 +127,7 @@ module execute #(
 	begin
 		memory_bus_out <= memory_bus;
 		writeBack_bus_out <= writeBack_bus;
-		out_pc_branch <= in_pc_branch + (in_sign_extend << 2);
+		out_pc_branch <= in_pc_branch + (in_sign_extend);
 		out_alu <= connect_alu_out;
 		out_reg2 <= in_reg2;
 		out_write_reg <= execute_bus[8] ? in_rd : in_rt;

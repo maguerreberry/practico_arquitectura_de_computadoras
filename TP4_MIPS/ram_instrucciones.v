@@ -41,7 +41,7 @@ module ram_instrucciones #(
       if (wea)
         BRAM[addra] <= dina;
       if (ena)
-        ram_data <= BRAM[addra >> 2];
+        ram_data <= BRAM[addra];
   end
 
   // assign douta = BRAM[addra >> 2];

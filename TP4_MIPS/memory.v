@@ -22,13 +22,15 @@
 
 module memory #(
 	parameter len = 32,
-	parameter NB = $clog2(len)
+	parameter NB = $clog2(len),
+	parameter len_mem_bus = 9,
+	parameter len_wb_bus = 2
 	)(
 	input clk,
 	input [len-1:0] in_addr_mem,
 	input [len-1:0] write_data,
-	input [7:0] memory_bus,
-    input [1:0] in_writeBack_bus,
+	input [len_mem_bus-1:0] memory_bus,
+    input [len_wb_bus-1:0] in_writeBack_bus,
 	input [NB-1:0] in_write_reg,	
 
 	input zero_flag,
@@ -49,22 +51,24 @@ module memory #(
 			control_LH,
 			control_LB,
 			control_SH,
-			control_SB;
+			control_SB,
+			BranchNotEqual;
 
 	reg [len-1:0] 	connect_mux_in_mem;	
 	wire [len-1:0]	connect_out_mem;
 
 	assign MemWrite			= memory_bus[0],
 		   MemRead 			= memory_bus[1],
-		   Branch 			= memory_bus[2],
+		   Branch   		= memory_bus[2],
 		   control_unsigned = memory_bus[3],
 		   control_LH 		= memory_bus[4],
 		   control_LB 		= memory_bus[5],
 		   control_SH 		= memory_bus[6],
-		   control_SB 		= memory_bus[7];
+		   control_SB 		= memory_bus[7],
+		   BranchNotEqual   = memory_bus[8];
 
 	assign out_pc_branch = in_pc_branch;
-	assign pc_src = Branch & zero_flag;	
+	assign pc_src = Branch & ((BranchNotEqual) ? (~zero_flag) : (zero_flag));	// la señal de Branch se activa con ambas intrucciones de branch, la otra señal te indica cual de las 2 fue
 
 	ram_datos #(
 		.RAM_WIDTH(32),
