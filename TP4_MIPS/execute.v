@@ -55,7 +55,6 @@ module execute #(
 	output reg [len-1:0] out_pc_branch,
 	output reg [len-1:0] out_alu,
 	output reg zero_flag,
-	output reg neg_flag,
 	output reg [len-1:0] out_reg2,
 	output reg [NB-1:0] out_write_reg,
 
@@ -73,7 +72,6 @@ module execute #(
 	wire [len-1:0] connect_aluop2 = execute_bus[6] ? in_sign_extend : mux2_alu_forwarding;
 	wire [len-1:0] connect_alu_out;
 	wire connect_zero_flag;
-	wire connect_neg_flag;
 
 
 	alu #(
@@ -86,8 +84,7 @@ module execute #(
 			.OPCODE(execute_bus[3:0]),
 	
 			.RESULT_OUT(connect_alu_out),
-			.zero_flag(connect_zero_flag),
-			.neg_flag(connect_neg_flag)
+			.zero_flag(connect_zero_flag)
 		);
 
 	forwarding_unit #(
@@ -127,12 +124,11 @@ module execute #(
 	begin
 		memory_bus_out <= memory_bus;
 		writeBack_bus_out <= writeBack_bus;
-		out_pc_branch <= in_pc_branch + (in_sign_extend);
+		out_pc_branch <= in_pc_branch + in_sign_extend;
 		out_alu <= connect_alu_out;
 		out_reg2 <= in_reg2;
 		out_write_reg <= execute_bus[8] ? in_rd : in_rt;
 		zero_flag <= connect_zero_flag;
-		neg_flag <= connect_neg_flag;
 	end
 
 endmodule

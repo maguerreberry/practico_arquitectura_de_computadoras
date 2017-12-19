@@ -36,7 +36,8 @@ module decode #(
 	input [NB-1:0] write_register,
 
 	output reg [len-1:0] out_pc_branch,
-	output [len-1:0] out_pc_jump,
+	output [len-1:0] out_pc_jump,	
+	output [len-1:0] out_pc_jump_register,	
 	output [len-1:0] out_reg1,
 	output [len-1:0] out_reg2,
 	output reg [len-1:0] out_sign_extend,
@@ -60,6 +61,7 @@ module decode #(
 	wire [len_mem_bus-1:0] connect_memory_bus ;
 	wire [len_wb_bus-1:0] connect_writeBack_bus;	
 
+	wire [len-1:0] connect_out_wire_reg1;
 	wire [len-1:0] connect_out_reg1;
 	wire [len-1:0] connect_out_reg2;
 
@@ -67,6 +69,7 @@ module decode #(
 	assign flag_jump_register = connect_execute_bus[4];
 	
 	assign out_pc_jump = {in_pc_branch[31:28], {2'b 00, (in_instruccion[25:0])}};
+	assign out_pc_jump_register = connect_out_wire_reg1;
 	
     assign out_reg1 = connect_out_reg1; 
     assign out_reg2 = connect_out_reg2;
@@ -100,6 +103,7 @@ module decode #(
 			.write_register(write_register),
 			.write_data(write_data),
 
+			.wire_read_data_1(connect_out_wire_reg1),
 			.read_data_1(connect_out_reg1),
 			.read_data_2(connect_out_reg2)
 			);
@@ -126,9 +130,7 @@ module decode #(
 		out_shamt <= in_instruccion [10:6];
 		execute_bus <= mux_out[(len_mem_bus+len_wb_bus+len_exec_bus)-1:len_mem_bus+len_wb_bus];
 		memory_bus <= mux_out[(len_mem_bus+len_wb_bus)-1:len_wb_bus];
-		writeBack_bus <= mux_out[len_wb_bus-1:0];
-		
-		
+		writeBack_bus <= mux_out[len_wb_bus-1:0];		
 	end
 
 endmodule

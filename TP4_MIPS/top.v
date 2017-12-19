@@ -22,7 +22,10 @@
 
 module top#(
 	parameter LEN = 32,
-	parameter NB = $clog2(LEN)
+	parameter NB = $clog2(LEN),
+	parameter len_exec_bus = 9,
+	parameter len_mem_bus = 9,
+	parameter len_wb_bus = 2
 	)(
 	input clk,
 	input reset
@@ -32,6 +35,7 @@ module top#(
 				   connect_in_pc_branch_2_3,
 				   connect_in_pc_branch_3_1,
 				   connect_in_pc_jump,
+				   connect_in_pc_jump_register,
 				   connect_instruccion,
 				   connect_reg1,
 				   connect_reg2,
@@ -51,12 +55,12 @@ module top#(
 				  connect_write_reg_3_4,
 				  connect_write_reg_4_2;
 
-    wire [8:0] connect_execute_bus;
+    wire [len_exec_bus-1:0] connect_execute_bus;
 	
-	wire [7:0] connect_memory_bus_2_3,
+	wire [len_mem_bus-1:0] connect_memory_bus_2_3,
 			   connect_memory_bus_3_4;
 	
-	wire [1:0] connect_writeBack_bus_2_3,
+	wire [len_wb_bus-1:0] connect_writeBack_bus_2_3,
 			   connect_out_writeBack_bus,
 			   connect_writeBack_bus_3_4;
     
@@ -77,7 +81,7 @@ module top#(
 			.in_pc_src({connect_flag_jump, connect_flag_jump_register, connect_branch_flag}),
 			.in_pc_jump(connect_in_pc_jump),
 			.in_pc_branch(connect_in_pc_branch_4_1),
-			.in_pc_register(),
+			.in_pc_register(connect_in_pc_jump_register),
 			.stall_flag(!connect_stall_flag),
 
 			.out_pc_branch(connect_in_pc_branch_1_2),
@@ -98,6 +102,7 @@ module top#(
 			
 			.out_pc_branch(connect_in_pc_branch_2_3),
 			.out_pc_jump(connect_in_pc_jump),
+			.out_pc_jump_register(connect_in_pc_jump_register),
 			.out_reg1(connect_reg1),
 			.out_reg2(connect_reg2),
 			.out_sign_extend(connect_sign_extend),
@@ -145,7 +150,6 @@ module top#(
 			.out_pc_branch(connect_in_pc_branch_3_4),
 			.out_alu(connect_alu_out),
 			.zero_flag(connect_zero_flag),
-			.neg_flag(),
 			.out_reg2(connect_write_data_3_4),
 			.out_write_reg(connect_write_reg_3_4),
 		

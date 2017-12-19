@@ -40,13 +40,12 @@ module alu_control(
 					6'b000110 : alu_code <= 4'b0001; // srlv
 					6'b000111 : alu_code <= 4'b0010; // srav
 					6'b100001 : alu_code <= 4'b0011; // addu
-					6'b100011 : alu_code <= 4'b0100; // subu
+					6'b100011 : alu_code <= 4'b1010; // subu
 					6'b100100 : alu_code <= 4'b0101; // and
 					6'b100101 : alu_code <= 4'b0110; // or
 					6'b100110 : alu_code <= 4'b0111; // xor
 					6'b100111 : alu_code <= 4'b1000; // nor
 					6'b101010 :	alu_code <= 4'b0100; // slt
-
 				endcase
 			end			
 			3'b001 : alu_code <= 4'b0011; //sumar
@@ -54,7 +53,7 @@ module alu_control(
 			3'b011 : alu_code <= 4'b0110; //or
 			3'b100 : alu_code <= 4'b0111; //xor
 			3'b101 : alu_code <= 4'b0000; //shift left
-			3'b110 : alu_code <= 4'b0100; //restar 
+			3'b110 : alu_code <= 4'b0100; //compare 
 			3'b111 : alu_code <= 4'b1001; // INSTRUCCION LUI -> SHIFT 16 IZQUIERDA
 			default: alu_code <= 4'bxxxx;	
 		endcase

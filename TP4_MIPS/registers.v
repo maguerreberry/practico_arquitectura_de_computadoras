@@ -32,11 +32,14 @@ module registers#(
 	input [NB-1:0] write_register,
 	input [width-1:0] write_data,
 
+	output [width-1:0] wire_read_data_1,
 	output reg [width-1:0] read_data_1,
 	output reg [width-1:0] read_data_2
     );
 
 	reg [width-1:0]  registers_mips [lenght-1:0];
+
+	assign wire_read_data_1 = registers_mips[read_register_1];
 
 	generate
 		integer ii;		

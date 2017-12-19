@@ -30,8 +30,7 @@ module alu #(
 
 	//output
 	RESULT_OUT,
-	zero_flag,
-	neg_flag
+	zero_flag
     );
 
 	input signed [lenghtIN-1 : 0] A;
@@ -40,12 +39,10 @@ module alu #(
 
 	output reg [lenghtIN - 1 : 0] RESULT_OUT;
 	output reg zero_flag;
-	output reg neg_flag;
 
 	always @(*)
 	begin
 		zero_flag = 0;
-		neg_flag = 0;
 
 		case (OPCODE)
 			4'b 0000: RESULT_OUT = B << A; //shift left
@@ -55,16 +52,16 @@ module alu #(
 			
 			4'b 0100: 
 			begin
-				RESULT_OUT = A - B; //sub
-				zero_flag = A == B ? 1 : 0;
-				neg_flag = RESULT_OUT[lenghtIN-1];
+				RESULT_OUT = A < B; //LUI
+				zero_flag = A == B ? 1 : 0; //BRANCH
 			end
 
 			4'b 0101: RESULT_OUT = A & B; //and
 			4'b 0110: RESULT_OUT = A | B; //or
 			4'b 0111: RESULT_OUT = A ^ B; //xor
 			4'b 1000: RESULT_OUT = ~(A | B); //nor
-			4'b 1001: RESULT_OUT = B << 16;
+			4'b 1001: RESULT_OUT = B << 16; //LUI
+			4'b 1010: RESULT_OUT = A - B; //restar
 			default: RESULT_OUT = 0;
 		endcase	
 	end
