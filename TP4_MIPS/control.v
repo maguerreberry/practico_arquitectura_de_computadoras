@@ -20,18 +20,22 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module control(
+module control#(
+	parameter len_exec_bus = 11,
+	parameter len_mem_bus = 9,
+	parameter len_wb_bus = 2
+	)(
 	input clk,
     input [5:0] opcode,
     input reset,
     input [5:0] opcode_lsb,
 
     // junto las salidas en buses para mas prolijidad
-    output reg [8:0] execute_bus,
-    	// RegDst, ALUSrc1, ALUSrc2, jump, jump register, ALUCode [4]
-    output reg [8:0] memory_bus,
+    output reg [len_exec_bus-1:0] execute_bus,
+    	// Jump&Link, JALOnly, RegDst, ALUSrc1, ALUSrc2, jump, jump register, ALUCode [4]
+    output reg [len_mem_bus-1:0] memory_bus,
     	// SB, SH, LB, LH, Unsigned, Branch, MemRead, MemWrite
-    output reg [1:0] writeBack_bus
+    output reg [len_wb_bus-1:0] writeBack_bus
     	// RegWrite, MemtoReg
     );
 
@@ -49,9 +53,9 @@ module control(
 
 		if(reset)
 		begin
-			execute_bus <= 9'b000000000;
-			memory_bus <= 9'b000000000;
-			writeBack_bus <= 2'b00;
+			execute_bus <= {len_exec_bus{1'b0}};
+			memory_bus <= {len_mem_bus{1'b0}};
+			writeBack_bus <= {len_wb_bus{1'b0}};
 		end
 		else begin
 			case(opcode)
@@ -60,162 +64,165 @@ module control(
 					case(opcode_lsb)
 						6'b000000, 6'b000010, 6'b000011 :
 						begin //SHIFT CON SHAMT
-							execute_bus[8:4] <= 5'b11000;
+							execute_bus[len_exec_bus-1:4] <= 7'b0011000;
 							aluop <= 3'b000;
 							memory_bus <= 9'b000000000;
 							writeBack_bus <= 2'b10;
 						end
-						6'b001000, 6'b001001 :
-						begin //JR, OJO VER JALR
-							execute_bus[8:4] <= 5'b00001;
+						6'b001000 :
+						begin //JR
+							execute_bus[len_exec_bus-1:4] <= 7'b0000001;
+							aluop <= 3'b000;
+							memory_bus <= 9'b000000000;
+							writeBack_bus <= 2'b10;
+						end
+						6'b001001 :
+						begin //JALR
+							execute_bus[len_exec_bus-1:4] <= 7'b1010001;
 							aluop <= 3'b000;
 							memory_bus <= 9'b000000000;
 							writeBack_bus <= 2'b10;
 						end
 						default:
 						begin
-							execute_bus[8:4] <= 5'b10000;
+							execute_bus[len_exec_bus-1:4] <= 7'b0010000;
 							aluop <= 3'b000;
 							memory_bus <= 9'b000000000;
 							writeBack_bus <= 2'b10;
 						end
 					endcase
 				end
-
 				// LOADS
 				6'b100000:
 				begin //LB
-					execute_bus[8:4] <= 5'b00100;
+					execute_bus[len_exec_bus-1:4] <= 7'b0000100;
 					aluop <= 3'b001;
 					memory_bus <= 9'b000100010;
 					writeBack_bus <= 2'b11;
 				end
 				6'b100001:
 				begin //LH
-					execute_bus[8:4] <= 5'b00100;
+					execute_bus[len_exec_bus-1:4] <= 7'b0000100;
 					aluop <= 3'b001;
 					memory_bus <= 9'b000010010;
 					writeBack_bus <= 2'b11;
 				end
 				6'b100011, 6'b100111:
 				begin //LW, LWU
-					execute_bus[8:4] <= 5'b00100;
+					execute_bus[len_exec_bus-1:4] <= 7'b0000100;
 					aluop <= 3'b001;
 					memory_bus <= 9'b000000010;
 					writeBack_bus <= 2'b11;
 				end
 				6'b100100:
 				begin //LBU
-					execute_bus[8:4] <= 5'b00100;
+					execute_bus[len_exec_bus-1:4] <= 7'b0000100;
 					aluop <= 3'b001;
 					memory_bus <= 9'b000101010;
 					writeBack_bus <= 2'b11;
 				end
 				6'b100101:
 				begin //LHU
-					execute_bus[8:4] <= 5'b00100;
+					execute_bus[len_exec_bus-1:4] <= 7'b0000100;
 					aluop <= 3'b001;
 					memory_bus <= 9'b000011010;
 					writeBack_bus <= 2'b11;
 				end
-
 				//STORES
 				6'b101000:
 				begin //SB
-					execute_bus[8:4] <= 5'b00100;
+					execute_bus[len_exec_bus-1:4] <= 7'b0000100;
 					aluop <= 3'b001;
 					memory_bus <= 9'b010000001;
 					writeBack_bus <= 2'b00;
 				end
 				6'b101001:
 				begin //SH
-					execute_bus[8:4] <= 5'b00100;
+					execute_bus[len_exec_bus-1:4] <= 7'b0000100;
 					aluop <= 3'b001;
 					memory_bus <= 9'b001000001;
 					writeBack_bus <= 2'b00;
 				end
 				6'b101011 :
 				begin //SW
-					execute_bus[8:4] <= 5'b00100;
+					execute_bus[len_exec_bus-1:4] <= 7'b0000100;
 					aluop <= 3'b001;
 					memory_bus <= 9'b000000001;
 					writeBack_bus <= 2'b00;
 				end
-
-
 				6'b001000 :
 				begin //ADDI
-					execute_bus[8:4] <= 5'b00100;
+					execute_bus[len_exec_bus-1:4] <= 7'b0000100;
 					aluop <= 3'b001;
 					memory_bus <= 9'b000000100;
 					writeBack_bus <= 2'b10;
 				end
 				6'b001100 :
 				begin //ANDI
-					execute_bus[8:4] <= 5'b00100;
+					execute_bus[len_exec_bus-1:4] <= 7'b0000100;
 					aluop <= 3'b010;
 					memory_bus <= 9'b000000100;
 					writeBack_bus <= 2'b10;
 				end
 				6'b001101 :
 				begin //ORI
-					execute_bus[8:4] <= 5'b00100;
+					execute_bus[len_exec_bus-1:4] <= 7'b0000100;
 					aluop <= 3'b011;
 					memory_bus <= 9'b000000100;
 					writeBack_bus <= 2'b10;
 				end
 				6'b001110 :
 				begin //XORI
-					execute_bus[8:4] <= 5'b00100;
+					execute_bus[len_exec_bus-1:4] <= 7'b0000100;
 					aluop <= 3'b100;
 					memory_bus <= 9'b000000100;
 					writeBack_bus <= 2'b10;
 				end
 				6'b001111 :
 				begin //LUI
-					execute_bus[8:4] <= 5'b00100;
+					execute_bus[len_exec_bus-1:4] <= 7'b0000100;
 					aluop <= 3'b111;
 					memory_bus <= 9'b000000100;
 					writeBack_bus <= 2'b10;
 				end
 				6'b001010 :
 				begin //SLTI
-					execute_bus[8:4] <= 5'b00100;
+					execute_bus[len_exec_bus-1:4] <= 7'b0000100;
 					aluop <= 3'b110;
 					memory_bus <= 9'b000000000;
 					writeBack_bus <= 2'b10;
 				end
 				6'b 000100:
 				begin //BRANCH on equal
-					execute_bus[8:4] <= 5'b00000;
+					execute_bus[len_exec_bus-1:4] <= 7'b0000000;
 					aluop <= 3'b110;
 					memory_bus <= 9'b000000100;
 					writeBack_bus <= 2'b00;
 				end
 				6'b 000101:
 				begin //BRANCH on not equal
-					execute_bus[8:4] <= 5'b00000;
+					execute_bus[len_exec_bus-1:4] <= 7'b0000000;
 					aluop <= 3'b110;
 					memory_bus <= 9'b100000100;
 					writeBack_bus <= 2'b00;
 				end
 				6'b000010 :
 				begin //JUMP
-					execute_bus[8:4] <= 5'b00010;
+					execute_bus[len_exec_bus-1:4] <= 7'b0000010;
 					aluop <= 3'b000;
 					memory_bus <= 9'b000000100;
 					writeBack_bus <= 2'b00;
 				end
 				6'b000011 :
 				begin //JAL
-					execute_bus[8:4] <= 5'b00010;
-					aluop <= 3'b000;
-					memory_bus <= 9'b000000100;
+					execute_bus[len_exec_bus-1:4] <= 7'b1100010;
+					aluop <= 3'b001;
+					memory_bus <= 9'b000000000;
 					writeBack_bus <= 2'b10;
 				end
 				default: 
 				begin
-					execute_bus[8:4] <= 5'b00000;
+					execute_bus[len_exec_bus-1:4] <= 7'b0000000;
 					aluop <= 3'b000;
 					memory_bus <= 9'b000000000;
 					writeBack_bus <= 2'b00;

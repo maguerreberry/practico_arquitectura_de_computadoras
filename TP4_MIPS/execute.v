@@ -23,7 +23,7 @@
 module execute #(
 	parameter len = 32,
 	parameter NB =  $clog2(len),
-	parameter len_exec_bus = 9,
+	parameter len_exec_bus = 11,
 	parameter len_mem_bus = 9,
 	parameter len_wb_bus = 2
 	)(
@@ -68,8 +68,8 @@ module execute #(
 	wire [1:0] connect_mux2_forwarding;
     wire [len-1:0] mux2_alu_forwarding;
 
-	wire [len-1:0] connect_aluop1 = execute_bus[7] ? ({{27{1'b 0}}, in_shamt}) : mux1_alu_forwarding;
-	wire [len-1:0] connect_aluop2 = execute_bus[6] ? in_sign_extend : mux2_alu_forwarding;
+	wire [len-1:0] connect_aluop1 = execute_bus[10] ? (in_pc_branch) : (execute_bus[7] ? ({{27{1'b 0}}, in_shamt}) : mux1_alu_forwarding);
+	wire [len-1:0] connect_aluop2 = execute_bus[10] ? (1'b 1) : (execute_bus[6] ? in_sign_extend : mux2_alu_forwarding);
 	wire [len-1:0] connect_alu_out;
 	wire connect_zero_flag;
 
@@ -127,7 +127,7 @@ module execute #(
 		out_pc_branch <= in_pc_branch + in_sign_extend;
 		out_alu <= connect_alu_out;
 		out_reg2 <= in_reg2;
-		out_write_reg <= execute_bus[8] ? in_rd : in_rt;
+		out_write_reg <= execute_bus[9] ? (5'b 11111) : (execute_bus[8] ? in_rd : in_rt);
 		zero_flag <= connect_zero_flag;
 	end
 

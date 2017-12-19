@@ -23,7 +23,7 @@
 module top#(
 	parameter LEN = 32,
 	parameter NB = $clog2(LEN),
-	parameter len_exec_bus = 9,
+	parameter len_exec_bus = 11,
 	parameter len_mem_bus = 9,
 	parameter len_wb_bus = 2
 	)(

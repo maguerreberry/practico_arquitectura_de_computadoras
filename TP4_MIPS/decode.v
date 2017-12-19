@@ -23,7 +23,7 @@
 module decode #(
 	parameter len = 32,
 	parameter NB =  $clog2(len),
-	parameter len_exec_bus = 9,
+	parameter len_exec_bus = 11,
 	parameter len_mem_bus = 9,
 	parameter len_wb_bus = 2
 	)(
