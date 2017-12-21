@@ -64,10 +64,11 @@ module execute #(
 	output reg [len_wb_bus-1:0] writeBack_bus_out
     );
 
-	wire [1:0] connect_mux1_forwarding;
-    wire [len-1:0] mux1_alu_forwarding;
-	wire [1:0] connect_mux2_forwarding;
-    wire [len-1:0] mux2_alu_forwarding;
+	wire [1:0] 	connect_mux1_forwarding,
+				connect_mux2_forwarding;
+				
+    wire [len-1:0] 	mux1_alu_forwarding,
+    				mux2_alu_forwarding;
 
 	wire [len-1:0] connect_aluop1 = execute_bus[10] ? (in_pc_branch) : (execute_bus[7] ? ({{27{1'b 0}}, in_shamt}) : mux1_alu_forwarding);
 	wire [len-1:0] connect_aluop2 = execute_bus[10] ? (1'b 1) : (execute_bus[6] ? in_sign_extend : mux2_alu_forwarding);

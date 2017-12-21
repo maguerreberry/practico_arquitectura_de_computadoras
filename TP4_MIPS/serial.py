@@ -1,11 +1,3 @@
-# Control: limpiar etapas 1, 2 y 3 si branch taken (miss)
-# script leer:
-# 			32 Registros
-# 			pc
-# 			memoria de datos usada (16 registros?)
-# 			latches intermedios (solo para modo debug?)
-
-
 import serial
 
 # flags
@@ -16,7 +8,10 @@ h = True
 nro_registros = 32
 posiciones_memoria = 16
 
+file = "practico_arquitectura_de_computadoras/TP4_MIPS/program.hex"
+
 def concat_bin(byte_4, byte_3, byte_2, byte_1):
+	
 	return (ord(byte_4) << 24) + (ord(byte_3) << 16) + (ord(byte_2) << 8) + ord(byte_1)
 
 def read_32()
@@ -41,25 +36,93 @@ def print_registro_32(mensaje, registro):
 
 	print # para el newline
 
+print """
+ ____                                    _              __  __ ___ ____  ____ 
+|  _ \ _ __ ___   ___ ___  ___  __ _  __| | ___  _ __  |  \/  |_ _|  _ \/ ___| 
+| |_) | '__/ _ \ / __/ _ \/ __|/ _` |/ _` |/ _ \| '__| | |\/| || || |_) \___ \ 
+|  __/| | | (_) | (_|  __/\__ \ (_| | (_| | (_) | |    | |  | || ||  __/ ___) |
+|_|   |_|  \___/ \___\___||___/\__,_|\__,_|\___/|_|    |_|  |_|___|_|   |____/ 
+"""
 
-ser = serial.Serial('COM4')
+print "\nIngenieria en Computacion 2017\nAutores:\n	Matthew Aguerreberry\n	Facundo Maero\n"
 
-print "Registros del procesador"
-for i in xrange(0,nro_registros):
+raw_input("Presione una tecla para iniciar la carga del programa ensamblador por UART")
 
-	registro = read_32()
-	print_registro_32("Registro " + str(i) + ": ", registro)
+com = 0
 
-print "Contador de Programa"
+for i in xrange(1,10):
+	try:
+		puerto = 'COM' + str(i)
+		ser = serial.Serial(puerto)
+		com = i
+		break
+	except Exception as e:
+		if i == 9:
+			print "No puedo encontrar la FPGA"
+			quit()
+
+print "FPGA encontrada en puerto COM" + com
+
+################################################################################
+# envio palabra inicio de programacion
+################################################################################
+
+print "Abriendo el archivo " + file
+
+try:
+	f = open(file, 'r')
+except Exception as e:
+	print "ERROR: Archivo no encontrado"
+	quit()
+
+while True:
+    line = f.readline()[:8] 	# trunco el \n, leyendo solo los 8 hexas del opcode
+    if not line: break
+    print line
+    sent = ser.write(line)
+
+print "Envio del programa ensamblador finalizado"
+
+print """
+Seleccione el modo de debug\n
+Continuo: 1
+Paso a paso : 2
+""",
+
+modo = int(raw_input())
+
+if modo == 1:
+	# modo continuo
+
+	print "Contador de Programa"
 	pc = read_32()
-	print_registro_32("PC: ", registro)	
+	print_registro_32("PC: ", pc)	
 
-print "Posiciones de memoria"
-for i in xrange(0,posiciones_memoria):
+	print "Ciclos de clock empleados"
+	ciclos = read_32()
+	print_registro_32("Ciclos: ", ciclos)
 
-	memoria = read_32()
-	print_registro_32("Posicion " + str(i) + ": ", memoria)
+	print "Registros del procesador"
+	for i in xrange(0,nro_registros):
 
+		registro = read_32()
+		print_registro_32("Registro " + str(i) + ": ", registro)
+
+
+	print "Posiciones de memoria"
+	for i in xrange(0,posiciones_memoria):
+
+		memoria = read_32()
+		print_registro_32("Posicion " + str(i) + ": ", memoria)
+
+elif modo == 2:
+	# modo paso a paso
+
+	# TO DO
+
+else 
+	# entrada incorrecta
+	print "ERROR, entrada incorrecta"
 
 
 
