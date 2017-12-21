@@ -26,6 +26,7 @@ module registers#(
 	parameter NB = $clog2(lenght)
 	)(
 	input clk,
+	input reset,
 	input RegWrite,
 	input [NB-1:0] read_register_1,
 	input [NB-1:0] read_register_2,
@@ -47,6 +48,12 @@ module registers#(
         for (ii = 0; ii < lenght; ii = ii + 1)
           registers_mips[ii] = {width{1'b0+(ii)}};
 	endgenerate
+
+	always @(reset)
+	begin
+		read_data_1 = 0;
+		read_data_2 = 0;
+	end
 
 	always @(posedge clk)
 	begin

@@ -28,7 +28,7 @@ module execute #(
 	parameter len_wb_bus = 2
 	)(
 	input clk,
-	// input reset,
+	input reset,
 
 	input [len-1:0] in_pc_branch,
 	input [len-1:0] in_reg1,
@@ -120,6 +120,17 @@ module execute #(
 			.select(connect_mux2_forwarding),
 			.out_mux(mux2_alu_forwarding)
 			);
+
+	always @(reset)
+	begin
+		out_pc_branch = 0;
+		out_alu = 0;
+		zero_flag = 0;
+		out_reg2 = 0;
+		out_write_reg = 0;
+		memory_bus_out = 0;
+		writeBack_bus_out = 0;
+	end
 
 	always @(posedge clk) 
 	begin

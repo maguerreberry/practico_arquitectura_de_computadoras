@@ -31,14 +31,15 @@ module pc#(
     output reg [len-1:0] Out
     );
 
-    always @(posedge clk) begin
-		if (reset) begin
-          Out = 0;
-        end
-        else begin
+    always @(reset)
+    begin
+        Out = 0; 
+    end
+
+    always @(posedge clk)
+    begin
         if(enable)
 	   		Out = In;
-	   	end
 	end
 
 endmodule

@@ -43,17 +43,11 @@ module tb_top(
 		reset = 1;
 		#10
 		reset = 0;
-		#30
-		flag = 1;
 	end
 
 	always 
 	begin
 		#5 clk = ~clk;
-		// if(flag == 0)
-		// #5 clk = clk;
-		// else
-		// #5 clk = ~clk;
 	end
     
 endmodule

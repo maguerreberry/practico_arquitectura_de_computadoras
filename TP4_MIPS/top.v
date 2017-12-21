@@ -132,6 +132,7 @@ module top#(
 		)
 		u_execute(
 			.clk(clk),
+			.reset(reset),
 		
 			.in_pc_branch(connect_in_pc_branch_2_3),
 			.in_reg1(connect_reg1),
@@ -171,6 +172,7 @@ module top#(
 		)
 		u_memory(
 			.clk(clk),
+			.reset(reset),
 			.in_addr_mem(connect_alu_out),
 			.write_data(connect_write_data_3_4),
 			

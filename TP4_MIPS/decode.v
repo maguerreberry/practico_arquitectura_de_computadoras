@@ -62,9 +62,9 @@ module decode #(
 	wire [len_mem_bus-1:0] connect_memory_bus ;
 	wire [len_wb_bus-1:0] connect_writeBack_bus;	
 
-	wire [len-1:0] connect_out_wire_reg1;
-	wire [len-1:0] connect_out_reg1;
-	wire [len-1:0] connect_out_reg2;
+	wire [len-1:0] 	connect_out_wire_reg1,
+					connect_out_reg1,
+					connect_out_reg2;
 
     wire mux_control;
     wire [(len_exec_bus+len_wb_bus+len_mem_bus)-1:0] mux_out = mux_control ? 0 : {connect_execute_bus, connect_memory_bus, connect_writeBack_bus};
@@ -98,6 +98,7 @@ module decode #(
 		)
 		u_registers(
 			.clk(clk),
+			.reset(reset),
 			.RegWrite(RegWrite),
 			.read_register_1(in_instruccion[25:21]),
 			.read_register_2(in_instruccion[20:16]),
@@ -120,6 +121,19 @@ module decode #(
 
 			.stall_flag(mux_control)
 			);
+
+	always @(reset)
+	begin
+		out_pc_branch = 0;
+		out_sign_extend = 0;
+		out_rt = 0;
+		out_rd = 0;
+		out_rs = 0;
+		out_shamt = 0;
+		execute_bus = 0;
+		memory_bus = 0;
+		writeBack_bus = 0;
+	end
 
 	always @(posedge clk) 
 	begin

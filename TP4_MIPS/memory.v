@@ -27,6 +27,7 @@ module memory #(
 	parameter len_wb_bus = 2
 	)(
 	input clk,
+	input reset,
 	input [len-1:0] in_addr_mem,
 	input [len-1:0] write_data,
 	input [len_mem_bus-1:0] memory_bus,
@@ -68,7 +69,7 @@ module memory #(
 		   BranchNotEqual   = memory_bus[8];
 
 	assign out_pc_branch = in_pc_branch;
-	assign pc_src = Branch & ((BranchNotEqual) ? (~zero_flag) : (zero_flag));	// la señal de Branch se activa con ambas intrucciones de branch, la otra señal te indica cual de las 2 fue
+	assign pc_src = Branch && ((BranchNotEqual) ? (~zero_flag) : (zero_flag));	// la señal de Branch se activa con ambas intrucciones de branch, la otra señal te indica cual de las 2 fue
 
 	ram_datos #(
 		.RAM_WIDTH(32),
@@ -120,6 +121,15 @@ module memory #(
 
 	always @(*)
 	begin
+
+		if(reset)
+		begin
+			read_data = 0;
+		    out_writeBack_bus = 0;
+			out_addr_mem = 0;
+			out_write_reg = 0;
+		end
+
 		if (control_SH) 
 		begin
 			connect_mux_in_mem <= {{16{write_data[15]}},write_data[15:0]};				

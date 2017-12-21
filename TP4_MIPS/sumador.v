@@ -21,11 +21,10 @@
 
 
 module sumador #(
-	parameter len1 = 32, // tener en cuenta que en el In1 simepre va la entrada mas grande
-    parameter len2 = 32
+	parameter len1 = 32 // tener en cuenta que en el In1 simepre va la entrada mas grande
     ) (
     input [len1-1:0] In1,
-    input [3-1:0] In2,
+    input In2,
     output [len1-1:0] Out
     );
 
