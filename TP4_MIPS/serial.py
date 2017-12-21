@@ -14,7 +14,7 @@ def concat_bin(byte_4, byte_3, byte_2, byte_1):
 	
 	return (ord(byte_4) << 24) + (ord(byte_3) << 16) + (ord(byte_2) << 8) + ord(byte_1)
 
-def read_32()
+def read_32():
 	# leo primero el byte menos significativo
 	reg_1 = ser.read() 
 	reg_2 = ser.read()
@@ -117,10 +117,10 @@ if modo == 1:
 
 elif modo == 2:
 	# modo paso a paso
-
+	pass
 	# TO DO
 
-else 
+else:
 	# entrada incorrecta
 	print "ERROR, entrada incorrecta"
 
