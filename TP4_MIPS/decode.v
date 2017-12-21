@@ -34,6 +34,7 @@ module decode #(
 	input RegWrite,
 	input [len-1:0] write_data,
 	input [NB-1:0] write_register,
+	input flush,
 
 	output reg [len-1:0] out_pc_branch,
 	output [len-1:0] out_pc_jump,	
@@ -65,19 +66,19 @@ module decode #(
 	wire [len-1:0] connect_out_reg1;
 	wire [len-1:0] connect_out_reg2;
 
-	assign flag_jump = connect_execute_bus[5];
-	assign flag_jump_register = connect_execute_bus[4];
-	
-	assign out_pc_jump = {in_pc_branch[31:28], {2'b 00, (in_instruccion[25:0])}};
-	assign out_pc_jump_register = connect_out_wire_reg1;
-	
-    assign out_reg1 = connect_out_reg1; 
-    assign out_reg2 = connect_out_reg2;
-
     wire mux_control;
     wire [(len_exec_bus+len_wb_bus+len_mem_bus)-1:0] mux_out = mux_control ? 0 : {connect_execute_bus, connect_memory_bus, connect_writeBack_bus};
 
-    assign stall_flag = mux_control;
+	assign flag_jump = (flush) ? (0) : (connect_execute_bus[5]);
+	assign flag_jump_register = (flush) ? (0) : (connect_execute_bus[4]);
+	
+	assign out_pc_jump = (flush) ? (0) : ({in_pc_branch[31:28], {2'b 00, (in_instruccion[25:0])}});
+	assign out_pc_jump_register = (flush) ? (0) : (connect_out_wire_reg1);
+	
+    assign out_reg1 = (flush) ? (0) : (connect_out_reg1); 
+    assign out_reg2 = (flush) ? (0) : (connect_out_reg2);
+
+    assign stall_flag = (flush) ? (0) : (mux_control);
 
 	control #()
 		u_control(
@@ -122,15 +123,30 @@ module decode #(
 
 	always @(posedge clk) 
 	begin
-		out_pc_branch <= in_pc_branch;
-		out_sign_extend <= $signed(in_instruccion[15:0]);
-		out_rt <= in_instruccion [20:16];
-		out_rd <= in_instruccion [15:11];
-		out_rs <= in_instruccion [25:21];
-		out_shamt <= in_instruccion [10:6];
-		execute_bus <= mux_out[(len_mem_bus+len_wb_bus+len_exec_bus)-1:len_mem_bus+len_wb_bus];
-		memory_bus <= mux_out[(len_mem_bus+len_wb_bus)-1:len_wb_bus];
-		writeBack_bus <= mux_out[len_wb_bus-1:0];		
+		if(flush)
+		begin
+			out_pc_branch <= 0;
+			out_sign_extend <= 0;
+			out_rt <= 0;
+			out_rd <= 0;
+			out_rs <= 0;
+			out_shamt <= 0;
+			execute_bus <= 0;
+			memory_bus <= 0;
+			writeBack_bus <= 0;
+		end
+		else 
+		begin			
+			out_pc_branch <= in_pc_branch;
+			out_sign_extend <= $signed(in_instruccion[15:0]);
+			out_rt <= in_instruccion [20:16];
+			out_rd <= in_instruccion [15:11];
+			out_rs <= in_instruccion [25:21];
+			out_shamt <= in_instruccion [10:6];
+			execute_bus <= mux_out[(len_mem_bus+len_wb_bus+len_exec_bus)-1:len_mem_bus+len_wb_bus];
+			memory_bus <= mux_out[(len_mem_bus+len_wb_bus)-1:len_wb_bus];
+			writeBack_bus <= mux_out[len_wb_bus-1:0];		
+		end	
 	end
 
 endmodule

@@ -10,10 +10,11 @@ module ram_instrucciones #(
   parameter RAM_PERFORMANCE = "HIGH_PERFORMANCE", // Select "HIGH_PERFORMANCE" or "LOW_LATENCY" 
   parameter INIT_FILE = ""                        // Specify name/location of RAM initialization file if using one (leave blank if not
 ) (
-  input [RAM_WIDTH-1:0] addra,  // Address bus, width determined from RAM_DEPTH
-  input clka,                           // Clock
-  input ena,                            // RAM Enable, for additional power savings, disable port when not in use
-  output [RAM_WIDTH-1:0] douta          // RAM output data
+  input [RAM_WIDTH-1:0] addra,            // Address bus, width determined from RAM_DEPTH
+  input clka,                             // Clock
+  input ena,                              // RAM Enable, for additional power savings, disable port when not in use
+  output [RAM_WIDTH-1:0] douta,           // RAM output data
+  output wire_douta       // WIRE RAM output data
 );
   wire wea = 0;                            // Write enable
   wire rsta = 0;                           // Output reset (does not affect memory contents)
@@ -22,6 +23,8 @@ module ram_instrucciones #(
 
   reg [RAM_WIDTH-1:0] BRAM [RAM_DEPTH-1:0];
   reg [RAM_WIDTH-1:0] ram_data = {RAM_WIDTH{1'b0}};
+
+  assign wire_douta = &BRAM[addra][RAM_WIDTH-1:RAM_WIDTH-6];
 
   // The following code either initializes the memory values to a specified file or to all zeros to match hardware
   generate

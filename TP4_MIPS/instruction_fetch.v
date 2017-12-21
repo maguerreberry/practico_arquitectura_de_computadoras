@@ -38,6 +38,11 @@ module instruction_fetch #(
     wire [len-1:0] connect_sumador_mux; 
     wire [len-1:0] connect_mux_pc;
     wire [len-1:0] connect_pc_sumador_mem;
+    wire [len-1:0] connect_out_instruction;
+    wire connect_wire_douta;
+    wire flush = in_pc_src[0];
+
+    assign out_instruction = (flush) ? ({len{1'b 0}}) : (connect_out_instruction);
 
 	mux_PC #(
 		.len(len)
@@ -55,7 +60,7 @@ module instruction_fetch #(
 		.len(len)
 		)
 		u_pc(
-			.In(connect_mux_pc),
+			.In((connect_wire_douta)?(connect_pc_sumador_mem):(connect_mux_pc)),
 			.clk(clk),
 			.reset(reset),
 			.enable(stall_flag),
@@ -75,7 +80,8 @@ module instruction_fetch #(
 			.clka(clk),
 			.ena(stall_flag),
 			// .ena(!reset),
-			.douta(out_instruction)
+			.wire_douta(connect_wire_douta),
+			.douta(connect_out_instruction)
 			); 
 
 	sumador #(
@@ -90,9 +96,9 @@ module instruction_fetch #(
 
 	always @(posedge clk) 
 	begin
-		if (stall_flag) 
+		if (stall_flag | flush) 
 		begin
-			out_pc_branch <= connect_sumador_mux;
+			out_pc_branch <= (flush) ? {len{1'b 0}} : connect_sumador_mux;
 		end
 	end
 	

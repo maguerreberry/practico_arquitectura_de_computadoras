@@ -29,7 +29,13 @@ module top#(
 	)(
 	input clk,
 	input reset
-    );
+	);
+	// input CLK100MHZ,
+	// input SWITCH_RESET
+ //    );    
+ //    wire clk, reset;    
+ //    assign clk = CLK100MHZ,
+ //           reset = SWITCH_RESET; 
 
     wire [LEN-1:0] connect_in_pc_branch_1_2,
 				   connect_in_pc_branch_2_3,
@@ -99,6 +105,7 @@ module top#(
 			.RegWrite(connect_out_writeBack_bus[1]),
 			.write_data(connect_write_data_5_2),
 			.write_register(connect_write_reg_4_2),
+			.flush(connect_branch_flag),
 			
 			.out_pc_branch(connect_in_pc_branch_2_3),
 			.out_pc_jump(connect_in_pc_jump),
@@ -146,6 +153,7 @@ module top#(
 
 			.in_mem_forw(connect_alu_out),
 			.in_wb_forw(connect_write_data_5_2),
+			.flush(connect_branch_flag),
 		
 			.out_pc_branch(connect_in_pc_branch_3_4),
 			.out_alu(connect_alu_out),

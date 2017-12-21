@@ -51,7 +51,8 @@ module execute #(
 
 	input [len-1:0] in_mem_forw,
 	input [len-1:0] in_wb_forw,
-
+	input flush,
+	
 	output reg [len-1:0] out_pc_branch,
 	output reg [len-1:0] out_alu,
 	output reg zero_flag,
@@ -122,13 +123,26 @@ module execute #(
 
 	always @(posedge clk) 
 	begin
-		memory_bus_out <= memory_bus;
-		writeBack_bus_out <= writeBack_bus;
-		out_pc_branch <= in_pc_branch + in_sign_extend;
-		out_alu <= connect_alu_out;
-		out_reg2 <= in_reg2;
-		out_write_reg <= execute_bus[9] ? (5'b 11111) : (execute_bus[8] ? in_rd : in_rt);
-		zero_flag <= connect_zero_flag;
+		if (flush) 
+		begin
+			memory_bus_out <= 0;
+			writeBack_bus_out <= 0;
+			out_pc_branch <= 0;
+			out_alu <= 0;
+			out_reg2 <= 0;
+			out_write_reg <= 0;
+			zero_flag <= 0;
+		end
+		else
+		begin		
+			memory_bus_out <= memory_bus;
+			writeBack_bus_out <= writeBack_bus;
+			out_pc_branch <= in_pc_branch + in_sign_extend;
+			out_alu <= connect_alu_out;
+			out_reg2 <= in_reg2;
+			out_write_reg <= execute_bus[9] ? (5'b 11111) : (execute_bus[8] ? in_rd : in_rt);
+			zero_flag <= connect_zero_flag;
+		end
 	end
 
 endmodule

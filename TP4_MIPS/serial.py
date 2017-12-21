@@ -1,5 +1,4 @@
 # Control: limpiar etapas 1, 2 y 3 si branch taken (miss)
-# halt: pc = pc (nuevo opcode)
 # script leer:
 # 			32 Registros
 # 			pc
