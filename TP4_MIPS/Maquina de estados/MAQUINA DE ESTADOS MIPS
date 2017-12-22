@@ -1,0 +1,79 @@
+MAQUINA DE ESTADOS MIPS
+
+Idle
+Programming
+Waiting
+Step by step
+Stepping
+Continuous
+Sending data
+
+Idle
+		Lee la uart a la espera de la señal de start.
+
+Programming
+		Lee la uart. Cada 4 bytes leidos escribe la instruccion en la memoria de programa.
+		Si lee HALT (0xFFFFFFFF) lo escribe y pasa a estado Waiting.
+
+Waiting
+		Resetea registros (PC, demas registros con pulso en señal reset).
+		Resetea registro con cuenta de ciclos empleados
+		Lee la uart. Mensajes posibles:
+			Pasar a modo continuo
+			Pasar a modo step by step
+			Resetear registros de procesador y memoria de datos
+			Borrar memoria de programa y pasar a estar Idle.
+
+Continuous
+		Lee instrucciones de la memoria de programa y las ejecuta normalmente.
+		Cuenta ciclos de clock empleados hasta llegar al HALT.
+		Pasa a estado Sending Data.
+
+Sending Data
+		Envia resultados por UART.
+			PC
+			32 registros
+			Ciclos de clock empleados
+			Posiciones de memoria utilizadas
+		Al finalizar pasa a estado Waiting
+
+Step by Step
+		Lee UART esperando señal de step.
+
+Stepping
+		Avanza 1 ciclo de clock en la ejecucion del programa.
+		Envia resultados por UART.
+			PC
+			32 registros
+			Ciclos de clock empleados
+			Posiciones de memoria utilizadas
+			Estado de registros intermedios (entre cada etapa)
+		Si la instruccion es un HALT, se finalizo la ejecucion, y se pasa al estado Waiting.
+		Si no es un HALT, se pasa a Step by Step de nuevo, esperando otra señal del usuario.
+
++--------------+----------+--------------------------------------------------------+
+|   Mensaje    |  Codigo  |                      Significado                       |
++--------------+----------+--------------------------------------------------------+
+| Start        | 00000001 | Pasa de estado Idle a Programming                      |
+| Continuous   | 00000010 | Pasa de estado Waiting a Continuous                    |
+| Step by Step | 00000011 | Pasa de estado Waiting a Step by Step                  |
+| Reset MIPS   | 00000100 | En Waiting, limpia registros y memoria de datos        |
+| Erase memory | 00000101 | En Waiting, borra la memoria de programa y pasa a Idle |
+| Step         | 00000110 | En Step by Step, pasa a Stepping                       |
++--------------+----------+--------------------------------------------------------+
+
+
+ESTADOS COMPUESTOS
+
+Programming
+Sending data
+Stepping
+
+Programming
+		5 sub estados: 4 para recibir una instruccion de 32 bits, uno para escribirla en memoria y decidir que hacer
+
+Sending data:
+		4 sub estados: enviar PC, ciclos de clock, registros y memoria
+
+Stepping:
+		5 sub estados: enviar PC, ciclos de clock, registros, memoria y latches intermedios
