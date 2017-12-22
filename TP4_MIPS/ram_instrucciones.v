@@ -15,10 +15,10 @@ module ram_instrucciones #(
   input ena,                              // RAM Enable, for additional power savings, disable port when not in use
   input flush,
   input reset,
+  input wea,                              // Write enable
   output [RAM_WIDTH-1:0] douta,           // RAM output data
   output wire_douta       // WIRE RAM output data
 );
-  wire wea = 0;                            // Write enable
   wire rsta = 0;                           // Output reset (does not affect memory contents)
   wire regcea = 1;                         // Output register enable
   wire [RAM_WIDTH-1:0] dina = 0;           // RAM input data

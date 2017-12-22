@@ -35,6 +35,7 @@ Sending Data
 			32 registros
 			Ciclos de clock empleados
 			Posiciones de memoria utilizadas
+			Estado de registros intermedios (entre cada etapa)
 		Al finalizar pasa a estado Waiting
 
 Step by Step
