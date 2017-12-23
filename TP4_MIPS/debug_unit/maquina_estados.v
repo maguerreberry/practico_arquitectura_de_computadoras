@@ -20,66 +20,71 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module maquina_estados(
-	parameter len_opcode = 5,
-    parameter len_pc = 16,
+module maquina_estados #(
     parameter len = 32,
-    parameter len_acc = 16,
+    parameter cant_instruccciones = 64,
+	parameter NB_addr = $clog2(cant_instruccciones),
     parameter LEN_DATA = 8
 	) (
     input clk,
     input reset,
-    input [len_opcode-1:0] in_opcode,
-    input [len_acc-1:0] in_acc,    
+    input [len-1:0] pc,
+    input [(len*len)-1:0] regs, // pensar la longitud pq queda demasiados cables
+    input [(len*len)-1:0] MemDatos, // pensar la longitud pq queda demasiados cables
+    input [(len*len)-1:0] Latches_1_2, // pensar la longitud pq queda demasiados cables
+    input [(len*len)-1:0] Latches_2_3, // pensar la longitud pq queda demasiados cables
+    input [(len*len)-1:0] Latches_3_4, // pensar la longitud pq queda demasiados cables
+    input [(len*len)-1:0] Latches_4_5, // pensar la longitud pq queda demasiados cables
+    output [NB_addr-1:0] addr_mem_inst,
+    output [len-1:0] ins_to_mem,
+    output reg reset_mips,
+    output reg erase_mem_inst,
+    output clk_mips,
+
+
+    //UART
     input tx_done,
     input rx_done,
     input [LEN_DATA-1:0] uart_data_in, 
-
-
-    output [] addr_mem;
-    output [] ins_to_mem;
-
     output reg tx_start,
     output reg [LEN_DATA-1:0] uart_data_out 
     );
 
-    localparam [5:0] IDLE         	= 6'b 000000;
-    localparam [5:0] PROGRAMMING  	= 6'b 000001;
-    localparam [5:0] WAITING      	= 6'b 000010;
-    localparam [5:0] STEP_BY_STEP   = 6'b 000100;
-    localparam [5:0] SENDING_DATA 	= 6'b 001000;
-    localparam [5:0] CONTINUOS		= 6'b 010000;
+    localparam [5:0] IDLE         	= 6'b 000000,
+    				 PROGRAMMING  	= 6'b 000001,
+    				 WAITING      	= 6'b 000010,
+    				 STEP_BY_STEP   = 6'b 000100,
+    				 SENDING_DATA 	= 6'b 001000,
+    				 CONTINUOS		= 6'b 010000;
 
-    localparam [5:0] SUB_INIT		= 6'b 100000;
-    localparam [5:0] SUB_READ_1		= 6'b 100001;
-    localparam [5:0] SUB_READ_2		= 6'b 100010;
-    localparam [5:0] SUB_READ_3		= 6'b 100100;
-    localparam [5:0] SUB_READ_4		= 6'b 101000;
-    localparam [5:0] SUB_WRITE_MEM	= 6'b 110000;
+    localparam [5:0] SUB_INIT		= 6'b 100000,
+    				 SUB_READ_1		= 6'b 100001,
+    				 SUB_READ_2		= 6'b 100010,
+    				 SUB_READ_3		= 6'b 100100,
+    				 SUB_READ_4		= 6'b 101000,
+    				 SUB_WRITE_MEM	= 6'b 110000;
 
-    localparam [7:0] StartSignal		= 8'b 00000001;
-    localparam [7:0] ContinuosSignal  	= 8'b 00000010;
-    localparam [7:0] StepByStepSignal   = 8'b 00000011;
-    localparam [7:0] ResetMipsSignal   	= 8'b 00000100;
-    localparam [7:0] EraseMemorySignal 	= 8'b 00000101;
-    localparam [7:0] StepSignal			= 8'b 00000110;
-
+    localparam [7:0] StartSignal		= 8'b 00000001,
+					 ContinuosSignal  	= 8'b 00000010,
+					 StepByStepSignal   = 8'b 00000011,
+					 ResetMipsSignal   	= 8'b 00000100,
+					 EraseMemorySignal 	= 8'b 00000101,
+					 StepSignal			= 8'b 00000110;
 
     reg [5:0] state;
     reg [5:0] sub_state;
-    reg [len_pc-1:0] ciclos;
+    reg [len-1:0] ciclos;
     reg [len-1:0] instruction;
-    reg [5:0] num_instruc;
+    reg [NB_addr-1:0] num_instruc;
     reg wrtie_enable_ram_inst;
-    wire [len_acc-1:0] acc;
 
     assign ins_to_mem = instruction;
-    assign addr_mem = num_instruc;
-    assign acc = in_acc;
+    assign addr_mem_inst = num_instruc;
     
     always @(negedge clk) begin
         if (reset) begin
           ciclos = 0;
+          reset_mips = 0;
           state = IDLE;
           sub_state = SUB_INIT;
         end
@@ -87,6 +92,7 @@ module maquina_estados(
             case(state)
                 IDLE:
                     begin
+                      	reset_mips = 0;
                     	if (uart_data_in == StartSignal) 
                     	begin
 							state <= PROGRAMMING;	                	                   	
@@ -149,39 +155,39 @@ module maquina_estados(
                     end
                 WAITING:
                     begin
-                        data_out = ciclos[LEN_DATA-1:0];
-                        tx_start = 1;
-                        if (tx_done) begin
-                            state = TX2;
-                            tx_start = 0;
-                        end
+                    //     uart_data_out = ciclos[LEN_DATA-1:0];
+                    //     tx_start = 1;
+                    //     if (tx_done) begin
+                    //         state = IDLE;
+                    //         tx_start = 0;
+                    //     end
                     end
                 STEP_BY_STEP:
                     begin
-                        data_out = ciclos[len_pc-1:LEN_DATA];
-                        tx_start = 1;
-                        if (tx_done) begin
-                            state = TX3;
-                            tx_start = 0;
-                        end
+                    //     uart_data_out = ciclos[len-1:LEN_DATA];
+                    //     tx_start = 1;
+                    //     if (tx_done) begin
+                    //         state = IDLE;
+                    //         tx_start = 0;
+                    //     end
                     end
                 CONTINUOS:
                     begin
-                        data_out = acc[LEN_DATA-1:0];
-                        tx_start = 1;
-                        if (tx_done) begin
-                            state = TX4;
-                            tx_start = 0;
-                        end
+                    //     uart_data_out = acc[LEN_DATA-1:0];
+                    //     tx_start = 1;
+                    //     if (tx_done) begin
+                    //         state = IDLE;
+                    //         tx_start = 0;
+                    //     end
                     end                
                 SENDING_DATA:
                     begin
-                        data_out = acc[len_acc-1:LEN_DATA];
-                        tx_start = 1;
-                        if (tx_done) begin
-                            state = IDLE;
-                            tx_start = 0;
-                        end
+                    //     uart_data_out = acc[len_acc-1:LEN_DATA];
+                    //     tx_start = 1;
+                    //     if (tx_done) begin
+                    //         state = IDLE;
+                    //         tx_start = 0;
+                    //     end
                     end                
             endcase
         end
