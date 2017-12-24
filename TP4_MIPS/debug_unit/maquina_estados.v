@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps
+s`timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
 // Engineer: 
@@ -29,6 +29,7 @@ module maquina_estados #(
     input clk,
     input reset,
     input [len-1:0] pc,
+    input [len-1:0] current_inst,  
     input [(len*len)-1:0] regs, // pensar la longitud pq queda demasiados cables
     input [(len*len)-1:0] MemDatos, // pensar la longitud pq queda demasiados cables
     input [(len*len)-1:0] Latches_1_2, // pensar la longitud pq queda demasiados cables
@@ -39,8 +40,7 @@ module maquina_estados #(
     output [len-1:0] ins_to_mem,
     output reg reset_mips,
     output reg erase_mem_inst,
-    output clk_mips,
-
+    output ctrl_clk_mips,
 
     //UART
     input tx_done,
@@ -54,15 +54,21 @@ module maquina_estados #(
     				 PROGRAMMING  	= 6'b 000001,
     				 WAITING      	= 6'b 000010,
     				 STEP_BY_STEP   = 6'b 000100,
-    				 SENDING_DATA 	= 6'b 001000,
-    				 CONTINUOS		= 6'b 010000;
+                     SENDING_DATA   = 6'b 001000,
+                     CONTINUOS      = 6'b 010000,
+                     STEPPING       = 6'b 010001,
 
     localparam [5:0] SUB_INIT		= 6'b 100000,
     				 SUB_READ_1		= 6'b 100001,
     				 SUB_READ_2		= 6'b 100010,
     				 SUB_READ_3		= 6'b 100100,
     				 SUB_READ_4		= 6'b 101000,
-    				 SUB_WRITE_MEM	= 6'b 110000;
+    				 SUB_WRITE_MEM	= 6'b 110000,
+                     SUB_SEND_1     = 6'b 110001,
+                     SUB_SEND_2     = 6'b 110010,
+                     SUB_SEND_3     = 6'b 110100,
+                     SUB_SEND_4     = 6'b 111000;
+
 
     localparam [7:0] StartSignal		= 8'b 00000001,
 					 ContinuosSignal  	= 8'b 00000010,
@@ -93,6 +99,7 @@ module maquina_estados #(
                 IDLE:
                     begin
                       	reset_mips = 0;
+                        erase_mem_inst = 0;
                     	if (uart_data_in == StartSignal) 
                     	begin
 							state <= PROGRAMMING;	                	                   	
@@ -155,39 +162,67 @@ module maquina_estados #(
                     end
                 WAITING:
                     begin
-                    //     uart_data_out = ciclos[LEN_DATA-1:0];
-                    //     tx_start = 1;
-                    //     if (tx_done) begin
-                    //         state = IDLE;
-                    //         tx_start = 0;
-                    //     end
+                        ciclos = 0;
+                        case (uart_data_in)
+                            ResetMipsSignal: begin
+                                reset_mips = 1;
+                            end
+                            EraseMemorySignal: begin
+                                erase_mem_inst = 1;
+                                state = IDLE;                                                        
+                            end
+                            ContinuosSignal: begin 
+                                state = CONTINUOS;
+                                reset_mips = 0;
+                            end 
+                            StepByStepSignal: begin 
+                                state = STEP_BY_STEP;
+                                reset_mips = 0;
+                            end
+                        endcase                    
                     end
                 STEP_BY_STEP:
                     begin
-                    //     uart_data_out = ciclos[len-1:LEN_DATA];
-                    //     tx_start = 1;
-                    //     if (tx_done) begin
-                    //         state = IDLE;
-                    //         tx_start = 0;
-                    //     end
+                        ctrl_clk_mips = 0;
+                        if (uart_data_in == StepSignal) begin
+                            ciclos = ciclos + 1;
+                            state = SENDING_DATA;
+                        end
                     end
                 CONTINUOS:
                     begin
-                    //     uart_data_out = acc[LEN_DATA-1:0];
-                    //     tx_start = 1;
-                    //     if (tx_done) begin
-                    //         state = IDLE;
-                    //         tx_start = 0;
-                    //     end
-                    end                
+                        ctrl_clk_mips = 1;
+                        ciclos = ciclos + 1;
+                        if (&current_inst[31:26]) begin
+                            state = SENDING_DATA;
+                        end
+                    end
                 SENDING_DATA:
                     begin
-                    //     uart_data_out = acc[len_acc-1:LEN_DATA];
-                    //     tx_start = 1;
-                    //     if (tx_done) begin
-                    //         state = IDLE;
-                    //         tx_start = 0;
-                    //     end
+                        ctrl_clk_mips = 1;
+                        if (&current_inst[31:26]) begin
+                            state = WAITING;                            
+                        end
+                        else begin
+                            state = STEP_BY_STEP;
+                        end
+                        case (sub_state):
+                            SUB_INIT: begin
+                                sub_state = SUB_SEND_BYTE; 
+                                sub_sub_state = SUB_SUB_SEND_PC; 
+                            end
+                            SUB_SEND_BYTE: begin
+                                case(sub_sub_state) 
+                                    SUB_SUB_SEND_PC: begin
+                                        
+                                    end
+                                endcase
+                                tx_start = 1;
+                                if (tx_done) begin
+                                    tx_start = 0;
+                                end
+                            end
+                        endcase
                     end                
             endcase
         end
