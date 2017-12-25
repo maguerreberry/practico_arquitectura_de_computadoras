@@ -1,4 +1,4 @@
-s`timescale 1ns / 1ps
+`timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
 // Engineer: 
@@ -23,24 +23,33 @@ s`timescale 1ns / 1ps
 module maquina_estados #(
     parameter len = 32,
     parameter cant_instruccciones = 64,
+    parameter LEN_DATA = 8,
+    parameter nb_pc = len/8, //Num bytes
+    parameter nb_regs = (len*len)/8,
+    parameter nb_MemDatos = (len*1)/8,
+    parameter nb_Latches_1_2 = (len*1)/8,
+    parameter nb_Latches_2_3 = (len*1)/8,
+    parameter nb_Latches_3_4 = (len*1)/8,
+    parameter nb_Latches_4_5 = (len*1)/8,
+    parameter total_lenght = nb_pc + nb_regs + nb_MemDatos + nb_Latches_1_2 + nb_Latches_2_3 + nb_Latches_3_4 + nb_Latches_4_5,
 	parameter NB_addr = $clog2(cant_instruccciones),
-    parameter LEN_DATA = 8
+    parameter NB_total_lenght = $clog2(total_lenght)
 	) (
     input clk,
     input reset,
-    input [len-1:0] pc,
     input [len-1:0] current_inst,  
-    input [(len*len)-1:0] regs, // pensar la longitud pq queda demasiados cables
-    input [(len*len)-1:0] MemDatos, // pensar la longitud pq queda demasiados cables
-    input [(len*len)-1:0] Latches_1_2, // pensar la longitud pq queda demasiados cables
-    input [(len*len)-1:0] Latches_2_3, // pensar la longitud pq queda demasiados cables
-    input [(len*len)-1:0] Latches_3_4, // pensar la longitud pq queda demasiados cables
-    input [(len*len)-1:0] Latches_4_5, // pensar la longitud pq queda demasiados cables
+    input [(nb_pc*8)-1:0] pc,
+    input [(nb_regs*8)-1:0] regs, // pensar la longitud pq queda demasiados cables
+    input [(nb_MemDatos*8)-1:0] MemDatos, // pensar la longitud pq queda demasiados cables
+    input [(nb_Latches_1_2*8)-1:0] Latches_1_2, // pensar la longitud pq queda demasiados cables
+    input [(nb_Latches_2_3*8)-1:0] Latches_2_3, // pensar la longitud pq queda demasiados cables
+    input [(nb_Latches_3_4*8)-1:0] Latches_3_4, // pensar la longitud pq queda demasiados cables
+    input [(nb_Latches_4_5*8)-1:0] Latches_4_5, // pensar la longitud pq queda demasiados cables
     output [NB_addr-1:0] addr_mem_inst,
     output [len-1:0] ins_to_mem,
     output reg reset_mips,
     output reg erase_mem_inst,
-    output ctrl_clk_mips,
+    output reg ctrl_clk_mips,
 
     //UART
     input tx_done,
@@ -56,7 +65,7 @@ module maquina_estados #(
     				 STEP_BY_STEP   = 6'b 000100,
                      SENDING_DATA   = 6'b 001000,
                      CONTINUOS      = 6'b 010000,
-                     STEPPING       = 6'b 010001,
+                     STEPPING       = 6'b 010001;
 
     localparam [5:0] SUB_INIT		= 6'b 100000,
     				 SUB_READ_1		= 6'b 100001,
@@ -67,7 +76,10 @@ module maquina_estados #(
                      SUB_SEND_1     = 6'b 110001,
                      SUB_SEND_2     = 6'b 110010,
                      SUB_SEND_3     = 6'b 110100,
-                     SUB_SEND_4     = 6'b 111000;
+                     SUB_SEND_4     = 6'b 111000,
+                     SUB_SUB_SEND_PC        = 6'b 111001,
+                     SUB_SUB_SEND_32_REGS   = 6'b 111010,
+                     SUB_SEND_BYTE     = 6'b 111011;
 
 
     localparam [7:0] StartSignal		= 8'b 00000001,
@@ -79,10 +91,42 @@ module maquina_estados #(
 
     reg [5:0] state;
     reg [5:0] sub_state;
+    reg [5:0] sub_sub_state;
+    reg [5:0] n_bytes, i;
+    reg [NB_total_lenght-1:0] index;
     reg [len-1:0] ciclos;
     reg [len-1:0] instruction;
     reg [NB_addr-1:0] num_instruc;
     reg wrtie_enable_ram_inst;
+
+    wire [LEN_DATA-1:0] bytes_to_send [total_lenght-1:0];
+
+    generate
+        genvar ii;     
+        for (ii = 0; ii < total_lenght; ii = ii + 1) begin: cargar_todo
+            if (ii < nb_pc) begin
+                assign bytes_to_send[ii] = pc[((nb_pc*8)-((nb_pc-ii)*8))-1+8:((nb_pc*8)-((nb_pc-ii)*8))];                            
+            end
+            else if (ii < nb_regs+nb_pc) begin
+                assign bytes_to_send[ii] = regs[((nb_regs*8)-((nb_regs-(ii-nb_pc))*8))-1+8:((nb_regs*8)-((nb_regs-(ii-nb_pc))*8))];                                                            
+            end
+            else if (ii < nb_regs+nb_pc+nb_MemDatos) begin
+                assign bytes_to_send[ii] = MemDatos[((nb_MemDatos*8)-((nb_MemDatos-ii+nb_pc+nb_regs)*8))-1+8:((nb_MemDatos*8)-((nb_MemDatos-ii+nb_pc+nb_regs)*8))];                                                            
+            end
+            else if (ii < nb_regs+nb_pc+nb_MemDatos+nb_Latches_1_2) begin
+                assign bytes_to_send[ii] = Latches_1_2[((nb_Latches_1_2*8)-((nb_Latches_1_2-ii+nb_regs+nb_pc+nb_MemDatos)*8))-1+8:((nb_Latches_1_2*8)-((nb_Latches_1_2-ii+nb_regs+nb_pc+nb_MemDatos)*8))];                                                            
+            end
+            else if (ii < nb_regs+nb_pc+nb_MemDatos+nb_Latches_1_2+nb_Latches_2_3) begin
+                assign bytes_to_send[ii] = Latches_2_3[((nb_Latches_2_3*8)-((nb_Latches_2_3-ii+nb_regs+nb_pc+nb_MemDatos+nb_Latches_1_2)*8))-1+8:((nb_Latches_2_3*8)-((nb_Latches_2_3-ii+nb_regs+nb_pc+nb_MemDatos+nb_Latches_1_2)*8))];                                                            
+            end
+            else if (ii < nb_regs+nb_pc+nb_MemDatos+nb_Latches_1_2+nb_Latches_2_3+nb_Latches_3_4) begin
+                assign bytes_to_send[ii] = Latches_3_4[((nb_Latches_3_4*8)-((nb_Latches_3_4-ii+nb_regs+nb_pc+nb_MemDatos+nb_Latches_1_2+nb_Latches_2_3)*8))-1+8:((nb_Latches_3_4*8)-((nb_Latches_3_4-ii+nb_regs+nb_pc+nb_MemDatos+nb_Latches_1_2+nb_Latches_2_3)*8))];                                                            
+            end
+            else if (ii < nb_regs+nb_pc+nb_MemDatos+nb_Latches_1_2+nb_Latches_2_3+nb_Latches_3_4+nb_Latches_4_5) begin
+                assign bytes_to_send[ii] = Latches_4_5[((nb_Latches_4_5*8)-((nb_Latches_4_5-ii+nb_regs+nb_pc+nb_MemDatos+nb_Latches_1_2+nb_Latches_2_3+nb_Latches_3_4)*8))-1+8:((nb_Latches_4_5*8)-((nb_Latches_4_5-ii+nb_regs+nb_pc+nb_MemDatos+nb_Latches_1_2+nb_Latches_2_3+nb_Latches_3_4)*8))];                                                            
+            end
+        end
+    endgenerate
 
     assign ins_to_mem = instruction;
     assign addr_mem_inst = num_instruc;
@@ -99,6 +143,7 @@ module maquina_estados #(
                 IDLE:
                     begin
                       	reset_mips = 0;
+                        index = 0;
                         erase_mem_inst = 0;
                     	if (uart_data_in == StartSignal) 
                     	begin
@@ -200,31 +245,26 @@ module maquina_estados #(
                 SENDING_DATA:
                     begin
                         ctrl_clk_mips = 1;
-                        if (&current_inst[31:26]) begin
-                            state = WAITING;                            
+                        if (index < total_lenght) begin
+                            uart_data_out = bytes_to_send[index];
+                            index = index + 1;
+                            tx_start = 1;
+                            if (tx_done) begin
+                                tx_start = 0;
+                                state = SENDING_DATA;
+                            end
                         end
                         else begin
-                            state = STEP_BY_STEP;
+                            index = 0;                            
+                            if (&current_inst[31:26]) begin
+                                state = WAITING;                            
+                            end
+                            else begin
+                                state = STEP_BY_STEP;
+                            end
                         end
-                        case (sub_state):
-                            SUB_INIT: begin
-                                sub_state = SUB_SEND_BYTE; 
-                                sub_sub_state = SUB_SUB_SEND_PC; 
-                            end
-                            SUB_SEND_BYTE: begin
-                                case(sub_sub_state) 
-                                    SUB_SUB_SEND_PC: begin
-                                        
-                                    end
-                                endcase
-                                tx_start = 1;
-                                if (tx_done) begin
-                                    tx_start = 0;
-                                end
-                            end
-                        endcase
-                    end                
-            endcase
+                    end
+            endcase                
         end
     end
 endmodule

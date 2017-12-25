@@ -27,15 +27,14 @@ module top#(
 	parameter len_mem_bus = 9,
 	parameter len_wb_bus = 2
 	)(
-	input clk,
-	input reset
-	);
-	// input CLK100MHZ,
-	// input SWITCH_RESET
- //    );    
- //    wire clk, reset;    
- //    assign clk = CLK100MHZ,
- //           reset = SWITCH_RESET; 
+	input CLK100MHZ,
+	input SWITCH_RESET,
+	input UART_TXD_IN,
+	output UART_RXD_OUT
+    );    
+    wire clk, reset, clk_mips, ctrl_clk_mips, reset_mips;    
+    assign clk = CLK100MHZ,
+           reset = SWITCH_RESET; 
 
     wire [LEN-1:0] connect_in_pc_branch_1_2,
 				   connect_in_pc_branch_2_3,
@@ -74,16 +73,24 @@ module top#(
          connect_flag_jump_register,
 	     connect_zero_flag,
 	     connect_branch_flag,
-	     connect_stall_flag;
+	     connect_stall_flag,
+	     connect_uart_rx_done,
+	     connect_uart_tx_start,
+	     connect_uart_tx_done;
+    
+    wire [7:0] connect_uart_data_in,
+			   connect_uart_data_out;
 
 	assign connect_write_data_5_2 = (connect_out_writeBack_bus[0]) ? connect_read_data : connect_out_addr_mem;
+
+	assign clk_mips = (ctrl_clk_mips) ? (clk) : (1'b 0);
 
 	instruction_fetch #(
 		.len(LEN)
 		)
 		u_instruction_fetch(
-			.clk(clk),
-			.reset(reset),
+			.clk(clk_mips),
+			.reset(reset_mips),
 			.in_pc_src({connect_flag_jump, connect_flag_jump_register, connect_branch_flag}),
 			.in_pc_jump(connect_in_pc_jump),
 			.in_pc_branch(connect_in_pc_branch_4_1),
@@ -98,8 +105,8 @@ module top#(
 		.len(LEN)
 		)
 		u_decode(
-			.clk(clk),
-			.reset(reset),
+			.clk(clk_mips),
+			.reset(reset_mips),
 			.in_pc_branch(connect_in_pc_branch_1_2),
 			.in_instruccion(connect_instruccion),
 			.RegWrite(connect_out_writeBack_bus[1]),
@@ -131,8 +138,8 @@ module top#(
 		.len(LEN)
 		)
 		u_execute(
-			.clk(clk),
-			.reset(reset),
+			.clk(clk_mips),
+			.reset(reset_mips),
 		
 			.in_pc_branch(connect_in_pc_branch_2_3),
 			.in_reg1(connect_reg1),
@@ -171,8 +178,8 @@ module top#(
 		.len(LEN)
 		)
 		u_memory(
-			.clk(clk),
-			.reset(reset),
+			.clk(clk_mips),
+			.reset(reset_mips),
 			.in_addr_mem(connect_alu_out),
 			.write_data(connect_write_data_3_4),
 			
@@ -189,6 +196,58 @@ module top#(
 		    .out_writeBack_bus(connect_out_writeBack_bus),
 			.out_addr_mem(connect_out_addr_mem),
 			.out_write_reg(connect_write_reg_4_2)	
+			);
+	
+	maquina_estados #(
+		.len(LEN),
+		.cant_instruccciones(64),
+		.nb_MemDatos((LEN*1)/8),
+		.nb_Latches_1_2((LEN*1)/8),
+		.nb_Latches_2_3((LEN*1)/8),
+		.nb_Latches_3_4((LEN*1)/8),
+		.nb_Latches_4_5((LEN*1)/8)
+		)
+		u_maquina_estados(
+		    .clk(clk),
+		    .reset(reset),
+		    .current_inst(),  
+		    .pc(),
+		    .regs(),
+		    .MemDatos(),
+		    .Latches_1_2(),
+		    .Latches_2_3(),
+		    .Latches_3_4(),
+		    .Latches_4_5(),
+		    .addr_mem_inst(),
+		    .ins_to_mem(),
+		    .reset_mips(reset_mips),
+		    .erase_mem_inst(),
+		    .ctrl_clk_mips(ctrl_clk_mips),
+		
+		    //UART
+		    .tx_done(connect_uart_tx_done),
+		    .rx_done(connect_uart_rx_done),
+		    .uart_data_in(connect_uart_data_out), 
+		    .tx_start(connect_uart_tx_start),
+		    .uart_data_out(connect_uart_data_in) 
+			);
+
+	uart #(
+		.NBITS(8),
+		.NUM_TICKS(16),
+		.BAUD_RATE(9600)
+		)
+		u_uart(
+			.CLK_100MHZ(clk),
+			.reset(reset),
+			.tx_start(connect_uart_tx_start),
+			.rx(UART_TXD_IN),
+			.data_in(connect_uart_data_in),
+
+			.data_out(connect_uart_data_out),
+			.rx_done_tick(connect_uart_rx_done),
+			.tx(UART_RXD_OUT),
+			.tx_done_tick(connect_uart_tx_done)
 			);
 
 endmodule
