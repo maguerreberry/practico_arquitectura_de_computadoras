@@ -31,9 +31,13 @@ module instruction_fetch #(
 	input [len-1:0] in_pc_register,
 	input stall_flag,
 
+	input [len-1:0] in_addr_debug,
+	input debug_flag,
+
 	output reg [len-1:0] out_pc_branch,
 	output [len-1:0] out_instruction,
-	output [len-1:0] out_pc
+	output [len-1:0] out_pc,
+	output reg out_halt_flag_if // para debug
     );
 
     wire [len-1:0] connect_sumador_mux; 
@@ -46,7 +50,6 @@ module instruction_fetch #(
 
     assign out_instruction = connect_out_instruction;
     assign out_pc = connect_pc_sumador_mem;
-
 
 	mux_PC #(
 		.len(len)
@@ -80,10 +83,11 @@ module instruction_fetch #(
         // .INIT_FILE("E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP4_MIPS/program.hex")
 		)
 		u_ram_instrucciones(
-			.addra(connect_pc_sumador_mem),
+			.addra(debug_flag ? in_addr_debug : connect_pc_sumador_mem),
 			.clka(clk),
 			.reset(reset),
 			.ena(stall_flag),
+			.wea(debug_flag),
 			.wire_douta(connect_wire_douta),
 			.flush(flush),
 			.douta(connect_out_instruction)
@@ -106,6 +110,7 @@ module instruction_fetch #(
 	always @(posedge clk) 
 	begin
 
+		out_halt_flag_if <= connect_wire_douta;
 
 		if (stall_flag | flush) 
 		begin

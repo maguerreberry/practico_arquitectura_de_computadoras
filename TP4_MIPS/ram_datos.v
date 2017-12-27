@@ -15,13 +15,17 @@ module ram_datos #(
   input clka,                           // Clock
   input wea,                            // Write enable
   input ena,                            // RAM Enable, for additional power savings, disable port when not in use
-  output [RAM_WIDTH-1:0] douta          // RAM output data
+  output [RAM_WIDTH-1:0] douta,         // RAM output data
+  output [RAM_WIDTH-1:0] douta_wire     // RAM output data wire
 );
   wire regcea = 1;                         // Output register enable
   wire rsta = 0; // Output reset (does not affect memory contents)
 
   reg [RAM_WIDTH-1:0] BRAM [RAM_DEPTH-1:0];
   reg [RAM_WIDTH-1:0] ram_data = {RAM_WIDTH{1'b0}};
+
+
+  assign douta_wire = BRAM[addra];
 
   // The following code either initializes the memory values to a specified file or to all zeros to match hardware
   generate

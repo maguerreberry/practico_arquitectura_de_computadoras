@@ -22,7 +22,7 @@
 
 module maquina_estados #(
     parameter len = 32,
-    parameter cant_instruccciones = 64,
+    parameter cant_instrucciones = 64,
     parameter cant_regs = 32,
     parameter cant_mem_datos = 16,
     parameter LEN_DATA = 8,
@@ -34,7 +34,7 @@ module maquina_estados #(
     parameter nb_Latches_4_5 = (len*1)/8,
     parameter nb_ciclos = (len*1)/8,
     parameter total_lenght = nb_pc + nb_Latches_1_2 + nb_Latches_2_3 + nb_Latches_3_4 + nb_Latches_4_5 + nb_recolector + nb_ciclos,
-	parameter NB_addr = $clog2(cant_instruccciones),
+	parameter NB_addr = $clog2(cant_instrucciones),
     parameter NB_total_lenght = $clog2(total_lenght)
 	) (
     input clk,
@@ -46,7 +46,7 @@ module maquina_estados #(
     input [(nb_Latches_3_4*8)-1:0] Latches_3_4, // pensar la longitud pq queda demasiados cables
     input [(nb_Latches_4_5*8)-1:0] Latches_4_5, // pensar la longitud pq queda demasiados cables
     input [(nb_recolector*8)-1:0] recolector, // pensar la longitud pq queda demasiados cables
-    output [NB_addr-1:0] addr_mem_inst,
+    output [len-1:0] addr_mem_inst,
     output [len-1:0] ins_to_mem,
     output reg reset_mips,
     output reg reprogram,
@@ -54,6 +54,7 @@ module maquina_estados #(
     output reg restart_recolector,
     output reg send_regs_recolector,
     output reg enable_next_recolector,
+    output reg debug,
 
     //UART
     input tx_done,
@@ -93,12 +94,12 @@ module maquina_estados #(
 
     reg [6:0] state;
     reg [5:0] sub_state;
-    reg [NB_total_lenght-1:0] index;
-    reg [(nb_ciclos*8)-1:0] ciclos;
-    reg [len-1:0] instruction;
-    reg [NB_addr-1:0] num_instruc;
-    reg write_enable_ram_inst;
-    reg [7:0] regs_counter;
+    reg [NB_total_lenght-1:0] index;    // indice del mux
+    reg [(nb_ciclos*8)-1:0] ciclos;     // contador de ciclos de clock
+    reg [len-1:0] instruction;          // instruccion a escribir en memoria de programa
+    reg [NB_addr-1:0] num_instruc;      // contador de instrucciones para direccionar donde escribir
+    reg write_enable_ram_inst;          // write enable memoria de programa
+    reg [7:0] regs_counter;             // cuenta registros al enviar por uart a la pc
 
     wire [LEN_DATA-1:0] bytes_to_send [total_lenght-1:0];
 
@@ -132,12 +133,32 @@ module maquina_estados #(
     assign ins_to_mem = instruction;
     assign addr_mem_inst = num_instruc;
     
-    always @(negedge clk) begin
+    always @(posedge clk) begin
         if (reset) begin
           ciclos = 0;
           reset_mips = 0;
-          state = IDLE;
+          // state = IDLE;
+          state = WAITING;
+
           sub_state = SUB_INIT;
+          index = 0;
+          instruction = 0;
+          num_instruc = 0;
+          write_enable_ram_inst = 0;
+          regs_counter = 0;
+
+          reset_mips = 0;
+          reprogram = 0;
+          ctrl_clk_mips = 0;
+          restart_recolector = 0;
+          send_regs_recolector = 0;
+          enable_next_recolector = 0;
+          debug = 0;
+
+          tx_start = 0;
+          uart_data_out = 0; 
+
+
         end
         else begin
             case(state)
@@ -146,10 +167,16 @@ module maquina_estados #(
                       	reset_mips = 0;
                         index = 0;
                         reprogram = 0;
+                        debug = 0;
                     	if (uart_data_in == StartSignal) 
                     	begin
-							state <= PROGRAMMING;	                	                   	
-	                   	end                   
+							state <= PROGRAMMING;
+                            sub_state <= SUB_INIT;
+	                   	end
+                        else 
+                        begin
+                            state <= IDLE;    
+                        end
                     end
                 PROGRAMMING:
                     begin
@@ -158,6 +185,7 @@ module maquina_estados #(
                     			begin
                     				sub_state = SUB_READ_1;
                                     num_instruc = 0;
+                                    debug = 1;
                                 end
                             SUB_READ_1:
                                 begin
@@ -200,6 +228,7 @@ module maquina_estados #(
 	                					state = WAITING;
 	                					sub_state = SUB_INIT;
                                         write_enable_ram_inst = 0;
+                                        debug = 0;
 	                				end
 	                				else 
 	                				begin

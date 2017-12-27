@@ -36,13 +36,18 @@ module memory #(
 
 	input zero_flag,
 	input [len-1:0] in_pc_branch,
+	input halt_flag_m,
 
 	output reg [len-1:0] read_data,
 	output pc_src,
 	output [len-1:0] out_pc_branch,
     output reg [1:0] out_writeBack_bus,
 	output reg [len-1:0] out_addr_mem,
-	output reg [NB-1:0] out_write_reg	
+	output reg [NB-1:0] out_write_reg,
+
+	output [len-1:0] out_mem_wire,
+
+	output reg out_halt_flag_m
     );
 
 	wire 	MemWrite,
@@ -57,6 +62,9 @@ module memory #(
 
 	reg [len-1:0] 	connect_mux_in_mem;	
 	wire [len-1:0]	connect_out_mem;
+	wire [len-1:0]	connect_out_mem_debug;
+
+
 
 	assign MemWrite			= memory_bus[0],
 		   MemRead 			= memory_bus[1],
@@ -71,6 +79,8 @@ module memory #(
 	assign out_pc_branch = in_pc_branch;
 	assign pc_src = Branch && ((BranchNotEqual) ? (~zero_flag) : (zero_flag));	// la señal de Branch se activa con ambas intrucciones de branch, la otra señal te indica cual de las 2 fue
 
+	assign out_mem_wire = connect_out_mem_debug;
+
 	ram_datos #(
 		.RAM_WIDTH(32),
 		.RAM_DEPTH(2048),
@@ -82,11 +92,15 @@ module memory #(
 			.clka(clk),
 			.wea(MemWrite),
 			.ena(MemRead),
-			.douta(connect_out_mem)
+			.douta(connect_out_mem),
+			.douta_wire(connect_out_mem_debug)
 			);
 
 	always @(posedge clk) 
 	begin
+
+		out_halt_flag_m <= halt_flag_m;
+
 		out_writeBack_bus <= in_writeBack_bus;
 		out_addr_mem <= in_addr_mem;
 		out_write_reg <= in_write_reg;

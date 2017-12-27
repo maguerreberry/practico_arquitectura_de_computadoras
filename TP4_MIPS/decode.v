@@ -35,6 +35,7 @@ module decode #(
 	input [len-1:0] write_data,
 	input [NB-1:0] write_register,
 	input flush,
+	input halt_flag_d,
 
 	output reg [len-1:0] out_pc_branch,
 	output [len-1:0] out_pc_jump,	
@@ -46,6 +47,9 @@ module decode #(
 	output reg [NB-1:0] out_rd,
 	output reg [NB-1:0] out_rs,
 	output reg [NB-1:0] out_shamt,
+
+	output [len-1:0] out_reg1_recolector,	// para recolector en modo debug
+	output reg out_halt_flag_d,
 
 	// señales de control
 	output flag_jump,
@@ -74,6 +78,8 @@ module decode #(
 	
 	assign out_pc_jump = (flush) ? (0) : ({in_pc_branch[31:28], {2'b 00, (in_instruccion[25:0])}});
 	assign out_pc_jump_register = (flush) ? (0) : (connect_out_wire_reg1);
+
+	assign out_reg1_recolector = connect_out_wire_reg1; // para recolector en modo debug
 	
     assign out_reg1 = (flush) ? (0) : (connect_out_reg1); 
     assign out_reg2 = (flush) ? (0) : (connect_out_reg2);
@@ -137,6 +143,8 @@ module decode #(
 
 	always @(posedge clk) 
 	begin
+		out_halt_flag_d <= halt_flag_d;
+
 		if(flush)
 		begin
 			out_pc_branch <= 0;

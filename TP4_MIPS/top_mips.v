@@ -28,7 +28,18 @@ module top_mips#(
 	parameter len_wb_bus = 2
 	)(
 	input clk,
-	input reset
+	input reset,
+
+	// para debug
+
+	input debug_flag,
+	input [LEN-1:0] in_addr_debug,
+	input [LEN-1:0] in_addr_mem_inst,
+
+	output [LEN-1:0] out_reg1_recolector,
+	output [LEN-1:0] out_mem_wire,
+	output [LEN-1:0] out_pc,
+	output halt_flag
 	);
 	// input CLK100MHZ,
 	// input SWITCH_RESET
@@ -52,7 +63,10 @@ module top_mips#(
 				   connect_out_addr_mem,
 				   connect_write_data_3_4,
 				   connect_in_pc_branch_3_4,
-				   connect_in_pc_branch_4_1;
+				   connect_in_pc_branch_4_1,
+				   connect_reg1_recolector,
+				   connect_out_mem_wire,
+				   connect_out_pc;
 
 	wire [NB-1:0] connect_rt,
 				  connect_rd,
@@ -74,9 +88,18 @@ module top_mips#(
          connect_flag_jump_register,
 	     connect_zero_flag,
 	     connect_branch_flag,
-	     connect_stall_flag;
+	     connect_stall_flag,
+	     connect_halt_flag_1_2,
+	     connect_halt_flag_2_3,
+	     connect_halt_flag_3_4,
+	     connect_halt_flag_4_5; 
 
 	assign connect_write_data_5_2 = (connect_out_writeBack_bus[0]) ? connect_read_data : connect_out_addr_mem;
+
+	assign out_reg1_recolector = connect_reg1_recolector;
+	assign out_mem_wire = connect_out_mem_wire;
+	assign out_pc = connect_out_pc;
+	assign halt_flag = connect_halt_flag_4_5;
 
 	instruction_fetch #(
 		.len(LEN)
@@ -90,8 +113,13 @@ module top_mips#(
 			.in_pc_register(connect_in_pc_jump_register),
 			.stall_flag(!connect_stall_flag),
 
+			.in_addr_debug(in_addr_mem_inst),
+			.debug_flag(debug_flag),
+
 			.out_pc_branch(connect_in_pc_branch_1_2),
-			.out_instruction(connect_instruccion)
+			.out_instruction(connect_instruccion),
+			.out_pc(connect_out_pc), // para debug
+			.out_halt_flag_if(connect_halt_flag_1_2) // para debug
 		);
 
 	decode #(
@@ -101,7 +129,7 @@ module top_mips#(
 			.clk(clk),
 			.reset(reset),
 			.in_pc_branch(connect_in_pc_branch_1_2),
-			.in_instruccion(connect_instruccion),
+			.in_instruccion(debug_flag ? in_addr_debug : connect_instruccion),
 			.RegWrite(connect_out_writeBack_bus[1]),
 			.write_data(connect_write_data_5_2),
 			.write_register(connect_write_reg_4_2),
@@ -118,13 +146,18 @@ module top_mips#(
 			.out_rs(connect_rs),
 			.out_shamt(connect_shamt),
 
+			.out_reg1_recolector(connect_reg1_recolector),
+
 			.execute_bus(connect_execute_bus),
 			.flag_jump(connect_flag_jump),
 			.flag_jump_register(connect_flag_jump_register),
 			.memory_bus(connect_memory_bus_2_3),
 			.writeBack_bus(connect_writeBack_bus_2_3),
 
-			.stall_flag(connect_stall_flag)
+			.stall_flag(connect_stall_flag),
+
+			.halt_flag_d(connect_halt_flag_1_2),
+			.out_halt_flag_d(connect_halt_flag_2_3)
 		);
 
 	execute #(
@@ -164,7 +197,10 @@ module top_mips#(
 		
 			// señales de control
 			.memory_bus_out(connect_memory_bus_3_4),
-			.writeBack_bus_out(connect_writeBack_bus_3_4)
+			.writeBack_bus_out(connect_writeBack_bus_3_4),
+
+			.halt_flag_e(connect_halt_flag_2_3),
+			.out_halt_flag_e(connect_halt_flag_3_4)
 			);
 
 	memory #(
@@ -173,7 +209,7 @@ module top_mips#(
 		u_memory(
 			.clk(clk),
 			.reset(reset),
-			.in_addr_mem(connect_alu_out),
+			.in_addr_mem(debug_flag ? in_addr_debug : connect_alu_out),
 			.write_data(connect_write_data_3_4),
 			
 			.memory_bus(connect_memory_bus_3_4),
@@ -188,7 +224,11 @@ module top_mips#(
 			.out_pc_branch(connect_in_pc_branch_4_1),
 		    .out_writeBack_bus(connect_out_writeBack_bus),
 			.out_addr_mem(connect_out_addr_mem),
-			.out_write_reg(connect_write_reg_4_2)	
+			.out_write_reg(connect_write_reg_4_2),
+
+			.out_mem_wire(connect_out_mem_wire), // para debug
+			.halt_flag_m(connect_halt_flag_3_4),
+			.out_halt_flag_m(connect_halt_flag_4_5)
 			);
 
 endmodule

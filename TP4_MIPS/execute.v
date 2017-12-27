@@ -52,12 +52,15 @@ module execute #(
 	input [len-1:0] in_mem_forw,
 	input [len-1:0] in_wb_forw,
 	input flush,
+	input halt_flag_e,
 	
 	output reg [len-1:0] out_pc_branch,
 	output reg [len-1:0] out_alu,
 	output reg zero_flag,
 	output reg [len-1:0] out_reg2,
 	output reg [NB-1:0] out_write_reg,
+
+	output reg out_halt_flag_e,
 
 	// señales de control
 	output reg [len_mem_bus-1:0] memory_bus_out,
@@ -135,6 +138,8 @@ module execute #(
 
 	always @(posedge clk) 
 	begin
+		out_halt_flag_e <= halt_flag_e;
+
 		if (flush) 
 		begin
 			memory_bus_out <= 0;
