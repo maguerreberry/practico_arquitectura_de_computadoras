@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module tb_top(
+module tb_top_mips(
 
     );
     
@@ -29,7 +29,7 @@ module tb_top(
 
 	reg flag = 0;
 
-    top#(
+    top_mips#(
     	.LEN(32)
  		)
         u_top(
