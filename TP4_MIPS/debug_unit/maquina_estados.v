@@ -23,33 +23,37 @@
 module maquina_estados #(
     parameter len = 32,
     parameter cant_instruccciones = 64,
+    parameter cant_regs = 32,
+    parameter cant_mem_datos = 16,
     parameter LEN_DATA = 8,
     parameter nb_pc = len/8, //Num bytes
-    parameter nb_regs = (len*len)/8,
-    parameter nb_MemDatos = (len*1)/8,
+    parameter nb_recolector = len/8,
     parameter nb_Latches_1_2 = (len*1)/8,
     parameter nb_Latches_2_3 = (len*1)/8,
     parameter nb_Latches_3_4 = (len*1)/8,
     parameter nb_Latches_4_5 = (len*1)/8,
-    parameter total_lenght = nb_pc + nb_regs + nb_MemDatos + nb_Latches_1_2 + nb_Latches_2_3 + nb_Latches_3_4 + nb_Latches_4_5,
+    parameter nb_ciclos = (len*1)/8,
+    parameter total_lenght = nb_pc + nb_Latches_1_2 + nb_Latches_2_3 + nb_Latches_3_4 + nb_Latches_4_5 + nb_recolector + nb_ciclos,
 	parameter NB_addr = $clog2(cant_instruccciones),
     parameter NB_total_lenght = $clog2(total_lenght)
 	) (
     input clk,
     input reset,
-    input [len-1:0] current_inst,  
+    input halt,  
     input [(nb_pc*8)-1:0] pc,
-    input [(nb_regs*8)-1:0] regs, // pensar la longitud pq queda demasiados cables
-    input [(nb_MemDatos*8)-1:0] MemDatos, // pensar la longitud pq queda demasiados cables
     input [(nb_Latches_1_2*8)-1:0] Latches_1_2, // pensar la longitud pq queda demasiados cables
     input [(nb_Latches_2_3*8)-1:0] Latches_2_3, // pensar la longitud pq queda demasiados cables
     input [(nb_Latches_3_4*8)-1:0] Latches_3_4, // pensar la longitud pq queda demasiados cables
     input [(nb_Latches_4_5*8)-1:0] Latches_4_5, // pensar la longitud pq queda demasiados cables
+    input [(nb_recolector*8)-1:0] recolector, // pensar la longitud pq queda demasiados cables
     output [NB_addr-1:0] addr_mem_inst,
     output [len-1:0] ins_to_mem,
     output reg reset_mips,
-    output reg erase_mem_inst,
+    output reg reprogram,
     output reg ctrl_clk_mips,
+    output reg restart_recolector,
+    output reg send_regs_recolector,
+    output reg enable_next_recolector,
 
     //UART
     input tx_done,
@@ -59,13 +63,13 @@ module maquina_estados #(
     output reg [LEN_DATA-1:0] uart_data_out 
     );
 
-    localparam [5:0] IDLE         	= 6'b 000000,
-    				 PROGRAMMING  	= 6'b 000001,
-    				 WAITING      	= 6'b 000010,
-    				 STEP_BY_STEP   = 6'b 000100,
-                     SENDING_DATA   = 6'b 001000,
-                     CONTINUOS      = 6'b 010000,
-                     STEPPING       = 6'b 010001;
+    localparam [6:0] IDLE         	= 7'b 0000001,
+    				 PROGRAMMING  	= 7'b 0000010,
+    				 WAITING      	= 7'b 0000100,
+    				 STEP_BY_STEP   = 7'b 0001000,
+                     SENDING_DATA   = 7'b 0010000,
+                     CONTINUOS      = 7'b 0100000,
+                     STEPPING       = 7'b 1000000;
 
     localparam [5:0] SUB_INIT		= 6'b 100000,
     				 SUB_READ_1		= 6'b 100001,
@@ -81,23 +85,20 @@ module maquina_estados #(
                      SUB_SUB_SEND_32_REGS   = 6'b 111010,
                      SUB_SEND_BYTE     = 6'b 111011;
 
-
     localparam [7:0] StartSignal		= 8'b 00000001,
 					 ContinuosSignal  	= 8'b 00000010,
 					 StepByStepSignal   = 8'b 00000011,
-					 ResetMipsSignal   	= 8'b 00000100,
-					 EraseMemorySignal 	= 8'b 00000101,
+					 ReProgramSignal 	= 8'b 00000101,
 					 StepSignal			= 8'b 00000110;
 
-    reg [5:0] state;
+    reg [6:0] state;
     reg [5:0] sub_state;
-    reg [5:0] sub_sub_state;
-    reg [5:0] n_bytes, i;
     reg [NB_total_lenght-1:0] index;
-    reg [len-1:0] ciclos;
+    reg [(nb_ciclos*8)-1:0] ciclos;
     reg [len-1:0] instruction;
     reg [NB_addr-1:0] num_instruc;
-    reg wrtie_enable_ram_inst;
+    reg write_enable_ram_inst;
+    reg [7:0] regs_counter;
 
     wire [LEN_DATA-1:0] bytes_to_send [total_lenght-1:0];
 
@@ -107,23 +108,23 @@ module maquina_estados #(
             if (ii < nb_pc) begin
                 assign bytes_to_send[ii] = pc[((nb_pc*8)-((nb_pc-ii)*8))-1+8:((nb_pc*8)-((nb_pc-ii)*8))];                            
             end
-            else if (ii < nb_regs+nb_pc) begin
-                assign bytes_to_send[ii] = regs[((nb_regs*8)-((nb_regs-(ii-nb_pc))*8))-1+8:((nb_regs*8)-((nb_regs-(ii-nb_pc))*8))];                                                            
+            else if (ii < nb_pc+nb_Latches_1_2) begin
+                assign bytes_to_send[ii] = Latches_1_2[((nb_Latches_1_2*8)-((nb_Latches_1_2-ii+nb_pc)*8))-1+8:((nb_Latches_1_2*8)-((nb_Latches_1_2-ii+nb_pc)*8))];                                                            
             end
-            else if (ii < nb_regs+nb_pc+nb_MemDatos) begin
-                assign bytes_to_send[ii] = MemDatos[((nb_MemDatos*8)-((nb_MemDatos-ii+nb_pc+nb_regs)*8))-1+8:((nb_MemDatos*8)-((nb_MemDatos-ii+nb_pc+nb_regs)*8))];                                                            
+            else if (ii < nb_pc+nb_Latches_1_2+nb_Latches_2_3) begin
+                assign bytes_to_send[ii] = Latches_2_3[((nb_Latches_2_3*8)-((nb_Latches_2_3-ii+nb_pc+nb_Latches_1_2)*8))-1+8:((nb_Latches_2_3*8)-((nb_Latches_2_3-ii+nb_pc+nb_Latches_1_2)*8))];                                                            
             end
-            else if (ii < nb_regs+nb_pc+nb_MemDatos+nb_Latches_1_2) begin
-                assign bytes_to_send[ii] = Latches_1_2[((nb_Latches_1_2*8)-((nb_Latches_1_2-ii+nb_regs+nb_pc+nb_MemDatos)*8))-1+8:((nb_Latches_1_2*8)-((nb_Latches_1_2-ii+nb_regs+nb_pc+nb_MemDatos)*8))];                                                            
+            else if (ii < nb_pc+nb_Latches_1_2+nb_Latches_2_3+nb_Latches_3_4) begin
+                assign bytes_to_send[ii] = Latches_3_4[((nb_Latches_3_4*8)-((nb_Latches_3_4-ii+nb_pc+nb_Latches_1_2+nb_Latches_2_3)*8))-1+8:((nb_Latches_3_4*8)-((nb_Latches_3_4-ii+nb_pc+nb_Latches_1_2+nb_Latches_2_3)*8))];                                                            
             end
-            else if (ii < nb_regs+nb_pc+nb_MemDatos+nb_Latches_1_2+nb_Latches_2_3) begin
-                assign bytes_to_send[ii] = Latches_2_3[((nb_Latches_2_3*8)-((nb_Latches_2_3-ii+nb_regs+nb_pc+nb_MemDatos+nb_Latches_1_2)*8))-1+8:((nb_Latches_2_3*8)-((nb_Latches_2_3-ii+nb_regs+nb_pc+nb_MemDatos+nb_Latches_1_2)*8))];                                                            
+            else if (ii < nb_pc+nb_Latches_1_2+nb_Latches_2_3+nb_Latches_3_4+nb_Latches_4_5) begin
+                assign bytes_to_send[ii] = Latches_4_5[((nb_Latches_4_5*8)-((nb_Latches_4_5-ii+nb_pc+nb_Latches_1_2+nb_Latches_2_3+nb_Latches_3_4)*8))-1+8:((nb_Latches_4_5*8)-((nb_Latches_4_5-ii+nb_pc+nb_Latches_1_2+nb_Latches_2_3+nb_Latches_3_4)*8))];                                                            
             end
-            else if (ii < nb_regs+nb_pc+nb_MemDatos+nb_Latches_1_2+nb_Latches_2_3+nb_Latches_3_4) begin
-                assign bytes_to_send[ii] = Latches_3_4[((nb_Latches_3_4*8)-((nb_Latches_3_4-ii+nb_regs+nb_pc+nb_MemDatos+nb_Latches_1_2+nb_Latches_2_3)*8))-1+8:((nb_Latches_3_4*8)-((nb_Latches_3_4-ii+nb_regs+nb_pc+nb_MemDatos+nb_Latches_1_2+nb_Latches_2_3)*8))];                                                            
+            else if (ii < nb_pc+nb_Latches_1_2+nb_Latches_2_3+nb_Latches_3_4+nb_Latches_4_5+nb_ciclos) begin
+                assign bytes_to_send[ii] = ciclos[((nb_ciclos*8)-((nb_ciclos-ii+nb_pc+nb_Latches_1_2+nb_Latches_2_3+nb_Latches_3_4+nb_Latches_4_5)*8))-1+8:((nb_ciclos*8)-((nb_ciclos-ii+nb_pc+nb_Latches_1_2+nb_Latches_2_3+nb_Latches_3_4+nb_Latches_4_5)*8))];
             end
-            else if (ii < nb_regs+nb_pc+nb_MemDatos+nb_Latches_1_2+nb_Latches_2_3+nb_Latches_3_4+nb_Latches_4_5) begin
-                assign bytes_to_send[ii] = Latches_4_5[((nb_Latches_4_5*8)-((nb_Latches_4_5-ii+nb_regs+nb_pc+nb_MemDatos+nb_Latches_1_2+nb_Latches_2_3+nb_Latches_3_4)*8))-1+8:((nb_Latches_4_5*8)-((nb_Latches_4_5-ii+nb_regs+nb_pc+nb_MemDatos+nb_Latches_1_2+nb_Latches_2_3+nb_Latches_3_4)*8))];                                                            
+            else if (ii < nb_pc+nb_Latches_1_2+nb_Latches_2_3+nb_Latches_3_4+nb_Latches_4_5+nb_recolector+nb_ciclos) begin
+                assign bytes_to_send[ii] = recolector[((nb_recolector*8)-((nb_recolector-ii+nb_pc+nb_Latches_1_2+nb_Latches_2_3+nb_Latches_3_4+nb_Latches_4_5+nb_ciclos)*8))-1+8:((nb_recolector*8)-((nb_recolector-ii+nb_pc+nb_Latches_1_2+nb_Latches_2_3+nb_Latches_3_4+nb_Latches_4_5+nb_ciclos)*8))];
             end
         end
     endgenerate
@@ -144,7 +145,7 @@ module maquina_estados #(
                     begin
                       	reset_mips = 0;
                         index = 0;
-                        erase_mem_inst = 0;
+                        reprogram = 0;
                     	if (uart_data_in == StartSignal) 
                     	begin
 							state <= PROGRAMMING;	                	                   	
@@ -156,9 +157,10 @@ module maquina_estados #(
                     		SUB_INIT:
                     			begin
                     				sub_state = SUB_READ_1;
-                    			end
-                    		SUB_READ_1:
-                    			begin
+                                    num_instruc = 0;
+                                end
+                            SUB_READ_1:
+                                begin
 	                    			instruction[7:0] = uart_data_in;
 	                    			if (rx_done) 
 	                    			begin
@@ -191,16 +193,18 @@ module maquina_estados #(
                     			end
                 			SUB_WRITE_MEM:
                 				begin
-	                				wrtie_enable_ram_inst = 1'b 1;
+	                				write_enable_ram_inst = 1'b 1;
 	                				num_instruc = num_instruc + 1'b 1;
 	                				if (&instruction[31:26]) 
 	                				begin
 	                					state = WAITING;
 	                					sub_state = SUB_INIT;
+                                        write_enable_ram_inst = 0;
 	                				end
 	                				else 
 	                				begin
-	                					sub_state = SUB_READ_1;                					
+	                					sub_state = SUB_READ_1;
+                                        write_enable_ram_inst = 0;             					
 	                				end
                 				end
                     	endcase	
@@ -208,12 +212,10 @@ module maquina_estados #(
                 WAITING:
                     begin
                         ciclos = 0;
+                        reset_mips = 1;
                         case (uart_data_in)
-                            ResetMipsSignal: begin
-                                reset_mips = 1;
-                            end
-                            EraseMemorySignal: begin
-                                erase_mem_inst = 1;
+                            ReProgramSignal: begin
+                                reprogram = 1;
                                 state = IDLE;                                                        
                             end
                             ContinuosSignal: begin 
@@ -230,6 +232,7 @@ module maquina_estados #(
                     begin
                         ctrl_clk_mips = 0;
                         if (uart_data_in == StepSignal) begin
+                            ctrl_clk_mips = 1;
                             ciclos = ciclos + 1;
                             state = SENDING_DATA;
                         end
@@ -238,30 +241,52 @@ module maquina_estados #(
                     begin
                         ctrl_clk_mips = 1;
                         ciclos = ciclos + 1;
-                        if (&current_inst[31:26]) begin
+                        if (halt) begin
                             state = SENDING_DATA;
                         end
                     end
                 SENDING_DATA:
                     begin
-                        ctrl_clk_mips = 1;
-                        if (index < total_lenght) begin
+                        enable_next_recolector = 0;
+                        ctrl_clk_mips = 0;
+                        restart_recolector = 0;
+                        if (index < nb_pc+nb_Latches_1_2+nb_Latches_2_3+nb_Latches_3_4+nb_Latches_4_5+nb_ciclos) begin
                             uart_data_out = bytes_to_send[index];
-                            index = index + 1;
                             tx_start = 1;
-                            if (tx_done) begin
-                                tx_start = 0;
-                                state = SENDING_DATA;
+                        end
+                        else if (index < total_lenght) begin
+                            uart_data_out = bytes_to_send[index];
+                            tx_start = 1;
+                            if (&index[1:0]) begin
+                                index = nb_pc+nb_Latches_1_2+nb_Latches_2_3+nb_Latches_3_4+nb_Latches_4_5+nb_ciclos;
+                                enable_next_recolector = 1;
+                                if (regs_counter < cant_regs) begin
+                                    send_regs_recolector = 1;
+                                    regs_counter = regs_counter + 1;
+                                end
+                                else if(regs_counter < cant_mem_datos+cant_regs) begin
+                                    send_regs_recolector = 0;                                    
+                                    regs_counter = regs_counter + 1;
+                                end
+                                else begin
+                                    index = total_lenght;
+                                end
                             end
                         end
                         else begin
-                            index = 0;                            
-                            if (&current_inst[31:26]) begin
+                            index = 0;
+                            restart_recolector = 1;                         
+                            if (halt) begin
                                 state = WAITING;                            
                             end
                             else begin
                                 state = STEP_BY_STEP;
                             end
+                        end
+                        if (tx_done) begin
+                            index = index + 1;
+                            tx_start = 0;
+                            // state = SENDING_DATA;
                         end
                     end
             endcase                

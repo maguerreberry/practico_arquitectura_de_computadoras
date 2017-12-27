@@ -51,7 +51,12 @@ module top#(
 				   connect_out_addr_mem,
 				   connect_write_data_3_4,
 				   connect_in_pc_branch_3_4,
-				   connect_in_pc_branch_4_1;
+				   connect_in_pc_branch_4_1,
+				   connect_regs_recolector_mips,
+				   connect_mem_datos_recolector_mips,
+				   connect_addr_recolector_mips,
+				   connect_data_recolector,
+				   connect_pc;
 
 	wire [NB-1:0] connect_rt,
 				  connect_rd,
@@ -76,8 +81,13 @@ module top#(
 	     connect_stall_flag,
 	     connect_uart_rx_done,
 	     connect_uart_tx_start,
-	     connect_uart_tx_done;
-    
+	     connect_uart_tx_done,
+		 connect_restart_recolector,
+		 connect_send_regs,
+		 connect_enable_next,
+		 connect_reprogram;
+
+
     wire [7:0] connect_uart_data_in,
 			   connect_uart_data_out;
 
@@ -90,7 +100,7 @@ module top#(
 		)
 		u_instruction_fetch(
 			.clk(clk_mips),
-			.reset(reset_mips),
+			.reset(reset_mips | connect_reprogram),
 			.in_pc_src({connect_flag_jump, connect_flag_jump_register, connect_branch_flag}),
 			.in_pc_jump(connect_in_pc_jump),
 			.in_pc_branch(connect_in_pc_branch_4_1),
@@ -98,7 +108,8 @@ module top#(
 			.stall_flag(!connect_stall_flag),
 
 			.out_pc_branch(connect_in_pc_branch_1_2),
-			.out_instruction(connect_instruccion)
+			.out_instruction(connect_instruccion),
+			.out_pc(connect_pc)
 		);
 
 	decode #(
@@ -198,31 +209,51 @@ module top#(
 			.out_write_reg(connect_write_reg_4_2)	
 			);
 	
+	recolector #(
+		.len(LEN)
+		)
+		u_recolector(
+			.clk(clk),
+			.regs(connect_regs_recolector_mips),
+			.mem_datos(connect_mem_datos_recolector_mips),
+			.enable_next(connect_enable_next),
+			.send_regs(connect_send_regs),
+			.restart(connect_restart_recolector),		
+			.addr(connect_addr_recolector_mips),
+			.data(connect_data_recolector)
+	    ); 	
+
 	maquina_estados #(
 		.len(LEN),
 		.cant_instruccciones(64),
-		.nb_MemDatos((LEN*1)/8),
-		.nb_Latches_1_2((LEN*1)/8),
-		.nb_Latches_2_3((LEN*1)/8),
-		.nb_Latches_3_4((LEN*1)/8),
-		.nb_Latches_4_5((LEN*1)/8)
+		.nb_Latches_1_2((LEN*5)/8),
+		.nb_Latches_2_3((LEN*5)/8),
+		.nb_Latches_3_4((LEN*5)/8),
+		.nb_Latches_4_5((LEN*5)/8),
+		.cant_regs(32),
+		.cant_mem_datos(16),
+		.LEN_DATA(8)
 		)
 		u_maquina_estados(
 		    .clk(clk),
 		    .reset(reset),
-		    .current_inst(),  
-		    .pc(),
-		    .regs(),
-		    .MemDatos(),
+		    .halt(),
+		    .pc(connect_pc),
 		    .Latches_1_2(),
 		    .Latches_2_3(),
 		    .Latches_3_4(),
 		    .Latches_4_5(),
+		    .recolector(connect_data_recolector),
+
+		    // outputs
 		    .addr_mem_inst(),
 		    .ins_to_mem(),
 		    .reset_mips(reset_mips),
-		    .erase_mem_inst(),
+		    .reprogram(connect_reprogram),
 		    .ctrl_clk_mips(ctrl_clk_mips),
+			.restart_recolector(connect_restart_recolector),
+			.send_regs_recolector(connect_send_regs),
+			.enable_next_recolector(connect_enable_next),
 		
 		    //UART
 		    .tx_done(connect_uart_tx_done),

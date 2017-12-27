@@ -58,8 +58,7 @@ Stepping
 | Start        | 00000001 | Pasa de estado Idle a Programming                      |
 | Continuous   | 00000010 | Pasa de estado Waiting a Continuous                    |
 | Step by Step | 00000011 | Pasa de estado Waiting a Step by Step                  |
-| Reset MIPS   | 00000100 | En Waiting, limpia registros y memoria de datos        |
-| Erase memory | 00000101 | En Waiting, borra la memoria de programa y pasa a Idle |
+| Re Program   | 00000101 | En Waiting, borra la memoria de programa y pasa a Idle |
 | Step         | 00000110 | En Step by Step, pasa a Stepping                       |
 +--------------+----------+--------------------------------------------------------+
 
