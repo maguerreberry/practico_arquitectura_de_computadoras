@@ -140,10 +140,14 @@ module top_modular#(
 	maquina_estados #(
 		.len(LEN),
 		.cant_instrucciones(64),
-		.nb_Latches_1_2((LEN*5)/8),
-		.nb_Latches_2_3((LEN*5)/8),
-		.nb_Latches_3_4((LEN*5)/8),
-		.nb_Latches_4_5((LEN*5)/8),
+		// .nb_Latches_1_2((LEN*1)/8),
+		// .nb_Latches_2_3((LEN*1)/8),
+		// .nb_Latches_3_4((LEN*1)/8),
+		// .nb_Latches_4_5((LEN*1)/8),
+		.nb_Latches_1_2(1),
+		.nb_Latches_2_3(1),
+		.nb_Latches_3_4(1),
+		.nb_Latches_4_5(1),
 		.cant_regs(32),
 		.cant_mem_datos(16),
 		.LEN_DATA(8)
@@ -171,7 +175,9 @@ module top_modular#(
 			.debug(connect_debug_mode),
 		
 		    //UART
-		    .tx_done(connect_uart_tx_done),
+		    // .tx_done(connect_uart_tx_done),
+		    .tx_done(1),
+
 		    .rx_done(connect_uart_rx_done),
 		    // .uart_data_in(connect_uart_data_out), 
 
