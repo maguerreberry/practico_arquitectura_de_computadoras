@@ -279,6 +279,7 @@ module maquina_estados #(
                         enable_next_recolector = 0;
                         ctrl_clk_mips = 0;
                         restart_recolector = 0;
+                        debug = 1;
                         if (index < nb_pc+nb_Latches_1_2+nb_Latches_2_3+nb_Latches_3_4+nb_Latches_4_5+nb_ciclos) begin
                             uart_data_out = bytes_to_send[index];
                             tx_start = 1;
@@ -306,10 +307,12 @@ module maquina_estados #(
                             index = 0;
                             restart_recolector = 1;                         
                             if (halt) begin
-                                state = WAITING;                            
+                                state = WAITING;
+                                debug = 0;                           
                             end
                             else begin
                                 state = STEP_BY_STEP;
+                                debug = 0;
                             end
                         end
                         if (tx_done) begin

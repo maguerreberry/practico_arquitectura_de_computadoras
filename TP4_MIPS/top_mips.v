@@ -129,7 +129,10 @@ module top_mips#(
 			.clk(clk),
 			.reset(reset),
 			.in_pc_branch(connect_in_pc_branch_1_2),
-			.in_instruccion(debug_flag ? in_addr_debug : connect_instruccion),
+			.in_instruccion(debug_flag ? {{6{1'b0}}, in_addr_debug[4:0], {21{1'b0}}} : connect_instruccion),
+
+
+
 			.RegWrite(connect_out_writeBack_bus[1]),
 			.write_data(connect_write_data_5_2),
 			.write_register(connect_write_reg_4_2),
