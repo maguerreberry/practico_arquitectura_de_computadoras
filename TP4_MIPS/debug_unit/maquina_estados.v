@@ -64,27 +64,19 @@ module maquina_estados #(
     output [LEN_DATA-1:0] uart_data_out 
     );
 
-    localparam [6:0] IDLE           = 7'b 0000001,
-                     PROGRAMMING    = 7'b 0000010,
-                     WAITING        = 7'b 0000100,
-                     STEP_BY_STEP   = 7'b 0001000,
-                     SENDING_DATA   = 7'b 0010000,
-                     CONTINUOS      = 7'b 0100000,
-                     STEPPING       = 7'b 1000000;
+    localparam [5:0] IDLE           = 6'b 000001,
+                     PROGRAMMING    = 6'b 000010,
+                     WAITING        = 6'b 000100,
+                     STEP_BY_STEP   = 6'b 001000,
+                     SENDING_DATA   = 6'b 010000,
+                     CONTINUOS      = 6'b 100000;
 
     localparam [5:0] SUB_INIT       = 6'b 100000,
                      SUB_READ_1     = 6'b 100001,
                      SUB_READ_2     = 6'b 100010,
                      SUB_READ_3     = 6'b 100100,
                      SUB_READ_4     = 6'b 101000,
-                     SUB_WRITE_MEM  = 6'b 110000,
-                     SUB_SEND_1     = 6'b 110001,
-                     SUB_SEND_2     = 6'b 110010,
-                     SUB_SEND_3     = 6'b 110100,
-                     SUB_SEND_4     = 6'b 111000,
-                     SUB_SUB_SEND_PC        = 6'b 111001,
-                     SUB_SUB_SEND_32_REGS   = 6'b 111010,
-                     SUB_SEND_BYTE     = 6'b 111011;
+                     SUB_WRITE_MEM  = 6'b 110000;
 
     localparam [7:0] StartSignal        = 8'b 00000001,
                      ContinuosSignal    = 8'b 00000010,
@@ -92,9 +84,9 @@ module maquina_estados #(
                      ReProgramSignal    = 8'b 00000101,
                      StepSignal         = 8'b 00000110;
 
-    reg [6:0] state;
+    reg [5:0] state;
     reg [5:0] sub_state;
-    reg [NB_total_lenght:0] index;    // indice del mux
+    reg [NB_total_lenght:0] index;      // indice del mux
     reg [(nb_ciclos*8)-1:0] ciclos;     // contador de ciclos de clock
     reg [len-1:0] instruction;          // instruccion a escribir en memoria de programa
     reg [NB_addr-1:0] num_instruc;      // contador de instrucciones para direccionar donde escribir
@@ -166,8 +158,6 @@ module maquina_estados #(
           tx_start = 0;
           // uart_data_out = 0;
           contador = 0;
-
-
         end
         else begin
             case(state)
@@ -292,7 +282,7 @@ module maquina_estados #(
                         if(tx_done) begin
                             if (index < (total_lenght - nb_recolector)) begin
                                 index = index + 1;
-                                if (index == total_lenght - nb_recolector) begin
+                                if ((index+1) == total_lenght - nb_recolector) begin
                                     enable_next_recolector = 1;
                                 end
                             end
