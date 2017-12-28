@@ -31,8 +31,11 @@ module top_modular#(
 	input SWITCH_RESET,
 	input UART_TXD_IN,
 	input [7:0] uart_in_debug,
+	input select_uart_puente,
 
-	output UART_RXD_OUT
+	output UART_RXD_OUT,
+	input tx_start_debug,
+	output tx_done_debug
     );    
     wire clk, reset, clk_mips, ctrl_clk_mips, reset_mips;    
     assign clk = CLK100MHZ,
@@ -91,7 +94,9 @@ module top_modular#(
 		 connect_enable_next,
 		 connect_reprogram,
 		 connect_debug_mode,
-		 connect_halt;
+		 connect_halt,
+		 connect_tx_debug,
+		 connect_rx_debug;
 
 
     wire [7:0] connect_uart_data_in,
@@ -101,6 +106,9 @@ module top_modular#(
 
 	assign clk_mips = (ctrl_clk_mips) ? (clk) : (1'b 0);
 
+	assign connect_rx_debug = select_uart_puente ? connect_tx_debug : UART_TXD_IN;
+	assign connect_tx_debug = UART_RXD_OUT;
+	assign tx_done_debug = connect_uart_tx_done;
 
 	top_mips #(
 	.LEN(32),
@@ -181,9 +189,9 @@ module top_modular#(
 		    // .tx_done(1),
 
 		    .rx_done(connect_uart_rx_done),
-		    // .uart_data_in(connect_uart_data_out), 
-
-		    .uart_data_in(uart_in_debug),
+		    
+		    .uart_data_in(connect_uart_data_out), 
+		    // .uart_data_in(uart_in_debug),
 
 		    .tx_start(connect_uart_tx_start),
 		    .uart_data_out(connect_uart_data_in) 
@@ -197,13 +205,13 @@ module top_modular#(
 		u_uart(
 			.CLK_100MHZ(clk),
 			.reset(reset),
-			.tx_start(connect_uart_tx_start),
-			.rx(UART_TXD_IN),
-			.data_in(connect_uart_data_in),
+			.tx_start(select_uart_puente ? tx_start_debug : connect_uart_tx_start),
+			.rx(connect_rx_debug),
+			.data_in(select_uart_puente ? uart_in_debug : connect_uart_data_in),
 
 			.data_out(connect_uart_data_out),
 			.rx_done_tick(connect_uart_rx_done),
-			.tx(UART_RXD_OUT),
+			.tx(connect_tx_debug),
 			.tx_done_tick(connect_uart_tx_done)
 			);
 

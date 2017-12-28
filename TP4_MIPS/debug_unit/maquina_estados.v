@@ -145,8 +145,9 @@ module maquina_estados #(
         if (reset) begin
           ciclos = 0;
           reset_mips = 0;
-          // state = IDLE;
-          state = WAITING;
+          state = IDLE;
+          // state = WAITING;
+          state = PROGRAMMING;
 
           sub_state = SUB_INIT;
           index = 0;
@@ -194,10 +195,11 @@ module maquina_estados #(
                                 begin
                                     sub_state = SUB_READ_1;
                                     num_instruc = 0;
-                                    debug = 1;
+                                    debug = 0;
                                 end
                             SUB_READ_1:
                                 begin
+                                    debug = 0;
                                     instruction[7:0] = uart_data_in;
                                     if (rx_done) 
                                     begin
@@ -226,23 +228,21 @@ module maquina_estados #(
                                     if (rx_done) 
                                     begin
                                         sub_state = SUB_WRITE_MEM;
+                                        debug = 1'b 1;
                                     end
                                 end
                             SUB_WRITE_MEM:
                                 begin
-                                    write_enable_ram_inst = 1'b 1;
                                     num_instruc = num_instruc + 1'b 1;
                                     if (&instruction[31:26]) 
                                     begin
                                         state = WAITING;
                                         sub_state = SUB_INIT;
-                                        write_enable_ram_inst = 0;
                                         debug = 0;
                                     end
                                     else 
                                     begin
                                         sub_state = SUB_READ_1;
-                                        write_enable_ram_inst = 0;                              
                                     end
                                 end
                         endcase 

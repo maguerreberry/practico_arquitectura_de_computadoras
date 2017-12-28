@@ -46,10 +46,12 @@ module ram_instrucciones #(
     ram_data = 0;
   end
 
+  always @(posedge wea) begin
+      BRAM[addra] <= dina;
+  end
+
   always @(posedge clka)
   begin
-      if (wea)
-        BRAM[addra] <= dina;
       if (ena)
       begin
         if(flush)
