@@ -27,6 +27,7 @@ module tb_top(
 	reg clk;
 	reg reset;
     reg [7:0] uart_debug;
+    reg [31:0] instruccion;
 
     localparam [7:0] StartSignal		= 8'b 00000001,
 					 ContinuosSignal  	= 8'b 00000010,
@@ -40,16 +41,37 @@ module tb_top(
         u_top_modular(
         	.CLK100MHZ(clk),
         	.SWITCH_RESET(reset),
-            .uart_in_debug(uart_debug),
+            .uart_in_debug(uart_debug)
         );
+
+    integer program_file;
 
 	initial
 	begin
 		clk = 0;
 		reset = 1;
-		#12
+
+        program_file = $fopen("/home/facundo/Desktop/practico_arquitectura_de_computadoras/TP4_MIPS/program.hex");
+        // program_file = $fopen("E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP4_MIPS/program.hex");
+
+        if(program_file == 0) $stop;
+
+        #12
+
+        uart_debug = StartSignal;
+        reset = 0;
+
+        #200000000
+
+        uart_debug = ContinuosSignal;
+
+        #20
+
+        uart_debug = 0;
+
+        #2000000
+
         uart_debug = StepByStepSignal;
-		reset = 0;
 
 		#20
 		uart_debug = 0;
@@ -130,5 +152,9 @@ module tb_top(
 	begin
 		#5 clk = ~clk;
 	end
+
+    always @(posedge clk) begin
+        $fscanf(program_file,"%h", instruccion);
+    end
 
 endmodule

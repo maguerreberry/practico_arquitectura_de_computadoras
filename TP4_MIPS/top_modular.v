@@ -59,7 +59,8 @@ module top_modular#(
 				   connect_addr_recolector_mips,
 				   connect_data_recolector,
 				   connect_pc_debug,
-				   connect_addr_mem_inst;
+				   connect_addr_mem_inst,
+				   connect_ins_to_mem;
 
 	wire [NB-1:0] connect_rt,
 				  connect_rd,
@@ -116,6 +117,7 @@ module top_modular#(
 		.debug_flag(connect_debug_mode),
 		.in_addr_debug(connect_addr_recolector_mips),
 		.in_addr_mem_inst(connect_addr_mem_inst),
+		.in_ins_to_mem(connect_ins_to_mem),
 
 		.out_reg1_recolector(connect_regs_recolector_mips),
 		.out_mem_wire(connect_mem_datos_recolector_mips),
@@ -165,7 +167,7 @@ module top_modular#(
 
 		    // outputs
 		    .addr_mem_inst(connect_addr_mem_inst),
-		    .ins_to_mem(),
+		    .ins_to_mem(connect_ins_to_mem),
 		    .reset_mips(reset_mips),
 		    .reprogram(connect_reprogram),
 		    .ctrl_clk_mips(ctrl_clk_mips),

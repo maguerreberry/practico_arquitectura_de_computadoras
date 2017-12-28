@@ -33,6 +33,7 @@ module instruction_fetch #(
 
 	input [len-1:0] in_addr_debug,
 	input debug_flag,
+	input [len-1:0] in_ins_to_mem,
 
 	output reg [len-1:0] out_pc_branch,
 	output [len-1:0] out_instruction,
@@ -78,9 +79,9 @@ module instruction_fetch #(
 	ram_instrucciones #(
 		.RAM_WIDTH(len),
 		.RAM_DEPTH(2048),
-		.RAM_PERFORMANCE("LOW_LATENCY"),
-		.INIT_FILE("/home/facundo/Desktop/practico_arquitectura_de_computadoras/TP4_MIPS/program.hex")
-        // .INIT_FILE("E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP4_MIPS/program.hex")
+		// .INIT_FILE("/home/facundo/Desktop/practico_arquitectura_de_computadoras/TP4_MIPS/program.hex"),
+        // .INIT_FILE("E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP4_MIPS/program.hex"),
+		.RAM_PERFORMANCE("LOW_LATENCY")
 		)
 		u_ram_instrucciones(
 			.addra(debug_flag ? in_addr_debug : connect_pc_sumador_mem),
@@ -90,7 +91,8 @@ module instruction_fetch #(
 			.wea(debug_flag),
 			.wire_douta(connect_wire_douta),
 			.flush(flush),
-			.douta(connect_out_instruction)
+			.douta(connect_out_instruction),
+			.dina(in_ins_to_mem)
 			); 
 
 	sumador #(

@@ -138,7 +138,7 @@ module maquina_estados #(
     
     always @(negedge clk) begin
         if(state == SENDING_DATA)
-        ctrl_clk_mips = 0;
+            ctrl_clk_mips = 0;
     end
 
     always @(posedge clk) begin
@@ -292,7 +292,7 @@ module maquina_estados #(
                         if(tx_done) begin
                             if (index < (total_lenght - nb_recolector)) begin
                                 index = index + 1;
-                                if (index == total_lenght - nb_recolector) begin
+                                if ((index + 1) == total_lenght - nb_recolector) begin
                                     enable_next_recolector = 1;
                                 end
                             end
