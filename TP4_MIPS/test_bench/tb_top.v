@@ -48,15 +48,23 @@ module tb_top(
 		clk = 0;
 		reset = 1;
 		#12
-        uart_debug = ContinuosSignal;
+        uart_debug = StepByStepSignal;
 		reset = 0;
 
 		#20
 		uart_debug = 0;
 
-        #2000000
+        #20
 
-        uart_debug = ContinuosSignal;
+        uart_debug = StepSignal;
+
+        #10
+
+        uart_debug = 0;
+
+        // #2000000
+
+        // uart_debug = ContinuosSignal;
 
 	end
 
