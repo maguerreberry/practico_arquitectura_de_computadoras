@@ -31,7 +31,6 @@ module top_modular#(
 	input SWITCH_RESET,
 	input UART_TXD_IN,
 	input [7:0] uart_in_debug,
-	// input tx_done_debug,
 
 	output UART_RXD_OUT
     );    
@@ -111,7 +110,7 @@ module top_modular#(
 	)
 	u_top_mips(
 		.clk(clk_mips),
-		.reset(reset),
+		.reset(reset | reset_mips),
 
 		//para debug
 		.debug_flag(connect_debug_mode),
@@ -133,7 +132,7 @@ module top_modular#(
 			.mem_datos(connect_mem_datos_recolector_mips),
 			.enable_next(connect_enable_next),
 			.send_regs(connect_send_regs),
-			.restart(connect_restart_recolector),		
+			.restart(connect_restart_recolector),
 			.addr(connect_addr_recolector_mips),
 			.data(connect_data_recolector)
 	    ); 	
@@ -177,7 +176,7 @@ module top_modular#(
 		
 		    //UART
 		    .tx_done(connect_uart_tx_done),
-		    // .tx_done(tx_done_debug),
+		    // .tx_done(1),
 
 		    .rx_done(connect_uart_rx_done),
 		    // .uart_data_in(connect_uart_data_out), 

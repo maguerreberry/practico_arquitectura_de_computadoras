@@ -101,6 +101,8 @@ module maquina_estados #(
     reg write_enable_ram_inst;          // write enable memoria de programa
     reg [7:0] regs_counter;             // cuenta registros al enviar por uart a la pc
 
+    reg [2:0] contador;
+
     wire [LEN_DATA-1:0] bytes_to_send [total_lenght-1:0];
 
     generate
@@ -157,7 +159,8 @@ module maquina_estados #(
           debug = 0;
 
           tx_start = 0;
-          // uart_data_out = 0; 
+          // uart_data_out = 0;
+          contador = 0;
 
 
         end
@@ -277,59 +280,62 @@ module maquina_estados #(
                     end
                 SENDING_DATA:
                     begin
-                        enable_next_recolector = 0;
                         ctrl_clk_mips = 0;
                         restart_recolector = 0;
                         debug = 1;
-                        if (index < nb_pc+nb_Latches_1_2+nb_Latches_2_3+nb_Latches_3_4+nb_Latches_4_5+nb_ciclos) begin
-                            // uart_data_out = bytes_to_send[index];
-                            tx_start = 1;
-                        end
-                        else if (index < total_lenght) begin // enviar registros y memoria
-                            // uart_data_out = bytes_to_send[index + regs_counter[1:0]];
-                            // uart_data_out = bytes_to_send[index];
-                            tx_start = 1;
-                            if (index == (total_lenght-1)) begin
-                                index = total_lenght-nb_recolector;
-                                enable_next_recolector = 1;
-                                if (regs_counter < cant_regs) begin
-                                    send_regs_recolector = 1;
-                                    regs_counter = regs_counter + 1;
-                                end
-                                else if(regs_counter < cant_mem_datos+cant_regs) begin
-                                    send_regs_recolector = 0;                                    
-                                    regs_counter = regs_counter + 1;
-                                end
-                                else begin
-                                    index = total_lenght-1;
+
+                        if(tx_done) begin
+                            if (index < (total_lenght - nb_recolector)) begin
+                                index = index + 1;
+                                if (index == total_lenght - nb_recolector) begin
+                                    enable_next_recolector = 1;
                                 end
                             end
                             else begin
-                                enable_next_recolector = 0;                                
+                                contador = contador + 1;
+
+                                if (contador == 4) begin
+                                    regs_counter = regs_counter + 1;
+                                    contador = 0;
+                                    enable_next_recolector = 1;
+                                end
+                               
+                                index = (total_lenght - nb_recolector) + contador;
                             end
+
+                            if (regs_counter < cant_regs) begin
+                                send_regs_recolector = 1;
+                            end
+                            else begin
+                                send_regs_recolector = 0;
+                            end
+                            
+                            tx_start = 0;
                         end
+
                         else begin
+                            tx_start = 1;
+                            enable_next_recolector = 0;
+                        end
+
+                        if (regs_counter >= (cant_regs + cant_mem_datos)) begin
                             index = 0;
-                            restart_recolector = 1;                         
+                            restart_recolector = 1;
+                            
                             if (halt) begin
                                 state = WAITING;
-                                debug = 0;                           
                             end
                             else begin
                                 state = STEP_BY_STEP;
-                                debug = 0;
                             end
-                        end
-                        if (tx_done) begin
-                            // if(index < (total_lenght-nb_recolector-1))
-                            //     index = index + 1;
-                            // else begin
-                            //     regs_counter = regs_counter + 1;
-                            // end
-                            index = index + 1;
+
+                            debug = 0;
+                            contador = 0;
+                            enable_next_recolector = 0;
                             tx_start = 0;
-                            // state = SENDING_DATA;
+                            regs_counter = 0;
                         end
+
                     end
             endcase                
         end

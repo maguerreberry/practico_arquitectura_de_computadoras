@@ -30,7 +30,8 @@ parameter BAUD_RATE = 9600;
 parameter CLK_RATE = 100000000;
 localparam NUM_TICKS = 16;
 
-parameter RATE_CLK_OUT = 1;//CLK_RATE / (BAUD_RATE * NUM_TICKS);
+// parameter RATE_CLK_OUT = CLK_RATE / (BAUD_RATE * NUM_TICKS);
+parameter RATE_CLK_OUT = CLK_RATE / (BAUD_RATE * NUM_TICKS * 1000); // debug!
 parameter LEN_ACUM = $clog2(RATE_CLK_OUT); 
 
 reg [LEN_ACUM - 1 : 0] acumulator = 0;

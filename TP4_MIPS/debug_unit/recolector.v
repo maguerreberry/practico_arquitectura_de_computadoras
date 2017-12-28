@@ -46,7 +46,7 @@ module recolector#(
     	end
     	else if (enable_next) begin
     		if (send_regs) begin
-    			data <= regs;    		 	
+    			data <= regs;
     			addr_reg <= addr_reg + 1;
     		end 
     		else begin

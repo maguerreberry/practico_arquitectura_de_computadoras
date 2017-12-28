@@ -134,6 +134,7 @@ module execute #(
 		out_write_reg = 0;
 		memory_bus_out = 0;
 		writeBack_bus_out = 0;
+		out_halt_flag_e = 0;
 	end
 
 	always @(posedge clk) 

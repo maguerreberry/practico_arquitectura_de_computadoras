@@ -142,6 +142,7 @@ module memory #(
 		    out_writeBack_bus = 0;
 			out_addr_mem = 0;
 			out_write_reg = 0;
+			out_halt_flag_m = 0;
 		end
 
 		if (control_SH) 

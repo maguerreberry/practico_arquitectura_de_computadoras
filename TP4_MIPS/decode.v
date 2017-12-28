@@ -139,6 +139,7 @@ module decode #(
 		execute_bus = 0;
 		memory_bus = 0;
 		writeBack_bus = 0;
+		out_halt_flag_d = 0;
 	end
 
 	always @(posedge clk) 
