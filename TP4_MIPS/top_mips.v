@@ -35,6 +35,7 @@ module top_mips#(
 	input debug_flag,
 	input [LEN-1:0] in_addr_debug,
 	input [LEN-1:0] in_addr_mem_inst,
+	input [LEN-1:0] in_ins_to_mem,
 
 	output [LEN-1:0] out_reg1_recolector,
 	output [LEN-1:0] out_mem_wire,
@@ -115,6 +116,7 @@ module top_mips#(
 
 			.in_addr_debug(in_addr_mem_inst),
 			.debug_flag(debug_flag),
+			.in_ins_to_mem(in_ins_to_mem),
 
 			.out_pc_branch(connect_in_pc_branch_1_2),
 			.out_instruction(connect_instruccion),
