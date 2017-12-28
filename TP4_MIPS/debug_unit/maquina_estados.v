@@ -61,7 +61,7 @@ module maquina_estados #(
     input rx_done,
     input [LEN_DATA-1:0] uart_data_in, 
     output reg tx_start,
-    output reg [LEN_DATA-1:0] uart_data_out 
+    output [LEN_DATA-1:0] uart_data_out 
     );
 
     localparam [6:0] IDLE         	= 7'b 0000001,
@@ -94,7 +94,7 @@ module maquina_estados #(
 
     reg [6:0] state;
     reg [5:0] sub_state;
-    reg [NB_total_lenght-1:0] index;    // indice del mux
+    reg [NB_total_lenght:0] index;    // indice del mux
     reg [(nb_ciclos*8)-1:0] ciclos;     // contador de ciclos de clock
     reg [len-1:0] instruction;          // instruccion a escribir en memoria de programa
     reg [NB_addr-1:0] num_instruc;      // contador de instrucciones para direccionar donde escribir
@@ -132,6 +132,7 @@ module maquina_estados #(
 
     assign ins_to_mem = instruction;
     assign addr_mem_inst = num_instruc;
+    assign uart_data_out = reset ? 0 : bytes_to_send[index];
     
     always @(posedge clk) begin
         if (reset) begin
@@ -156,7 +157,7 @@ module maquina_estados #(
           debug = 0;
 
           tx_start = 0;
-          uart_data_out = 0; 
+          // uart_data_out = 0; 
 
 
         end
@@ -281,14 +282,15 @@ module maquina_estados #(
                         restart_recolector = 0;
                         debug = 1;
                         if (index < nb_pc+nb_Latches_1_2+nb_Latches_2_3+nb_Latches_3_4+nb_Latches_4_5+nb_ciclos) begin
-                            uart_data_out = bytes_to_send[index];
+                            // uart_data_out = bytes_to_send[index];
                             tx_start = 1;
                         end
-                        else if (index < total_lenght) begin
-                            uart_data_out = bytes_to_send[index];
+                        else if (index < total_lenght) begin // enviar registros y memoria
+                            // uart_data_out = bytes_to_send[index + regs_counter[1:0]];
+                            // uart_data_out = bytes_to_send[index];
                             tx_start = 1;
-                            if (&index[1:0]) begin
-                                index = nb_pc+nb_Latches_1_2+nb_Latches_2_3+nb_Latches_3_4+nb_Latches_4_5+nb_ciclos;
+                            if (index == (total_lenght-1)) begin
+                                index = total_lenght-nb_recolector;
                                 enable_next_recolector = 1;
                                 if (regs_counter < cant_regs) begin
                                     send_regs_recolector = 1;
@@ -299,8 +301,11 @@ module maquina_estados #(
                                     regs_counter = regs_counter + 1;
                                 end
                                 else begin
-                                    index = total_lenght;
+                                    index = total_lenght-1;
                                 end
+                            end
+                            else begin
+                                enable_next_recolector = 0;                                
                             end
                         end
                         else begin
@@ -316,6 +321,11 @@ module maquina_estados #(
                             end
                         end
                         if (tx_done) begin
+                            // if(index < (total_lenght-nb_recolector-1))
+                            //     index = index + 1;
+                            // else begin
+                            //     regs_counter = regs_counter + 1;
+                            // end
                             index = index + 1;
                             tx_start = 0;
                             // state = SENDING_DATA;

@@ -31,6 +31,7 @@ module top_modular#(
 	input SWITCH_RESET,
 	input UART_TXD_IN,
 	input [7:0] uart_in_debug,
+	// input tx_done_debug,
 
 	output UART_RXD_OUT
     );    
@@ -175,8 +176,8 @@ module top_modular#(
 			.debug(connect_debug_mode),
 		
 		    //UART
-		    // .tx_done(connect_uart_tx_done),
-		    .tx_done(1),
+		    .tx_done(connect_uart_tx_done),
+		    // .tx_done(tx_done_debug),
 
 		    .rx_done(connect_uart_rx_done),
 		    // .uart_data_in(connect_uart_data_out), 
