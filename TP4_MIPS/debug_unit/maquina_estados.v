@@ -34,9 +34,9 @@ module maquina_estados #(
     parameter nb_Latches_4_5 = (len*1)/8,
     parameter nb_ciclos = (len*1)/8,
     parameter total_lenght = nb_pc + nb_Latches_1_2 + nb_Latches_2_3 + nb_Latches_3_4 + nb_Latches_4_5 + nb_recolector + nb_ciclos,
-	parameter NB_addr = $clog2(cant_instrucciones),
+    parameter NB_addr = $clog2(cant_instrucciones),
     parameter NB_total_lenght = $clog2(total_lenght)
-	) (
+    ) (
     input clk,
     input reset,
     input halt,  
@@ -64,20 +64,20 @@ module maquina_estados #(
     output [LEN_DATA-1:0] uart_data_out 
     );
 
-    localparam [6:0] IDLE         	= 7'b 0000001,
-    				 PROGRAMMING  	= 7'b 0000010,
-    				 WAITING      	= 7'b 0000100,
-    				 STEP_BY_STEP   = 7'b 0001000,
+    localparam [6:0] IDLE           = 7'b 0000001,
+                     PROGRAMMING    = 7'b 0000010,
+                     WAITING        = 7'b 0000100,
+                     STEP_BY_STEP   = 7'b 0001000,
                      SENDING_DATA   = 7'b 0010000,
                      CONTINUOS      = 7'b 0100000,
                      STEPPING       = 7'b 1000000;
 
-    localparam [5:0] SUB_INIT		= 6'b 100000,
-    				 SUB_READ_1		= 6'b 100001,
-    				 SUB_READ_2		= 6'b 100010,
-    				 SUB_READ_3		= 6'b 100100,
-    				 SUB_READ_4		= 6'b 101000,
-    				 SUB_WRITE_MEM	= 6'b 110000,
+    localparam [5:0] SUB_INIT       = 6'b 100000,
+                     SUB_READ_1     = 6'b 100001,
+                     SUB_READ_2     = 6'b 100010,
+                     SUB_READ_3     = 6'b 100100,
+                     SUB_READ_4     = 6'b 101000,
+                     SUB_WRITE_MEM  = 6'b 110000,
                      SUB_SEND_1     = 6'b 110001,
                      SUB_SEND_2     = 6'b 110010,
                      SUB_SEND_3     = 6'b 110100,
@@ -86,11 +86,11 @@ module maquina_estados #(
                      SUB_SUB_SEND_32_REGS   = 6'b 111010,
                      SUB_SEND_BYTE     = 6'b 111011;
 
-    localparam [7:0] StartSignal		= 8'b 00000001,
-					 ContinuosSignal  	= 8'b 00000010,
-					 StepByStepSignal   = 8'b 00000011,
-					 ReProgramSignal 	= 8'b 00000101,
-					 StepSignal			= 8'b 00000110;
+    localparam [7:0] StartSignal        = 8'b 00000001,
+                     ContinuosSignal    = 8'b 00000010,
+                     StepByStepSignal   = 8'b 00000011,
+                     ReProgramSignal    = 8'b 00000101,
+                     StepSignal         = 8'b 00000110;
 
     reg [6:0] state;
     reg [5:0] sub_state;
@@ -136,6 +136,11 @@ module maquina_estados #(
     assign addr_mem_inst = num_instruc;
     assign uart_data_out = reset ? 0 : bytes_to_send[index];
     
+    always @(negedge clk) begin
+        if(state == SENDING_DATA)
+        ctrl_clk_mips = 0;
+    end
+
     always @(posedge clk) begin
         if (reset) begin
           ciclos = 0;
@@ -168,15 +173,15 @@ module maquina_estados #(
             case(state)
                 IDLE:
                     begin
-                      	reset_mips = 0;
+                        reset_mips = 0;
                         index = 0;
                         reprogram = 0;
                         debug = 0;
-                    	if (uart_data_in == StartSignal) 
-                    	begin
-							state <= PROGRAMMING;
+                        if (uart_data_in == StartSignal) 
+                        begin
+                            state <= PROGRAMMING;
                             sub_state <= SUB_INIT;
-	                   	end
+                        end
                         else 
                         begin
                             state <= IDLE;    
@@ -184,63 +189,63 @@ module maquina_estados #(
                     end
                 PROGRAMMING:
                     begin
-                    	case (sub_state)
-                    		SUB_INIT:
-                    			begin
-                    				sub_state = SUB_READ_1;
+                        case (sub_state)
+                            SUB_INIT:
+                                begin
+                                    sub_state = SUB_READ_1;
                                     num_instruc = 0;
                                     debug = 1;
                                 end
                             SUB_READ_1:
                                 begin
-	                    			instruction[7:0] = uart_data_in;
-	                    			if (rx_done) 
-	                    			begin
-	                    				sub_state = SUB_READ_2; 
-	                    			end
-                    			end
-                    		SUB_READ_2:
-                    			begin
-	                    			instruction[15:8] = uart_data_in;
-	                    			if (rx_done) 
-	                    			begin
-	                    				sub_state = SUB_READ_3; 
-	                    			end
-                    			end
-                    		SUB_READ_3:
-	                			begin
-	                    			instruction[23:16] = uart_data_in;
-	                    			if (rx_done) 
-	                    			begin
-	                    				sub_state = SUB_READ_4; 
-	                    			end
-                    			end
-                    		SUB_READ_4:
-                    			begin
-	                    			instruction[31:24] = uart_data_in;
-	                    			if (rx_done) 
-	                    			begin
-	                    				sub_state = SUB_WRITE_MEM;
-	                    			end
-                    			end
-                			SUB_WRITE_MEM:
-                				begin
-	                				write_enable_ram_inst = 1'b 1;
-	                				num_instruc = num_instruc + 1'b 1;
-	                				if (&instruction[31:26]) 
-	                				begin
-	                					state = WAITING;
-	                					sub_state = SUB_INIT;
+                                    instruction[7:0] = uart_data_in;
+                                    if (rx_done) 
+                                    begin
+                                        sub_state = SUB_READ_2; 
+                                    end
+                                end
+                            SUB_READ_2:
+                                begin
+                                    instruction[15:8] = uart_data_in;
+                                    if (rx_done) 
+                                    begin
+                                        sub_state = SUB_READ_3; 
+                                    end
+                                end
+                            SUB_READ_3:
+                                begin
+                                    instruction[23:16] = uart_data_in;
+                                    if (rx_done) 
+                                    begin
+                                        sub_state = SUB_READ_4; 
+                                    end
+                                end
+                            SUB_READ_4:
+                                begin
+                                    instruction[31:24] = uart_data_in;
+                                    if (rx_done) 
+                                    begin
+                                        sub_state = SUB_WRITE_MEM;
+                                    end
+                                end
+                            SUB_WRITE_MEM:
+                                begin
+                                    write_enable_ram_inst = 1'b 1;
+                                    num_instruc = num_instruc + 1'b 1;
+                                    if (&instruction[31:26]) 
+                                    begin
+                                        state = WAITING;
+                                        sub_state = SUB_INIT;
                                         write_enable_ram_inst = 0;
                                         debug = 0;
-	                				end
-	                				else 
-	                				begin
-	                					sub_state = SUB_READ_1;
-                                        write_enable_ram_inst = 0;             					
-	                				end
-                				end
-                    	endcase	
+                                    end
+                                    else 
+                                    begin
+                                        sub_state = SUB_READ_1;
+                                        write_enable_ram_inst = 0;                              
+                                    end
+                                end
+                        endcase 
                     end
                 WAITING:
                     begin

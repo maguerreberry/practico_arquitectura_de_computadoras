@@ -40,7 +40,7 @@ module tb_top(
         u_top_modular(
         	.CLK100MHZ(clk),
         	.SWITCH_RESET(reset),
-            .uart_in_debug(uart_debug)
+            .uart_in_debug(uart_debug),
         );
 
 	initial
@@ -57,14 +57,72 @@ module tb_top(
         #20
 
         uart_debug = StepSignal;
-
-        #10
-
+        #20
         uart_debug = 0;
 
-        // #2000000
+        #2000000
 
-        // uart_debug = ContinuosSignal;
+        uart_debug = StepSignal;
+
+        #20
+        // clk_mips = 0;
+        uart_debug = 0;
+
+        #2000000
+
+        uart_debug = StepSignal;
+
+        #20
+        // clk_mips = 0;
+        uart_debug = 0;
+
+        #2000000
+
+        uart_debug = StepSignal;
+
+        #20
+        // clk_mips = 0;
+        uart_debug = 0;
+
+        #2000000
+
+        uart_debug = StepSignal;
+
+        #20
+        // clk_mips = 0;
+        uart_debug = 0;
+
+        #2000000
+
+        uart_debug = StepSignal;
+
+        #20
+        // clk_mips = 0;
+        uart_debug = 0;
+
+        #2000000
+
+        uart_debug = StepSignal;
+
+        #20
+        // clk_mips = 0;
+        uart_debug = 0;
+
+        #2000000
+
+        uart_debug = StepSignal;
+
+        #20
+        // clk_mips = 0;
+        uart_debug = 0;
+
+        #2000000
+
+        uart_debug = StepSignal;
+
+        #20
+        // clk_mips = 0;
+        uart_debug = 0;
 
 	end
 
