@@ -34,6 +34,7 @@ module instruction_fetch #(
 	input [len-1:0] in_addr_debug,
 	input debug_flag,
 	input [len-1:0] in_ins_to_mem,
+	input wea_ram_inst,
 
 	output reg [len-1:0] out_pc_branch,
 	output [len-1:0] out_instruction,
@@ -88,7 +89,7 @@ module instruction_fetch #(
 			.clka(clk),
 			.reset(reset),
 			.ena(stall_flag),
-			.wea(debug_flag),
+			.wea(wea_ram_inst),
 			.wire_douta(connect_wire_douta),
 			.flush(flush),
 			.douta(connect_out_instruction),

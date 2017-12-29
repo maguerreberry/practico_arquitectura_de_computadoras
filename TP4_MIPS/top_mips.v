@@ -25,7 +25,11 @@ module top_mips#(
 	parameter NB = $clog2(LEN),
 	parameter len_exec_bus = 11,
 	parameter len_mem_bus = 9,
-	parameter len_wb_bus = 2
+	parameter len_wb_bus = 2,
+    parameter nb_Latches_1_2 = (LEN*1)/8,
+    parameter nb_Latches_2_3 = (LEN*1)/8,
+    parameter nb_Latches_3_4 = (LEN*1)/8,
+    parameter nb_Latches_4_5 = (LEN*1)/8
 	)(
 	input clk,
 	input reset,
@@ -36,11 +40,16 @@ module top_mips#(
 	input [LEN-1:0] in_addr_debug,
 	input [LEN-1:0] in_addr_mem_inst,
 	input [LEN-1:0] in_ins_to_mem,
+	input wea_ram_inst,
 
 	output [LEN-1:0] out_reg1_recolector,
 	output [LEN-1:0] out_mem_wire,
 	output [LEN-1:0] out_pc,
-	output halt_flag
+	output halt_flag,
+    output [(nb_Latches_1_2*8)-1:0] Latches_1_2, // pensar la longitud pq queda demasiados cables
+    output [(nb_Latches_2_3*8)-1:0] Latches_2_3, // pensar la longitud pq queda demasiados cables
+    output [(nb_Latches_3_4*8)-1:0] Latches_3_4, // pensar la longitud pq queda demasiados cables
+    output [(nb_Latches_4_5*8)-1:0] Latches_4_5 // pensar la longitud pq queda demasiados cables
 	);
 	// input CLK100MHZ,
 	// input SWITCH_RESET
@@ -102,6 +111,41 @@ module top_mips#(
 	assign out_pc = connect_out_pc;
 	assign halt_flag = connect_halt_flag_4_5;
 
+	assign Latches_1_2 = {
+		connect_out_pc, // 32 bits
+		connect_in_pc_branch_1_2 // 32 bits
+	};
+	assign Latches_2_3 = {
+		{10{1'b 0}}, // 10 bits
+		connect_execute_bus, // 11 bits
+		connect_memory_bus_2_3, // 9 bits
+		connect_writeBack_bus_2_3, // 2 bits
+		{12{1'b 0}}, // 12 bits
+		connect_rd, // 5 bits
+		connect_rs, // 5 bits
+		connect_rt, // 5 bits
+		connect_shamt, // 5 bits
+		connect_sign_extend, // 32 bits
+		connect_in_pc_branch_2_3 // 32 bits
+	};
+	assign Latches_3_4 = {
+		{15{1'b 0}}, // 15 bits
+		connect_memory_bus_3_4, // 9 bits
+		connect_writeBack_bus_3_4, // 2 bits
+		connect_write_reg_3_4, // 5 bits
+		connect_zero_flag, // 1 bit
+		connect_alu_out, // 32 bits
+		connect_in_pc_branch_3_4, // 32 bits
+		connect_reg2 // 32 bits
+	};
+	assign Latches_4_5 = {
+		{25{1'b 0}}, // 25 bits
+		connect_write_reg_4_2, // 5 bits
+		connect_out_writeBack_bus, // 2 bits
+		connect_out_addr_mem, // 32 bits
+		connect_read_data // 32 bits
+	};
+
 	instruction_fetch #(
 		.len(LEN)
 		)
@@ -117,6 +161,7 @@ module top_mips#(
 			.in_addr_debug(in_addr_mem_inst),
 			.debug_flag(debug_flag),
 			.in_ins_to_mem(in_ins_to_mem),
+			.wea_ram_inst(wea_ram_inst),
 
 			.out_pc_branch(connect_in_pc_branch_1_2),
 			.out_instruction(connect_instruccion),
@@ -132,8 +177,6 @@ module top_mips#(
 			.reset(reset),
 			.in_pc_branch(connect_in_pc_branch_1_2),
 			.in_instruccion(debug_flag ? {{6{1'b0}}, in_addr_debug[4:0], {21{1'b0}}} : connect_instruccion),
-
-
 
 			.RegWrite(connect_out_writeBack_bus[1]),
 			.write_data(connect_write_data_5_2),

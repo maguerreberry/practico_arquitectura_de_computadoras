@@ -20,12 +20,28 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
+
+
+
+
+// #########################################
+// // CAMBIAR EL BAUD RATE GENARATE CUANDO PASEMOS A LA FPGA
+// #########################################
+
+
+
+
 module top_modular#(
 	parameter LEN = 32,
 	parameter NB = $clog2(LEN),
 	parameter len_exec_bus = 11,
 	parameter len_mem_bus = 9,
-	parameter len_wb_bus = 2
+	parameter len_wb_bus = 2,
+	parameter estamos_en_test_bench = 0,
+    parameter nb_Latches_1_2 = (LEN*2)/8,
+    parameter nb_Latches_2_3 = (LEN*4)/8,
+    parameter nb_Latches_3_4 = (LEN*4)/8,
+    parameter nb_Latches_4_5 = (LEN*3)/8
 	)(
 	input CLK100MHZ,
 	input SWITCH_RESET,
@@ -98,6 +114,11 @@ module top_modular#(
 		 connect_tx_debug,
 		 connect_rx_debug;
 
+	wire [(nb_Latches_1_2*8)-1:0] connect_Latches_1_2;
+	wire [(nb_Latches_2_3*8)-1:0] connect_Latches_2_3;
+	wire [(nb_Latches_3_4*8)-1:0] connect_Latches_3_4;
+	wire [(nb_Latches_4_5*8)-1:0] connect_Latches_4_5;
+
 
     wire [7:0] connect_uart_data_in,
 			   connect_uart_data_out;
@@ -106,7 +127,7 @@ module top_modular#(
 
 	assign clk_mips = (ctrl_clk_mips) ? (clk) : (1'b 0);
 
-	assign connect_rx_debug = select_uart_puente ? connect_tx_debug : UART_TXD_IN;
+	assign connect_rx_debug = (1 & estamos_en_test_bench) ? connect_tx_debug : UART_TXD_IN;
 	assign connect_tx_debug = UART_RXD_OUT;
 	assign tx_done_debug = connect_uart_tx_done;
 
@@ -115,7 +136,11 @@ module top_modular#(
 	.NB($clog2(LEN)),
 	.len_exec_bus(11),
 	.len_mem_bus(9),
-	.len_wb_bus(2)
+	.len_wb_bus(2),
+	.nb_Latches_1_2(nb_Latches_1_2),
+	.nb_Latches_2_3(nb_Latches_2_3),
+	.nb_Latches_3_4(nb_Latches_3_4),
+	.nb_Latches_4_5(nb_Latches_4_5)
 	)
 	u_top_mips(
 		.clk(clk_mips),
@@ -126,11 +151,16 @@ module top_modular#(
 		.in_addr_debug(connect_addr_recolector_mips),
 		.in_addr_mem_inst(connect_addr_mem_inst),
 		.in_ins_to_mem(connect_ins_to_mem),
+		.wea_ram_inst(connect_wea_ram_inst),
 
 		.out_reg1_recolector(connect_regs_recolector_mips),
 		.out_mem_wire(connect_mem_datos_recolector_mips),
 		.out_pc(connect_pc_debug),
-		.halt_flag(connect_halt)
+		.halt_flag(connect_halt),
+		.Latches_1_2(connect_Latches_1_2),
+		.Latches_2_3(connect_Latches_2_3),
+		.Latches_3_4(connect_Latches_3_4),
+		.Latches_4_5(connect_Latches_4_5)
 		);
 	
 	recolector #(
@@ -150,14 +180,10 @@ module top_modular#(
 	maquina_estados #(
 		.len(LEN),
 		.cant_instrucciones(64),
-		// .nb_Latches_1_2((LEN*1)/8),
-		// .nb_Latches_2_3((LEN*1)/8),
-		// .nb_Latches_3_4((LEN*1)/8),
-		// .nb_Latches_4_5((LEN*1)/8),
-		.nb_Latches_1_2(1),
-		.nb_Latches_2_3(1),
-		.nb_Latches_3_4(1),
-		.nb_Latches_4_5(1),
+		.nb_Latches_1_2(nb_Latches_1_2),
+		.nb_Latches_2_3(nb_Latches_2_3),
+		.nb_Latches_3_4(nb_Latches_3_4),
+		.nb_Latches_4_5(nb_Latches_4_5),
 		.cant_regs(32),
 		.cant_mem_datos(16),
 		.LEN_DATA(8)
@@ -167,10 +193,10 @@ module top_modular#(
 		    .reset(reset),
 		    .halt(connect_halt),
 		    .pc(connect_pc_debug),
-		    .Latches_1_2(),
-		    .Latches_2_3(),
-		    .Latches_3_4(),
-		    .Latches_4_5(),
+		    .Latches_1_2(connect_Latches_1_2),
+		    .Latches_2_3(connect_Latches_2_3),
+		    .Latches_3_4(connect_Latches_3_4),
+		    .Latches_4_5(connect_Latches_4_5),
 		    .recolector(connect_data_recolector),
 
 		    // outputs
@@ -183,6 +209,7 @@ module top_modular#(
 			.send_regs_recolector(connect_send_regs),
 			.enable_next_recolector(connect_enable_next),
 			.debug(connect_debug_mode),
+			.write_enable_ram_inst(connect_wea_ram_inst),
 		
 		    //UART
 		    .tx_done(connect_uart_tx_done),
@@ -205,9 +232,9 @@ module top_modular#(
 		u_uart(
 			.CLK_100MHZ(clk),
 			.reset(reset),
-			.tx_start(select_uart_puente ? tx_start_debug : connect_uart_tx_start),
+			.tx_start((select_uart_puente & estamos_en_test_bench) ? tx_start_debug : connect_uart_tx_start),
 			.rx(connect_rx_debug),
-			.data_in(select_uart_puente ? uart_in_debug : connect_uart_data_in),
+			.data_in((1 & estamos_en_test_bench) ? uart_in_debug : connect_uart_data_in),
 
 			.data_out(connect_uart_data_out),
 			.rx_done_tick(connect_uart_rx_done),

@@ -40,7 +40,8 @@ module tb_top(
 					 StepSignal			= 8'b 00000110;
 
     top_modular#(
-    	.LEN(32)
+    	.LEN(32),
+        .estamos_en_test_bench(1)
  		)
         u_top_modular(
         	.CLK100MHZ(clk),
@@ -54,12 +55,13 @@ module tb_top(
 
     integer program_file;
 
-    localparam [5:0] EXECUTE         = 6'b 000001;
+    localparam [5:0] EXECUTE      = 6'b 000001;
     localparam [5:0] READING      = 6'b 000010;
     localparam [5:0] TX1          = 6'b 000100;
     localparam [5:0] TX2          = 6'b 001000;
     localparam [5:0] TX3          = 6'b 010000;
     localparam [5:0] TX4          = 6'b 100000;
+    localparam [5:0] IDLE         = 6'b 100001;
 
     reg [5:0] state = READING;
 
@@ -69,8 +71,8 @@ module tb_top(
 		reset = 1;
         uart_puente_selector = 1;
 
-        program_file = $fopen("/home/facundo/Desktop/practico_arquitectura_de_computadoras/TP4_MIPS/program.hex", "r");
-        // program_file = $fopen("E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP4_MIPS/program.hex", "r");
+//        program_file = $fopen("/home/facundo/Desktop/practico_arquitectura_de_computadoras/TP4_MIPS/program.hex", "r");
+         program_file = $fopen("E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP4_MIPS/program.hex", "r");
 
         if(program_file == 0) $stop;
 
@@ -145,6 +147,15 @@ module tb_top(
                 begin
                     uart_debug = ContinuosSignal;
                     tx_start_debug = 1;
+                    if (tx_done_debug) begin
+                        uart_puente_selector = 0;
+                        state = IDLE;
+                    end
+                end
+            IDLE:
+                begin
+                    uart_debug = 0;
+                    tx_start_debug = 0;                    
                 end
         endcase
     end

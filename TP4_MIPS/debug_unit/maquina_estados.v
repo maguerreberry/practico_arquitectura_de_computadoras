@@ -55,6 +55,8 @@ module maquina_estados #(
     output reg send_regs_recolector,
     output reg enable_next_recolector,
     output reg debug,
+    output reg write_enable_ram_inst,          // write enable memoria de programa
+
 
     //UART
     input tx_done,
@@ -90,7 +92,6 @@ module maquina_estados #(
     reg [(nb_ciclos*8)-1:0] ciclos;     // contador de ciclos de clock
     reg [len-1:0] instruction;          // instruccion a escribir en memoria de programa
     reg [NB_addr-1:0] num_instruc;      // contador de instrucciones para direccionar donde escribir
-    reg write_enable_ram_inst;          // write enable memoria de programa
     reg [7:0] regs_counter;             // cuenta registros al enviar por uart a la pc
 
     reg [2:0] contador;
@@ -145,7 +146,6 @@ module maquina_estados #(
           index = 0;
           instruction = 0;
           num_instruc = 0;
-          write_enable_ram_inst = 0;
           regs_counter = 0;
 
           reset_mips = 0;
@@ -168,14 +168,16 @@ module maquina_estados #(
                         index = 0;
                         reprogram = 0;
                         debug = 0;
-                        if (uart_data_in == StartSignal) 
-                        begin
-                            state <= PROGRAMMING;
-                            sub_state <= SUB_INIT;
-                        end
-                        else 
-                        begin
-                            state <= IDLE;    
+                        if (rx_done) begin
+                            if (uart_data_in == StartSignal) 
+                            begin
+                                state <= PROGRAMMING;
+                                sub_state <= SUB_INIT;
+                            end
+                            else 
+                            begin
+                                state <= IDLE;    
+                            end
                         end
                     end
                 PROGRAMMING:
@@ -185,11 +187,12 @@ module maquina_estados #(
                                 begin
                                     sub_state = SUB_READ_1;
                                     num_instruc = 0;
-                                    debug = 0;
+                                    debug = 1;
+                                    write_enable_ram_inst = 0;
                                 end
                             SUB_READ_1:
                                 begin
-                                    debug = 0;
+                                    write_enable_ram_inst = 0;
                                     instruction[7:0] = uart_data_in;
                                     if (rx_done) 
                                     begin
@@ -218,7 +221,7 @@ module maquina_estados #(
                                     if (rx_done) 
                                     begin
                                         sub_state = SUB_WRITE_MEM;
-                                        debug = 1'b 1;
+                                        write_enable_ram_inst = 1'b 1;
                                     end
                                 end
                             SUB_WRITE_MEM:
@@ -228,6 +231,7 @@ module maquina_estados #(
                                     begin
                                         state = WAITING;
                                         sub_state = SUB_INIT;
+                                        write_enable_ram_inst = 0;
                                         debug = 0;
                                     end
                                     else 
@@ -241,28 +245,32 @@ module maquina_estados #(
                     begin
                         ciclos = 0;
                         reset_mips = 1;
-                        case (uart_data_in)
-                            ReProgramSignal: begin
-                                reprogram = 1;
-                                state = IDLE;                                                        
-                            end
-                            ContinuosSignal: begin 
-                                state = CONTINUOS;
-                                reset_mips = 0;
-                            end 
-                            StepByStepSignal: begin 
-                                state = STEP_BY_STEP;
-                                reset_mips = 0;
-                            end
-                        endcase                    
+                        if (rx_done) begin
+                            case (uart_data_in)
+                                ReProgramSignal: begin
+                                    reprogram = 1;
+                                    state = IDLE;                                                        
+                                end
+                                ContinuosSignal: begin 
+                                    state = CONTINUOS;
+                                    reset_mips = 0;
+                                end 
+                                StepByStepSignal: begin 
+                                    state = STEP_BY_STEP;
+                                    reset_mips = 0;
+                                end
+                            endcase                    
+                        end
                     end
                 STEP_BY_STEP:
                     begin
                         ctrl_clk_mips = 0;
-                        if (uart_data_in == StepSignal) begin
-                            ctrl_clk_mips = 1;
-                            ciclos = ciclos + 1;
-                            state = SENDING_DATA;
+                        if (rx_done) begin
+                            if (uart_data_in == StepSignal) begin
+                                ctrl_clk_mips = 1;
+                                ciclos = ciclos + 1;
+                                state = SENDING_DATA;
+                            end
                         end
                     end
                 CONTINUOS:
