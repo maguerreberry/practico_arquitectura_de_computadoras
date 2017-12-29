@@ -111,11 +111,11 @@ module top_mips#(
 	assign out_pc = connect_out_pc;
 	assign halt_flag = connect_halt_flag_4_5;
 
-	assign Latches_1_2 = {
+	assign Latches_1_2 = {	// 2 registros
 		connect_out_pc, // 32 bits
 		connect_in_pc_branch_1_2 // 32 bits
 	};
-	assign Latches_2_3 = {
+	assign Latches_2_3 = {	// 4 registros
 		{10{1'b 0}}, // 10 bits
 		connect_execute_bus, // 11 bits
 		connect_memory_bus_2_3, // 9 bits
@@ -128,7 +128,7 @@ module top_mips#(
 		connect_sign_extend, // 32 bits
 		connect_in_pc_branch_2_3 // 32 bits
 	};
-	assign Latches_3_4 = {
+	assign Latches_3_4 = {	// 4 registros
 		{15{1'b 0}}, // 15 bits
 		connect_memory_bus_3_4, // 9 bits
 		connect_writeBack_bus_3_4, // 2 bits
@@ -138,7 +138,7 @@ module top_mips#(
 		connect_in_pc_branch_3_4, // 32 bits
 		connect_reg2 // 32 bits
 	};
-	assign Latches_4_5 = {
+	assign Latches_4_5 = {	// 3 registros
 		{25{1'b 0}}, // 25 bits
 		connect_write_reg_4_2, // 5 bits
 		connect_out_writeBack_bus, // 2 bits

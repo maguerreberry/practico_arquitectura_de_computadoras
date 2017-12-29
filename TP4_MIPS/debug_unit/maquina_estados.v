@@ -140,7 +140,7 @@ module maquina_estados #(
           reset_mips = 0;
           state = IDLE;
           // state = WAITING;
-          state = PROGRAMMING;
+          // state = PROGRAMMING;
 
           sub_state = SUB_INIT;
           index = 0;

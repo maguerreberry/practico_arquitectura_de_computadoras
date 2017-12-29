@@ -62,8 +62,9 @@ module tb_top(
     localparam [5:0] TX3          = 6'b 010000;
     localparam [5:0] TX4          = 6'b 100000;
     localparam [5:0] IDLE         = 6'b 100001;
+    localparam [5:0] INICIAL      = 6'b 101010;
 
-    reg [5:0] state = READING;
+    reg [5:0] state = INICIAL;
 
 	initial
 	begin
@@ -71,8 +72,8 @@ module tb_top(
 		reset = 1;
         uart_puente_selector = 1;
 
-//        program_file = $fopen("/home/facundo/Desktop/practico_arquitectura_de_computadoras/TP4_MIPS/program.hex", "r");
-         program_file = $fopen("E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP4_MIPS/program.hex", "r");
+       program_file = $fopen("/home/facundo/Desktop/practico_arquitectura_de_computadoras/TP4_MIPS/program.hex", "r");
+         // program_file = $fopen("E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP4_MIPS/program.hex", "r");
 
         if(program_file == 0) $stop;
 
@@ -94,9 +95,18 @@ module tb_top(
     always @(posedge clk) begin
 
         case(state)
-            READING:
+            INICIAL:
                 begin
                     uart_puente_selector = 1;
+                    uart_debug = StartSignal;
+                    tx_start_debug = 1;
+                    if (tx_done_debug) begin
+                        state = READING;
+                        tx_start_debug = 0;
+                    end
+                end
+            READING:
+                begin
                     $fscanf(program_file, "%x", instruccion);
                     state = TX1;
                 end
