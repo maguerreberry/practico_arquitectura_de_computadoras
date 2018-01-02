@@ -96,47 +96,10 @@ module memory #(
 			.douta_wire(connect_out_mem_debug)
 			);
 
-	always @(posedge clk) 
+	always @(posedge clk, negedge reset) 
 	begin
 
-		out_halt_flag_m <= halt_flag_m;
-
-		out_writeBack_bus <= in_writeBack_bus;
-		out_addr_mem <= in_addr_mem;
-		out_write_reg <= in_write_reg;
-
-		if (control_LH) 
-		begin
-			if (control_unsigned) 
-			begin
-				read_data <= {{16{1'b 0}},connect_out_mem[15:0]};
-			end
-			else 
-			begin
-				read_data <= {{16{connect_out_mem[15]}},connect_out_mem[15:0]};				
-			end
-		end
-		else if (control_LB) 
-		begin
-			if (control_unsigned) 
-			begin
-				read_data <= {{24{1'b 0}},connect_out_mem[7:0]};
-			end
-			else 
-			begin
-				read_data <= {{24{connect_out_mem[7]}},connect_out_mem[7:0]};				
-			end
-		end
-		else 
-		begin
-			read_data <= connect_out_mem;				
-		end
-	end
-
-	always @(*)
-	begin
-
-		if(reset)
+		if(!reset)
 		begin
 			read_data = 0;
 		    out_writeBack_bus = 0;
@@ -144,6 +107,45 @@ module memory #(
 			out_write_reg = 0;
 			out_halt_flag_m = 0;
 		end
+
+		else begin
+			out_halt_flag_m <= halt_flag_m;
+
+			out_writeBack_bus <= in_writeBack_bus;
+			out_addr_mem <= in_addr_mem;
+			out_write_reg <= in_write_reg;
+
+			if (control_LH) 
+			begin
+				if (control_unsigned) 
+				begin
+					read_data <= {{16{1'b 0}},connect_out_mem[15:0]};
+				end
+				else 
+				begin
+					read_data <= {{16{connect_out_mem[15]}},connect_out_mem[15:0]};				
+				end
+			end
+			else if (control_LB) 
+			begin
+				if (control_unsigned) 
+				begin
+					read_data <= {{24{1'b 0}},connect_out_mem[7:0]};
+				end
+				else 
+				begin
+					read_data <= {{24{connect_out_mem[7]}},connect_out_mem[7:0]};				
+				end
+			end
+			else 
+			begin
+				read_data <= connect_out_mem;				
+			end
+		end
+	end
+
+	always @(*)
+	begin
 
 		if (control_SH) 
 		begin

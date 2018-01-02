@@ -128,48 +128,49 @@ module decode #(
 			.stall_flag(mux_control)
 			);
 
-	always @(reset)
+	always @(posedge clk, negedge reset) 
 	begin
-		out_pc_branch = 0;
-		out_sign_extend = 0;
-		out_rt = 0;
-		out_rd = 0;
-		out_rs = 0;
-		out_shamt = 0;
-		execute_bus = 0;
-		memory_bus = 0;
-		writeBack_bus = 0;
-		out_halt_flag_d = 0;
-	end
-
-	always @(posedge clk) 
-	begin
-		out_halt_flag_d <= halt_flag_d;
-
-		if(flush)
-		begin
-			out_pc_branch <= 0;
-			out_sign_extend <= 0;
-			out_rt <= 0;
-			out_rd <= 0;
-			out_rs <= 0;
-			out_shamt <= 0;
-			execute_bus <= 0;
-			memory_bus <= 0;
-			writeBack_bus <= 0;
+		if (!reset) begin
+			out_pc_branch = 0;
+			out_sign_extend = 0;
+			out_rt = 0;
+			out_rd = 0;
+			out_rs = 0;
+			out_shamt = 0;
+			execute_bus = 0;
+			memory_bus = 0;
+			writeBack_bus = 0;
+			out_halt_flag_d = 0;			
 		end
-		else 
-		begin			
-			out_pc_branch <= in_pc_branch;
-			out_sign_extend <= $signed(in_instruccion[15:0]);
-			out_rt <= in_instruccion [20:16];
-			out_rd <= in_instruccion [15:11];
-			out_rs <= in_instruccion [25:21];
-			out_shamt <= in_instruccion [10:6];
-			execute_bus <= mux_out[(len_mem_bus+len_wb_bus+len_exec_bus)-1:len_mem_bus+len_wb_bus];
-			memory_bus <= mux_out[(len_mem_bus+len_wb_bus)-1:len_wb_bus];
-			writeBack_bus <= mux_out[len_wb_bus-1:0];		
-		end	
+
+		else begin
+			out_halt_flag_d <= halt_flag_d;
+
+			if(flush)
+			begin
+				out_pc_branch <= 0;
+				out_sign_extend <= 0;
+				out_rt <= 0;
+				out_rd <= 0;
+				out_rs <= 0;
+				out_shamt <= 0;
+				execute_bus <= 0;
+				memory_bus <= 0;
+				writeBack_bus <= 0;
+			end
+			else 
+			begin			
+				out_pc_branch <= in_pc_branch;
+				out_sign_extend <= $signed(in_instruccion[15:0]);
+				out_rt <= in_instruccion [20:16];
+				out_rd <= in_instruccion [15:11];
+				out_rs <= in_instruccion [25:21];
+				out_shamt <= in_instruccion [10:6];
+				execute_bus <= mux_out[(len_mem_bus+len_wb_bus+len_exec_bus)-1:len_mem_bus+len_wb_bus];
+				memory_bus <= mux_out[(len_mem_bus+len_wb_bus)-1:len_wb_bus];
+				writeBack_bus <= mux_out[len_wb_bus-1:0];		
+			end	
+		end
 	end
 
 endmodule

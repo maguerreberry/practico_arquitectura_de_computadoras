@@ -125,41 +125,42 @@ module execute #(
 			.out_mux(mux2_alu_forwarding)
 			);
 
-	always @(reset)
+	always @(posedge clk, negedge reset) 
 	begin
-		out_pc_branch = 0;
-		out_alu = 0;
-		zero_flag = 0;
-		out_reg2 = 0;
-		out_write_reg = 0;
-		memory_bus_out = 0;
-		writeBack_bus_out = 0;
-		out_halt_flag_e = 0;
-	end
-
-	always @(posedge clk) 
-	begin
-		out_halt_flag_e <= halt_flag_e;
-
-		if (flush) 
-		begin
-			memory_bus_out <= 0;
-			writeBack_bus_out <= 0;
-			out_pc_branch <= 0;
-			out_alu <= 0;
-			out_reg2 <= 0;
-			out_write_reg <= 0;
-			zero_flag <= 0;
+		if (!reset) begin
+			out_pc_branch = 0;
+			out_alu = 0;
+			zero_flag = 0;
+			out_reg2 = 0;
+			out_write_reg = 0;
+			memory_bus_out = 0;
+			writeBack_bus_out = 0;
+			out_halt_flag_e = 0;			
 		end
-		else
-		begin		
-			memory_bus_out <= memory_bus;
-			writeBack_bus_out <= writeBack_bus;
-			out_pc_branch <= in_pc_branch + in_sign_extend;
-			out_alu <= connect_alu_out;
-			out_reg2 <= in_reg2;
-			out_write_reg <= execute_bus[9] ? (5'b 11111) : (execute_bus[8] ? in_rd : in_rt);
-			zero_flag <= connect_zero_flag;
+
+		else begin
+			out_halt_flag_e <= halt_flag_e;
+
+			if (flush) 
+			begin
+				memory_bus_out <= 0;
+				writeBack_bus_out <= 0;
+				out_pc_branch <= 0;
+				out_alu <= 0;
+				out_reg2 <= 0;
+				out_write_reg <= 0;
+				zero_flag <= 0;
+			end
+			else
+			begin		
+				memory_bus_out <= memory_bus;
+				writeBack_bus_out <= writeBack_bus;
+				out_pc_branch <= in_pc_branch + in_sign_extend;
+				out_alu <= connect_alu_out;
+				out_reg2 <= in_reg2;
+				out_write_reg <= execute_bus[9] ? (5'b 11111) : (execute_bus[8] ? in_rd : in_rt);
+				zero_flag <= connect_zero_flag;
+			end
 		end
 	end
 

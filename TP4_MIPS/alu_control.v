@@ -47,6 +47,7 @@ module alu_control(
 					6'b100111 : alu_code <= 4'b1000; // nor
 					6'b101010 :	alu_code <= 4'b0100; // slt
 					6'b001001 :	alu_code <= 4'b0011; // sumar
+					default : alu_code <= 4'bxxxx;
 				endcase
 			end			
 			3'b001 : alu_code <= 4'b0011; //sumar

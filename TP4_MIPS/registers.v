@@ -49,16 +49,18 @@ module registers#(
           registers_mips[ii] = {width{1'b0+(ii)}};
 	endgenerate
 
-	always @(reset)
+	always @(posedge clk, negedge reset)
 	begin
-		read_data_1 = 0;
-		read_data_2 = 0;
-	end
+		if (!reset)
+		begin
+			read_data_1 = 0;
+			read_data_2 = 0;
+		end
 
-	always @(posedge clk)
-	begin
-		read_data_1 <= registers_mips[read_register_1];
-		read_data_2 <= registers_mips[read_register_2];
+		else begin
+			read_data_1 <= registers_mips[read_register_1];
+			read_data_2 <= registers_mips[read_register_2];
+		end
 	end
 
 	always @(negedge clk)

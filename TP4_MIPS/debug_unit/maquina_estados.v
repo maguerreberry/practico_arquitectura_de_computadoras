@@ -129,218 +129,223 @@ module maquina_estados #(
     assign addr_mem_inst = num_instruc;
     assign uart_data_out = reset ? 0 : bytes_to_send[index];
     
-    always @(negedge clk) begin
-        if(state == SENDING_DATA)
-            ctrl_clk_mips = 0;
-    end
 
-    always @(posedge clk) begin
-        if (reset) begin
-          ciclos = 0;
-          reset_mips = 0;
-          state = IDLE;
-          // state = WAITING;
-          // state = PROGRAMMING;
 
-          sub_state = SUB_INIT;
-          index = 0;
-          instruction = 0;
-          num_instruc = 0;
-          regs_counter = 0;
+    always @(posedge clk, negedge clk) begin
 
-          reset_mips = 0;
-          reprogram = 0;
-          ctrl_clk_mips = 0;
-          restart_recolector = 0;
-          send_regs_recolector = 0;
-          enable_next_recolector = 0;
-          debug = 0;
+        if (!clk) begin
+            if(state == SENDING_DATA)
+                ctrl_clk_mips = 0;
+        end        
 
-          tx_start = 0;
-          // uart_data_out = 0;
-          contador = 0;
-        end
         else begin
-            case(state)
-                IDLE:
-                    begin
-                        reset_mips = 0;
-                        index = 0;
-                        reprogram = 0;
-                        debug = 0;
-                        if (rx_done) begin
-                            if (uart_data_in == StartSignal) 
-                            begin
-                                state <= PROGRAMMING;
-                                sub_state <= SUB_INIT;
-                            end
-                            else 
-                            begin
-                                state <= IDLE;    
+            if (reset) begin
+              ciclos = 0;
+              reset_mips = 0;
+              state = IDLE;
+              // state = WAITING;
+              // state = PROGRAMMING;
+
+              sub_state = SUB_INIT;
+              index = 0;
+              instruction = 0;
+              num_instruc = 0;
+              regs_counter = 0;
+
+              reset_mips = 0;
+              reprogram = 0;
+              ctrl_clk_mips = 0;
+              restart_recolector = 0;
+              send_regs_recolector = 0;
+              enable_next_recolector = 0;
+              debug = 0;
+
+              tx_start = 0;
+              // uart_data_out = 0;
+              contador = 0;
+            end
+            else begin
+                case(state)
+                    IDLE:
+                        begin
+                            reset_mips = 0;
+                            index = 0;
+                            reprogram = 0;
+                            debug = 0;
+                            if (rx_done) begin
+                                if (uart_data_in == StartSignal) 
+                                begin
+                                    state <= PROGRAMMING;
+                                    sub_state <= SUB_INIT;
+                                end
+                                else 
+                                begin
+                                    state <= IDLE;    
+                                end
                             end
                         end
-                    end
-                PROGRAMMING:
-                    begin
-                        case (sub_state)
-                            SUB_INIT:
-                                begin
-                                    sub_state = SUB_READ_1;
-                                    num_instruc = 0;
-                                    debug = 1;
-                                    write_enable_ram_inst = 0;
-                                end
-                            SUB_READ_1:
-                                begin
-                                    write_enable_ram_inst = 0;
-                                    instruction[7:0] = uart_data_in;
-                                    if (rx_done) 
-                                    begin
-                                        sub_state = SUB_READ_2; 
-                                    end
-                                end
-                            SUB_READ_2:
-                                begin
-                                    instruction[15:8] = uart_data_in;
-                                    if (rx_done) 
-                                    begin
-                                        sub_state = SUB_READ_3; 
-                                    end
-                                end
-                            SUB_READ_3:
-                                begin
-                                    instruction[23:16] = uart_data_in;
-                                    if (rx_done) 
-                                    begin
-                                        sub_state = SUB_READ_4; 
-                                    end
-                                end
-                            SUB_READ_4:
-                                begin
-                                    instruction[31:24] = uart_data_in;
-                                    if (rx_done) 
-                                    begin
-                                        sub_state = SUB_WRITE_MEM;
-                                        write_enable_ram_inst = 1'b 1;
-                                    end
-                                end
-                            SUB_WRITE_MEM:
-                                begin
-                                    num_instruc = num_instruc + 1'b 1;
-                                    if (&instruction[31:26]) 
-                                    begin
-                                        state = WAITING;
-                                        sub_state = SUB_INIT;
-                                        write_enable_ram_inst = 0;
-                                        debug = 0;
-                                    end
-                                    else 
+                    PROGRAMMING:
+                        begin
+                            case (sub_state)
+                                SUB_INIT:
                                     begin
                                         sub_state = SUB_READ_1;
+                                        num_instruc = 0;
+                                        debug = 1;
+                                        write_enable_ram_inst = 0;
                                     end
-                                end
-                        endcase 
-                    end
-                WAITING:
-                    begin
-                        ciclos = 0;
-                        reset_mips = 1;
-                        if (rx_done) begin
-                            case (uart_data_in)
-                                ReProgramSignal: begin
-                                    reprogram = 1;
-                                    state = IDLE;                                                        
-                                end
-                                ContinuosSignal: begin 
-                                    state = CONTINUOS;
-                                    reset_mips = 0;
-                                end 
-                                StepByStepSignal: begin 
-                                    state = STEP_BY_STEP;
-                                    reset_mips = 0;
-                                end
-                            endcase                    
+                                SUB_READ_1:
+                                    begin
+                                        write_enable_ram_inst = 0;
+                                        instruction[7:0] = uart_data_in;
+                                        if (rx_done) 
+                                        begin
+                                            sub_state = SUB_READ_2; 
+                                        end
+                                    end
+                                SUB_READ_2:
+                                    begin
+                                        instruction[15:8] = uart_data_in;
+                                        if (rx_done) 
+                                        begin
+                                            sub_state = SUB_READ_3; 
+                                        end
+                                    end
+                                SUB_READ_3:
+                                    begin
+                                        instruction[23:16] = uart_data_in;
+                                        if (rx_done) 
+                                        begin
+                                            sub_state = SUB_READ_4; 
+                                        end
+                                    end
+                                SUB_READ_4:
+                                    begin
+                                        instruction[31:24] = uart_data_in;
+                                        if (rx_done) 
+                                        begin
+                                            sub_state = SUB_WRITE_MEM;
+                                            write_enable_ram_inst = 1'b 1;
+                                        end
+                                    end
+                                SUB_WRITE_MEM:
+                                    begin
+                                        num_instruc = num_instruc + 1'b 1;
+                                        if (&instruction[31:26]) 
+                                        begin
+                                            state = WAITING;
+                                            sub_state = SUB_INIT;
+                                            write_enable_ram_inst = 0;
+                                            debug = 0;
+                                        end
+                                        else 
+                                        begin
+                                            sub_state = SUB_READ_1;
+                                        end
+                                    end
+                            endcase 
                         end
-                    end
-                STEP_BY_STEP:
-                    begin
-                        ctrl_clk_mips = 0;
-                        if (rx_done) begin
-                            if (uart_data_in == StepSignal) begin
-                                ctrl_clk_mips = 1;
-                                ciclos = ciclos + 1;
+                    WAITING:
+                        begin
+                            ciclos = 0;
+                            reset_mips = 1;
+                            if (rx_done) begin
+                                case (uart_data_in)
+                                    ReProgramSignal: begin
+                                        reprogram = 1;
+                                        state = IDLE;                                                        
+                                    end
+                                    ContinuosSignal: begin 
+                                        state = CONTINUOS;
+                                        reset_mips = 0;
+                                    end 
+                                    StepByStepSignal: begin 
+                                        state = STEP_BY_STEP;
+                                        reset_mips = 0;
+                                    end
+                                endcase                    
+                            end
+                        end
+                    STEP_BY_STEP:
+                        begin
+                            ctrl_clk_mips = 0;
+                            if (rx_done) begin
+                                if (uart_data_in == StepSignal) begin
+                                    ctrl_clk_mips = 1;
+                                    ciclos = ciclos + 1;
+                                    state = SENDING_DATA;
+                                end
+                            end
+                        end
+                    CONTINUOS:
+                        begin
+                            ctrl_clk_mips = 1;
+                            ciclos = ciclos + 1;
+                            if (halt) begin
                                 state = SENDING_DATA;
                             end
                         end
-                    end
-                CONTINUOS:
-                    begin
-                        ctrl_clk_mips = 1;
-                        ciclos = ciclos + 1;
-                        if (halt) begin
-                            state = SENDING_DATA;
-                        end
-                    end
-                SENDING_DATA:
-                    begin
-                        ctrl_clk_mips = 0;
-                        restart_recolector = 0;
-                        debug = 1;
+                    SENDING_DATA:
+                        begin
+                            ctrl_clk_mips = 0;
+                            restart_recolector = 0;
+                            debug = 1;
 
-                        if(tx_done) begin
-                            if (index < (total_lenght - nb_recolector)) begin
-                                index = index + 1;
-                                if ((index + 1) == total_lenght - nb_recolector) begin
-                                    enable_next_recolector = 1;
+                            if(tx_done) begin
+                                if (index < (total_lenght - nb_recolector)) begin
+                                    index = index + 1;
+                                    if ((index + 1) == total_lenght - nb_recolector) begin
+                                        enable_next_recolector = 1;
+                                    end
                                 end
-                            end
-                            else begin
-                                contador = contador + 1;
+                                else begin
+                                    contador = contador + 1;
 
-                                if (contador == 4) begin
-                                    regs_counter = regs_counter + 1;
-                                    contador = 0;
-                                    enable_next_recolector = 1;
+                                    if (contador == 4) begin
+                                        regs_counter = regs_counter + 1;
+                                        contador = 0;
+                                        enable_next_recolector = 1;
+                                    end
+                                   
+                                    index = (total_lenght - nb_recolector) + contador;
                                 end
-                               
-                                index = (total_lenght - nb_recolector) + contador;
+
+                                if (regs_counter < cant_regs) begin
+                                    send_regs_recolector = 1;
+                                end
+                                else begin
+                                    send_regs_recolector = 0;
+                                end
+                                
+                                tx_start = 0;
                             end
 
-                            if (regs_counter < cant_regs) begin
-                                send_regs_recolector = 1;
-                            end
                             else begin
-                                send_regs_recolector = 0;
-                            end
-                            
-                            tx_start = 0;
-                        end
-
-                        else begin
-                            tx_start = 1;
-                            enable_next_recolector = 0;
-                        end
-
-                        if (regs_counter >= (cant_regs + cant_mem_datos)) begin
-                            index = 0;
-                            restart_recolector = 1;
-                            
-                            if (halt) begin
-                                state = WAITING;
-                            end
-                            else begin
-                                state = STEP_BY_STEP;
+                                tx_start = 1;
+                                enable_next_recolector = 0;
                             end
 
-                            debug = 0;
-                            contador = 0;
-                            enable_next_recolector = 0;
-                            tx_start = 0;
-                            regs_counter = 0;
-                        end
+                            if (regs_counter >= (cant_regs + cant_mem_datos)) begin
+                                index = 0;
+                                restart_recolector = 1;
+                                
+                                if (halt) begin
+                                    state = WAITING;
+                                end
+                                else begin
+                                    state = STEP_BY_STEP;
+                                end
 
-                    end
-            endcase                
+                                debug = 0;
+                                contador = 0;
+                                enable_next_recolector = 0;
+                                tx_start = 0;
+                                regs_counter = 0;
+                            end
+
+                        end
+                endcase                
+            end
         end
     end
 endmodule

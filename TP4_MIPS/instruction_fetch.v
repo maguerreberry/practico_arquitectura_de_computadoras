@@ -105,20 +105,21 @@ module instruction_fetch #(
 			.Out(connect_sumador_mux)
 			); 
 
-	always @(reset)
+
+	always @(posedge clk, negedge reset) 
 	begin
-		out_pc_branch = 0;
-		out_halt_flag_if = 0;
-	end
+		if(!reset) begin
+			out_pc_branch = 0;
+			out_halt_flag_if = 0;			
+		end
 
-	always @(posedge clk) 
-	begin
+		else begin
+			out_halt_flag_if <= connect_wire_douta;
 
-		out_halt_flag_if <= connect_wire_douta;
-
-		if (stall_flag | flush) 
-		begin
-			out_pc_branch <= (flush) ? {len{1'b 0}} : connect_sumador_mux;
+			if (stall_flag | flush) 
+			begin
+				out_pc_branch <= (flush) ? {len{1'b 0}} : connect_sumador_mux;
+			end
 		end
 	end
 	
