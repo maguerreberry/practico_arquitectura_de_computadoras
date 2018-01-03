@@ -96,10 +96,10 @@ module memory #(
 			.douta_wire(connect_out_mem_debug)
 			);
 
-	always @(posedge clk, negedge reset) 
+	always @(posedge clk) 
 	begin
 
-		if(!reset)
+		if(reset)
 		begin
 			read_data = 0;
 		    out_writeBack_bus = 0;

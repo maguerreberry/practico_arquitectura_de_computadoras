@@ -49,9 +49,9 @@ module registers#(
           registers_mips[ii] = {width{1'b0+(ii)}};
 	endgenerate
 
-	always @(posedge clk, negedge reset)
+	always @(posedge clk)
 	begin
-		if (!reset)
+		if (reset)
 		begin
 			read_data_1 = 0;
 			read_data_2 = 0;

@@ -46,16 +46,22 @@ module top_modular#(
 	input CLK100MHZ,
 	input SWITCH_RESET,
 	input UART_TXD_IN,
-	input [7:0] uart_in_debug,
-	input select_uart_puente,
+	output UART_RXD_OUT
 
-	output UART_RXD_OUT,
-	input tx_start_debug,
-	output tx_done_debug
-    );    
-    wire clk, reset, clk_mips, ctrl_clk_mips, reset_mips;    
-    assign clk = CLK100MHZ,
-           reset = SWITCH_RESET; 
+	// puertos para el test bench
+	// input [7:0] uart_in_debug,
+	// input select_uart_puente,
+	// input tx_start_debug,
+	// output tx_done_debug
+    );
+        
+    wire clk, 
+         reset, 
+         clk_mips, 
+         ctrl_clk_mips, 
+         reset_mips;
+             
+    assign reset = SWITCH_RESET; 
 
     wire [LEN-1:0] connect_in_pc_branch_1_2,
 				   connect_in_pc_branch_2_3,
@@ -128,8 +134,21 @@ module top_modular#(
 	assign clk_mips = (ctrl_clk_mips) ? (clk) : (1'b 0);
 
 	assign connect_rx_debug = (1 & estamos_en_test_bench) ? connect_tx_debug : UART_TXD_IN;
-	assign connect_tx_debug = UART_RXD_OUT;
+	assign UART_RXD_OUT = connect_tx_debug;
 	assign tx_done_debug = connect_uart_tx_done;
+
+  clk_wiz_0 
+  u_clk_wiz_0
+   (
+    	// Clock out ports
+    	.clk_out1(clk),     // output clk_out1
+    	// Status and control signals
+    	.reset(reset), // input reset
+    	.locked(),       // output locked
+        // Clock in ports
+    	.clk_in1(CLK100MHZ)      // input clk_in1
+    );
+
 
 	top_mips #(
 	.LEN(32),
@@ -227,7 +246,8 @@ module top_modular#(
 	uart #(
 		.NBITS(8),
 		.NUM_TICKS(16),
-		.BAUD_RATE(9600)
+		.BAUD_RATE(9600),
+		.CLK_RATE(40000000)
 		)
 		u_uart(
 			.CLK_100MHZ(clk),

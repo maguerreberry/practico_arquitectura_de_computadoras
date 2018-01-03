@@ -5,7 +5,7 @@ def concat_bin(msb,lsb):
 
 # con switch
 
-ser = serial.Serial('COM4')
+ser = serial.Serial('COM12')
 
 pc_1 = ser.read()
 pc_2 = ser.read()

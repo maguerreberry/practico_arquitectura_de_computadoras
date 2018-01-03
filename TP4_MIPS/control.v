@@ -56,6 +56,7 @@ module control#(
 			execute_bus <= {len_exec_bus{1'b0}};
 			memory_bus <= {len_mem_bus{1'b0}};
 			writeBack_bus <= {len_wb_bus{1'b0}};
+			aluop <= 0;
 		end
 		else begin
 			case(opcode)

@@ -125,9 +125,9 @@ module execute #(
 			.out_mux(mux2_alu_forwarding)
 			);
 
-	always @(posedge clk, negedge reset) 
+	always @(posedge clk) 
 	begin
-		if (!reset) begin
+		if (reset) begin
 			out_pc_branch = 0;
 			out_alu = 0;
 			zero_flag = 0;

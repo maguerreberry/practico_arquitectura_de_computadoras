@@ -128,9 +128,9 @@ module decode #(
 			.stall_flag(mux_control)
 			);
 
-	always @(posedge clk, negedge reset) 
+	always @(posedge clk) 
 	begin
-		if (!reset) begin
+		if (reset) begin
 			out_pc_branch = 0;
 			out_sign_extend = 0;
 			out_rt = 0;

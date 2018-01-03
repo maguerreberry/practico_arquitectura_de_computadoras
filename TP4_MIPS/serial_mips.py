@@ -30,9 +30,9 @@ Mostrar comandos disponibles: h
 ########################## funciones ##########################
 
 
-def read_32():
+def read32():
 	# leo primero el byte menos significativo
-	reg_1 = ser.read() 
+	reg_1 = ser.read()
 	reg_2 = ser.read()
 	reg_3 = ser.read()
 	reg_4 = ser.read()
@@ -57,17 +57,19 @@ def print_registro_32(mensaje, registro):
 	print # para el newline
 
 def serialConnect(lim):
-	for i in xrange(1,lim):
-		try:
-			puerto = 'COM' + str(i)
-			ser = serial.Serial(puerto)
-			com = i
-			break
-		except Exception as e:
-			pass
-			if (lim-1) == 9:
-				print "No puedo encontrar la FPGA"
-				quit()
+	# for i in xrange(1,lim):
+	# 	try:
+	# 		puerto = 'COM' + str(i)
+	# 		ser = serial.Serial(puerto)
+	# 		com = i
+	# 		break
+	# 	except Exception as e:
+	# 		pass
+	# 		if (lim-1) == 9:
+	# 			print "No puedo encontrar la FPGA"
+	# 			quit()
+	ser = serial.Serial('COM12')
+	print "FPGA encontrada en puerto COM12"
 	return ser
 
 def openFile(ser):
@@ -81,10 +83,10 @@ def openFile(ser):
 	instrucciones = 0
 
 	while True:
-	    line = f.readline()
-	    if not line: break
-	    sendInstruction(line)
-	    instrucciones += 1
+		line = f.readline()
+		if not line: break
+		sendInstruction(line)
+		instrucciones += 1
 
 	return instrucciones
 
@@ -98,7 +100,7 @@ def sendInstruction(instruction):
 
 def showAllRegisters():
 	print "---Contador de Programa---"
-	pc = read_32()
+	pc = read32()
 	print_registro_32("PC: ", pc)	
 
 	print "---Latches Intermedios IF/ID---"
@@ -161,100 +163,102 @@ def showAllRegisters():
 	print_registro_32("Writeback bus: ", bus1_4_5[30:])
 
 	print "---Ciclos de clock empleados---"
-	ciclos = read_32()
+	ciclos = read32()
 	print_registro_32("Ciclos: ", ciclos)
 
 	print "---Registros del procesador---"
 	for i in xrange(0,nro_registros):
 
-		registro = read_32()
+		registro = read32()
 		print_registro_32("Registro " + str(i) + ": ", registro)
 
 
 	print "---Posiciones de memoria---"
 	for i in xrange(0,posiciones_memoria):
 
-		memoria = read_32()
+		memoria = read32()
 		print_registro_32("Posicion " + str(i) + ": ", memoria)
 
 
 ########################## main ##########################
 
-print """
- ____                                    _              __  __ ___ ____  ____ 
-|  _ \ _ __ ___   ___ ___  ___  __ _  __| | ___  _ __  |  \/  |_ _|  _ \/ ___| 
-| |_) | '__/ _ \ / __/ _ \/ __|/ _` |/ _` |/ _ \| '__| | |\/| || || |_) \___ \ 
-|  __/| | | (_) | (_|  __/\__ \ (_| | (_| | (_) | |    | |  | || ||  __/ ___) |
-|_|   |_|  \___/ \___\___||___/\__,_|\__,_|\___/|_|    |_|  |_|___|_|   |____/ 
-"""
+if __name__ == '__main__':
+	print """
+	 ____                                    _              __  __ ___ ____  ____ 
+	|  _ \ _ __ ___   ___ ___  ___  __ _  __| | ___  _ __  |  \/  |_ _|  _ \/ ___| 
+	| |_) | '__/ _ \ / __/ _ \/ __|/ _` |/ _` |/ _ \| '__| | |\/| || || |_) \___ \ 
+	|  __/| | | (_) | (_|  __/\__ \ (_| | (_| | (_) | |    | |  | || ||  __/ ___) |
+	|_|   |_|  \___/ \___\___||___/\__,_|\__,_|\___/|_|    |_|  |_|___|_|   |____/ 
+	"""
 
-print "\nIngenieria en Computacion 2017\nAutores:\n	Matthew Aguerreberry\n	Facundo Maero\n"
+	print "\nIngenieria en Computacion 2017\nAutores:\n	Matthew Aguerreberry\n	Facundo Maero\n"
 
-raw_input("Presione una tecla para iniciar la carga del programa ensamblador por UART")
+	raw_input("Presione una tecla para iniciar la carga del programa ensamblador por UART")
 
-com = serialConnect(10)
-print "FPGA encontrada en puerto COM" + com
+	ser = serialConnect(10)
 
-ret = ser.write(StartSignal)
+	ret = ser.write(StartSignal)
+	# ret = ser.write(1)
 
-print "Abriendo el archivo " + file
+	print "Abriendo el archivo " + file
 
-lineas = openFile(com)
+	lineas = openFile(ser)
 
-print "Envio del programa ensamblador finalizado"
+	print "Envio del programa ensamblador finalizado"
 
-print helpMessage
+	print helpMessage
 
-while True:
+	while True:
 
-	try:
-		modo = raw_input("Ingrese un comando...")
-	except Exception as e:
-		print "ERROR, entrada incorrecta"
-		continue
+		try:
+			modo = raw_input("Ingrese un comando...")
+		except Exception as e:
+			print "ERROR, entrada incorrecta"
+			continue
 
-	if modo == "c":
-		print "Modo continuo seleccionado\nEl valor final en los registros y posiciones de memoria es:\n\n"
-		ret = ser.write(ContinuosSignal)
-		showAllRegisters()
-		continue
+		if modo == "c":
 
-	elif modo == "s":
-		print "Modo paso a paso seleccionado"
-		print "Para ejecutar un ciclo de clock y ver el estado de los registros, ingrese s"
-		print "Para salir del modo paso a paso, ingrese q"
+			print "Modo continuo seleccionado\nEl valor final en los registros y posiciones de memoria es:\n\n"
+			ret = ser.write(ContinuosSignal)
+			showAllRegisters()
+			continue
 
-		ret = ser.write(StepByStepSignal)
+		elif modo == "s":
+			print "Modo paso a paso seleccionado"
+			print "Para ejecutar un ciclo de clock y ver el estado de los registros, ingrese s"
+			print "Para salir del modo paso a paso, ingrese q"
 
-		while True:			
-			try:
-				command = raw_input()
-				if command == "s":
-					ret = ser.write(StepSignal)
-					showAllRegisters()
-				elif command == "x":
-					break
-			
-			except Exception as e:
-				print "ERROR, entrada incorrecta"
+			ret = ser.write(StepByStepSignal)
 
-	elif modo == "r":
-		print "Reprogramando FPGA..."
-		raw_input("Presione una tecla para iniciar la carga del programa ensamblador por UART")
-		ret = ser.write(ReProgramSignal)
-		ret = ser.write(StartSignal)		
-		print "Abriendo el archivo " + file
-		lineas = openFile(com)
-		print "Envio del programa ensamblador finalizado"
+			while True:
+				try:
+					command = raw_input()
+					if command == "s":
+						ret = ser.write(StepSignal)
+						showAllRegisters()
+					elif command == "x":
+						break
 
-	elif modo == "q":
-		print "Desconectando puerto serie y finalizando script..."
-		break
+				except Exception as e:
+					print "ERROR, entrada incorrecta"
 
-	elif modo == "h":
-		print helpMessage
+		elif modo == "r":
+			print "Reprogramando FPGA..."
+			raw_input("Presione una tecla para iniciar la carga del programa ensamblador por UART")
+			ret = ser.write(ReProgramSignal)
+			ret = ser.write(StartSignal)
+			print "Abriendo el archivo " + file
+			lineas = openFile(ser)
+			print "Envio del programa ensamblador finalizado"
 
-	else:
-		print "Comando no reconocido, intente nuevamente..."
+		elif modo == "q":
+			print "Desconectando puerto serie y finalizando script..."
+			break
 
-ser.close()
+		elif modo == "h":
+			print helpMessage
+
+		else:
+			print "Comando no reconocido, intente nuevamente..."
+
+	ser.close()

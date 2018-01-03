@@ -81,7 +81,7 @@ module instruction_fetch #(
 		.RAM_WIDTH(len),
 		.RAM_DEPTH(2048),
 		// .INIT_FILE("/home/facundo/Desktop/practico_arquitectura_de_computadoras/TP4_MIPS/program.hex"),
-        // .INIT_FILE("E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP4_MIPS/program.hex"),
+        .INIT_FILE("E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP4_MIPS/program.hex"),
 		.RAM_PERFORMANCE("LOW_LATENCY")
 		)
 		u_ram_instrucciones(
@@ -106,11 +106,11 @@ module instruction_fetch #(
 			); 
 
 
-	always @(posedge clk, negedge reset) 
+	always @(posedge clk) 
 	begin
-		if(!reset) begin
-			out_pc_branch = 0;
-			out_halt_flag_if = 0;			
+		if(reset) begin
+			out_pc_branch <= 0;
+			out_halt_flag_if <= 0;			
 		end
 
 		else begin
