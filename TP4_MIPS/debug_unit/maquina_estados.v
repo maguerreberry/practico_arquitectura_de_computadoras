@@ -142,8 +142,8 @@ module maquina_estados #(
             if (reset) begin
               ciclos = 0;
               reset_mips = 0;
-             state = IDLE;
-               // state = WAITING;
+              // state = IDLE;
+              state = WAITING;
               // state = PROGRAMMING;
 
               sub_state = SUB_INIT;
