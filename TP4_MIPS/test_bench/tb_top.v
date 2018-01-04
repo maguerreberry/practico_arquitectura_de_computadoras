@@ -153,19 +153,35 @@ module tb_top(
                         tx_start_debug = 0;
                     end
                 end
-            EXECUTE:
+            // EXECUTE: // continuous
+            //     begin
+            //         uart_debug = ContinuosSignal;
+            //         tx_start_debug = 1;
+            //         if (tx_done_debug) begin
+            //             uart_puente_selector = 0;
+            //             state = IDLE;
+            //         end
+            //     end
+            EXECUTE: // step by step
                 begin
-                    uart_debug = ContinuosSignal;
+                    uart_debug = StepByStepSignal;
                     tx_start_debug = 1;
                     if (tx_done_debug) begin
-                        uart_puente_selector = 0;
                         state = IDLE;
                     end
                 end
-            IDLE:
+            // IDLE: // continuous
+            //     begin
+            //         uart_debug = 0;
+            //         tx_start_debug = 0;                    
+            //     end
+            IDLE: // step by step
                 begin
-                    uart_debug = 0;
-                    tx_start_debug = 0;                    
+                    uart_debug = StepSignal;
+                    tx_start_debug = 1;
+                    if (tx_done_debug) begin
+                        state = IDLE;
+                    end
                 end
         endcase
     end

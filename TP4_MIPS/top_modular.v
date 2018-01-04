@@ -46,13 +46,13 @@ module top_modular#(
 	input CLK100MHZ,
 	input SWITCH_RESET,
 	input UART_TXD_IN,
-	output UART_RXD_OUT
+	output UART_RXD_OUT,
 
 	// puertos para el test bench
-//	input [7:0] uart_in_debug,
-//	input select_uart_puente,
-//	input tx_start_debug,
-//	output tx_done_debug
+	input [7:0] uart_in_debug,
+	input select_uart_puente,
+	input tx_start_debug,
+	output tx_done_debug
     );
         
     wire clk, 
@@ -131,7 +131,7 @@ module top_modular#(
 
 	assign connect_write_data_5_2 = (connect_out_writeBack_bus[0]) ? connect_read_data : connect_out_addr_mem;
 
-	assign clk_mips = (ctrl_clk_mips) ? (clk) : (1'b 0);
+	assign clk_mips = (ctrl_clk_mips) ? (!clk) : (1'b 0);
 
 	assign connect_rx_debug = (1 & estamos_en_test_bench) ? connect_tx_debug : UART_TXD_IN;
 	assign UART_RXD_OUT = connect_tx_debug;
@@ -247,7 +247,7 @@ module top_modular#(
 		.NBITS(8),
 		.NUM_TICKS(16),
 		.BAUD_RATE(9600),
-		.CLK_RATE(45000000)
+		.CLK_RATE(100000000)
 		)
 		u_uart(
 			.CLK_100MHZ(clk),
