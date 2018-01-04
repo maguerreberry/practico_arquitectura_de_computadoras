@@ -88,7 +88,6 @@ module decode #(
 
 	control #()
 		u_control(
-			.clk(clk),
 			.opcode(in_instruccion[31:26]),
 			.execute_bus(connect_execute_bus),
 			.memory_bus(connect_memory_bus),

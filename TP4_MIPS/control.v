@@ -25,7 +25,6 @@ module control#(
 	parameter len_mem_bus = 9,
 	parameter len_wb_bus = 2
 	)(
-	input clk,
     input [5:0] opcode,
     input reset,
     input [5:0] opcode_lsb,

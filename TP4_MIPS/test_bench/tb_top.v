@@ -72,8 +72,8 @@ module tb_top(
 		reset = 1;
         uart_puente_selector = 1;
 
-       program_file = $fopen("/home/facundo/Desktop/practico_arquitectura_de_computadoras/TP4_MIPS/program.hex", "r");
-         // program_file = $fopen("E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP4_MIPS/program.hex", "r");
+       // program_file = $fopen("/home/facundo/Desktop/practico_arquitectura_de_computadoras/TP4_MIPS/program.hex", "r");
+         program_file = $fopen("E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP4_MIPS/program.hex", "r");
 
         if(program_file == 0) $stop;
 
@@ -153,119 +153,37 @@ module tb_top(
                         tx_start_debug = 0;
                     end
                 end
-            // EXECUTE: // continuous
+            EXECUTE: // continuous
+                begin
+                    uart_debug = ContinuosSignal;
+                    tx_start_debug = 1;
+                    if (tx_done_debug) begin
+                        uart_puente_selector = 0;
+                        state = IDLE;
+                    end
+                end
+            IDLE: // continuous
+                begin
+                    uart_debug = 0;
+                    tx_start_debug = 0;                    
+                end
+            // EXECUTE: // step by step
             //     begin
-            //         uart_debug = ContinuosSignal;
+            //         uart_debug = StepByStepSignal;
             //         tx_start_debug = 1;
             //         if (tx_done_debug) begin
-            //             uart_puente_selector = 0;
             //             state = IDLE;
             //         end
             //     end
-            EXECUTE: // step by step
-                begin
-                    uart_debug = StepByStepSignal;
-                    tx_start_debug = 1;
-                    if (tx_done_debug) begin
-                        state = IDLE;
-                    end
-                end
-            // IDLE: // continuous
+            // IDLE: // step by step
             //     begin
-            //         uart_debug = 0;
-            //         tx_start_debug = 0;                    
+            //         uart_debug = StepSignal;
+            //         tx_start_debug = 1;
+            //         if (tx_done_debug) begin
+            //             state = IDLE;
+            //         end
             //     end
-            IDLE: // step by step
-                begin
-                    uart_debug = StepSignal;
-                    tx_start_debug = 1;
-                    if (tx_done_debug) begin
-                        state = IDLE;
-                    end
-                end
         endcase
     end
 
 endmodule
-
-
-        // #20
-
-        // uart_debug = 0;
-
-        // #2000000
-
-        // uart_debug = StepByStepSignal;
-// 
-        // #20
-        // uart_debug = 0;
-
-        // #20
-// 
-        // uart_debug = StepSignal;
-        // #20
-        // uart_debug = 0;
-
-        // #2000000
-
-        // uart_debug = StepSignal;
-
-        // #20
-        // // clk_mips = 0;
-        // uart_debug = 0;
-
-        // #2000000
-
-        // uart_debug = StepSignal;
-
-        // #20
-        // // clk_mips = 0;
-        // uart_debug = 0;
-
-        // #2000000
-
-        // uart_debug = StepSignal;
-
-        // #20
-        // // clk_mips = 0;
-        // uart_debug = 0;
-
-        // #2000000
-
-        // uart_debug = StepSignal;
-
-        // #20
-        // // clk_mips = 0;
-        // uart_debug = 0;
-
-        // #2000000
-
-        // uart_debug = StepSignal;
-
-        // #20
-        // // clk_mips = 0;
-        // uart_debug = 0;
-
-        // #2000000
-
-        // uart_debug = StepSignal;
-
-        // #20
-        // // clk_mips = 0;
-        // uart_debug = 0;
-
-        // #2000000
-
-        // uart_debug = StepSignal;
-
-        // #20
-        // // clk_mips = 0;
-        // uart_debug = 0;
-
-        // #2000000
-
-        // uart_debug = StepSignal;
-
-        // #20
-        // // clk_mips = 0;
-        // uart_debug = 0;
