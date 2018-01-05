@@ -154,7 +154,7 @@ module maquina_estados #(
           tx_start = 0;
           // uart_data_out = 0;
           contador = 0;
-          write write_enable_ram_inst = 0;
+          write_enable_ram_inst = 0;
         end
         else begin
             case(state)
