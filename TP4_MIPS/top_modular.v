@@ -210,12 +210,12 @@ module top_modular#(
 	maquina_estados #(
 		.len(LEN),
 		.cant_instrucciones(64),
-		.nb_Latches_1_2(1),
-		.nb_Latches_2_3(1),
-		.nb_Latches_3_4(1),
-		.nb_Latches_4_5(1),
-		.cant_regs(3),
-		.cant_mem_datos(1),
+		.nb_Latches_1_2(nb_Latches_1_2),
+		.nb_Latches_2_3(nb_Latches_2_3),
+		.nb_Latches_3_4(nb_Latches_3_4),
+		.nb_Latches_4_5(nb_Latches_4_5),
+		.cant_regs(32),
+		.cant_mem_datos(16),
 		.LEN_DATA(8)
 		)
 		u_maquina_estados(
@@ -254,7 +254,7 @@ module top_modular#(
 		.NBITS(8),
 		.NUM_TICKS(16),
 		.BAUD_RATE(38400),
-		.CLK_RATE(40000000)
+		.CLK_RATE(30000000)
 		)
 		u_uart(
 			.CLK_100MHZ(clk),

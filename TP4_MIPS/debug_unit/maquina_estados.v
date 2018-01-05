@@ -130,7 +130,7 @@ module maquina_estados #(
     assign uart_data_out = reset ? 0 : bytes_to_send[index];
     assign state_out = state;
 
-    always @(posedge clk, posedge reset, posedge rx_done) begin
+    always @(posedge clk, posedge reset) begin
         if (reset) begin
           ciclos = 0;
           reset_mips = 0;
@@ -154,6 +154,7 @@ module maquina_estados #(
           tx_start = 0;
           // uart_data_out = 0;
           contador = 0;
+          write write_enable_ram_inst = 0;
         end
         else begin
             case(state)
@@ -166,12 +167,12 @@ module maquina_estados #(
                         if (rx_done) begin
                             if (uart_data_in == StartSignal) 
                             begin
-                                state <= PROGRAMMING;
-                                sub_state <= SUB_INIT;
+                                state = PROGRAMMING;
+                                sub_state = SUB_INIT;
                             end
                             else 
                             begin
-                                state <= IDLE;    
+                                state = IDLE;    
                             end
                         end
                     end
