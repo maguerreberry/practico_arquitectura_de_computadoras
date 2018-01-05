@@ -54,7 +54,7 @@ def print_registro_32(mensaje, registro, msb = 31, lsb = 0):
 	binario = str(bin(int(reg,2)))
 	decimal = str(int(reg,2))
 	hexa = str(hex(int(reg,2)))
-	print mensaje + binario.rjust(36) + decimal.rjust(14) + hexa.rjust(12)
+	print mensaje.ljust(22) + binario.rjust(36) + decimal.rjust(14) + hexa.rjust(12)
 
 def serialConnect(lim):
 	# for i in xrange(1,lim):
