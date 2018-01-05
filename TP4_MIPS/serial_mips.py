@@ -54,7 +54,7 @@ def print_registro_32(mensaje, registro, msb = 31, lsb = 0):
 	binario = str(bin(int(reg,2)))
 	decimal = str(int(reg,2))
 	hexa = str(hex(int(reg,2)))
-	print "mensaje" + binario.rjust(36) + decimal.rjust(14) + hexa.rjust(12)
+	print mensaje + binario.rjust(36) + decimal.rjust(14) + hexa.rjust(12)
 
 def serialConnect(lim):
 	# for i in xrange(1,lim):
@@ -103,6 +103,7 @@ def showAllRegisters():
 	print "---Contador de Programa---"
 	pc = read32()
 	print_registro_32("PC: ", pc)	
+	print
 
 	print "---Latches Intermedios IF/ID---"
 	branch_1_2 = read32()
@@ -110,6 +111,7 @@ def showAllRegisters():
 
 	print_registro_32("PC siguiente: ", pc_out_1_2)
 	print_registro_32("Branch target: ", branch_1_2)
+	print
 
 	print "---Latches Intermedios ID/EX---"
 
@@ -125,6 +127,7 @@ def showAllRegisters():
 	print_registro_32("Rt: ", bus1_2_3, msb=26, lsb=22)
 	print_registro_32("Rs: ", bus1_2_3, msb=21, lsb=17)
 	print_registro_32("Rd: ", bus1_2_3, msb=16, lsb=12)
+	print
 
 	# print_registro_32("Rd: ", bus1_2_3)
 
@@ -132,6 +135,7 @@ def showAllRegisters():
 	print_registro_32("Execute bus: ", bus2_2_3, msb=20, lsb=10)
 	print_registro_32("Memory bus: ", bus2_2_3, msb=29, lsb=21)
 	print_registro_32("Writeback bus: ", bus2_2_3, msb=31, lsb=30)
+	print
 
 	# print_registro_32("Execute bus: ", bus2_2_3)
 
@@ -148,10 +152,12 @@ def showAllRegisters():
 
 	print_registro_32("Zero flag: ", bus1_3_4, msb=31, lsb=31)
 	print_registro_32("Write register: ", bus1_3_4, msb=30, lsb=26)
+	print
 	
 	print "Buses de control"
 	print_registro_32("Memory bus: ", bus1_3_4, msb=23, lsb=15)
 	print_registro_32("Writeback bus: ", bus1_3_4, msb=25, lsb=24)
+	print
 
  	# print_registro_32("Writeback bus: ", bus1_3_4)
 
@@ -165,21 +171,25 @@ def showAllRegisters():
 	print_registro_32("ALU out: ", alu_out_4_5)
 
 	print_registro_32("Write register: ", bus1_4_5, msb=29, lsb=25)
+	print
 
 	print "Buses de control"
 	print_registro_32("Writeback bus: ", bus1_4_5, msb=31, lsb=30)
+	print
 
 	# print_registro_32("Writeback bus: ", bus1_4_5)
 
 	print "---Ciclos de clock empleados---"
 	ciclos = read32()
 	print_registro_32("Ciclos: ", ciclos)
+	print
 
 	print "---Registros del procesador---"
 	for i in xrange(0,nro_registros):
 
 		registro = read32()
 		print_registro_32("Registro " + str(i) + ": ", registro)
+	print
 
 
 	print "---Posiciones de memoria---"
@@ -187,6 +197,7 @@ def showAllRegisters():
 
 		memoria = read32()
 		print_registro_32("Posicion " + str(i) + ": ", memoria)
+	print
 
 
 ########################## main ##########################
