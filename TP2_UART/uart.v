@@ -23,7 +23,8 @@ module uart
 #(
 	parameter NBITS = 8,
 	parameter NUM_TICKS = 16,
-	parameter BAUD_RATE = 9600
+	parameter BAUD_RATE = 38400,
+	parameter CLK_RATE = 40000000
 )
 (
 	input CLK_100MHZ,
@@ -40,7 +41,7 @@ module uart
 
 	wire connect_baud_rate_rx_tx; 
 
-    baud_rate_gen #(.BAUD_RATE(BAUD_RATE)) 
+    baud_rate_gen #(.BAUD_RATE(BAUD_RATE), .CLK_RATE(CLK_RATE)) 
     u_baud_rate_gen (.reset(reset),
     	.CLK_100MHZ(CLK_100MHZ),
     	.CLK_TICK(connect_baud_rate_rx_tx));

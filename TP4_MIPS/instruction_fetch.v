@@ -73,7 +73,6 @@ module instruction_fetch #(
 			.clk(clk),
 			.reset(reset),
 			.enable(stall_flag),
-			// .enable(1),
 			.Out(connect_pc_sumador_mem)
 			);
 
@@ -81,6 +80,7 @@ module instruction_fetch #(
 		.RAM_WIDTH(len),
 		.RAM_DEPTH(2048),
 		// .INIT_FILE("/home/facundo/Desktop/practico_arquitectura_de_computadoras/TP4_MIPS/program.hex"),
+		.INIT_FILE("/home/maguerreberry/practico_arquitectura_de_computadoras/TP4_MIPS/program.hex"),
         // .INIT_FILE("E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP4_MIPS/program.hex"),
 		.RAM_PERFORMANCE("LOW_LATENCY")
 		)

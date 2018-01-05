@@ -5,7 +5,7 @@ def concat_bin(msb,lsb):
 
 # con switch
 
-ser = serial.Serial('COM12')
+ser = serial.Serial('/dev/ttyUSB1', baudrate = 38400)
 
 pc_1 = ser.read()
 pc_2 = ser.read()

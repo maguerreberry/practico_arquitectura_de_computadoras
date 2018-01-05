@@ -46,7 +46,9 @@ module top_modular#(
 	input CLK100MHZ,
 	input SWITCH_RESET,
 	input UART_TXD_IN,
-	output UART_RXD_OUT
+	output [2:0] led,
+	output UART_RXD_OUT,
+	output [5:0] led_state
 
 	// puertos para el test bench
 	// input [7:0] uart_in_debug,
@@ -137,6 +139,15 @@ module top_modular#(
 	assign UART_RXD_OUT = connect_tx_debug;
 	assign tx_done_debug = connect_uart_tx_done;
 
+
+	assign led[0] = connect_uart_tx_start;	
+	assign led[1] = connect_halt;
+	assign led[2] = reset;
+
+	wire [5:0] connect_state_out;
+
+	assign led_state = connect_state_out;
+
   clk_wiz_0 
   u_clk_wiz_0
    (
@@ -219,6 +230,7 @@ module top_modular#(
 		    .recolector(connect_data_recolector),
 
 		    // outputs
+		    .state_out             (connect_state_out),
 		    .addr_mem_inst(connect_addr_mem_inst),
 		    .ins_to_mem(connect_ins_to_mem),
 		    .reset_mips(reset_mips),
@@ -232,13 +244,8 @@ module top_modular#(
 		
 		    //UART
 		    .tx_done(connect_uart_tx_done),
-		    // .tx_done(1),
-
-		    .rx_done(connect_uart_rx_done),
-		    
+		    .rx_done(connect_uart_rx_done),	    
 		    .uart_data_in(connect_uart_data_out), 
-		    // .uart_data_in(uart_in_debug),
-
 		    .tx_start(connect_uart_tx_start),
 		    .uart_data_out(connect_uart_data_in) 
 			);
@@ -246,8 +253,8 @@ module top_modular#(
 	uart #(
 		.NBITS(8),
 		.NUM_TICKS(16),
-		.BAUD_RATE(9600),
-		.CLK_RATE(50000000)
+		.BAUD_RATE(38400),
+		.CLK_RATE(40000000)
 		)
 		u_uart(
 			.CLK_100MHZ(clk),

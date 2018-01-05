@@ -66,7 +66,8 @@ module super_top(
 	uart #(
 		.NBITS(`LEN_DATA),
 		.NUM_TICKS(16),
-		.BAUD_RATE(9600)
+		.BAUD_RATE(38400),
+		.CLK_RATE(40000000)
 		)
 		u_uart(
 			.CLK_100MHZ(CLK100MHZ),
@@ -112,7 +113,8 @@ module super_top(
 			.RAM_DEPTH(2048),
 			.RAM_PERFORMANCE("LOW_LATENCY"),
 			// .INIT_FILE("/home/facundo/Desktop/practico_arquitectura_de_computadoras/TP3_BIP/TP3_BIP.srcs/sources_1/new/program.hex")
-            .INIT_FILE("E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP3_BIP/TP3_BIP.srcs/sources_1/new/program.hex")
+            .INIT_FILE("/home/maguerreberry/practico_arquitectura_de_computadoras/TP3_BIP/TP3_BIP.srcs/sources_1/new/program.hex")
+            //.INIT_FILE("E:/Drive/Facultad/quinto/Arquitectura_de_Computadoras/TP3_BIP/TP3_BIP.srcs/sources_1/new/program.hex")
 			)
 		u_ram_instrucciones(
 			.addra(connect_addr_instrucciones),

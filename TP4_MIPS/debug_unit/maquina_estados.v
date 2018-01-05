@@ -56,7 +56,7 @@ module maquina_estados #(
     output reg enable_next_recolector,
     output reg debug,
     output reg write_enable_ram_inst,          // write enable memoria de programa
-
+    output [5:0] state_out,
 
     //UART
     input tx_done,
@@ -128,14 +128,15 @@ module maquina_estados #(
     assign ins_to_mem = instruction;
     assign addr_mem_inst = num_instruc;
     assign uart_data_out = reset ? 0 : bytes_to_send[index];
+    assign state_out = state;
 
-    always @(posedge clk) begin
+    always @(posedge clk, posedge reset, posedge rx_done) begin
         if (reset) begin
           ciclos = 0;
           reset_mips = 0;
-          state = IDLE;
-          // state = WAITING;
-          // state = PROGRAMMING;
+          // state = IDLE;
+          //state = WAITING;
+          state = CONTINUOS;
 
           sub_state = SUB_INIT;
           index = 0;

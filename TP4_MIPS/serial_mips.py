@@ -68,8 +68,9 @@ def serialConnect(lim):
 	# 		if (lim-1) == 9:
 	# 			print "No puedo encontrar la FPGA"
 	# 			quit()
-	ser = serial.Serial('COM12')
-	print "FPGA encontrada en puerto COM12"
+	port = '/dev/ttyUSB1'
+	ser = serial.Serial(port, baudrate = 38400)
+	print "FPGA encontrada en puerto " + port
 	return ser
 
 def openFile(ser):
@@ -120,15 +121,19 @@ def showAllRegisters():
 	print_registro_32("Sign extend: ", sign_extend_2_3)
 	print_registro_32("Branch target: ", branch_2_3)
 	
-	print_registro_32("Shamt: ", bus1_2_3[27:])
-	print_registro_32("Rt: ", bus1_2_3[22:27])
-	print_registro_32("Rs: ", bus1_2_3[17:22])
-	print_registro_32("Rd: ", bus1_2_3[12:17])
+#	print_registro_32("Shamt: ", bus1_2_3[27:32])
+#	print_registro_32("Rt: ", bus1_2_3[22:27])
+#	print_registro_32("Rs: ", bus1_2_3[17:22])
+#	print_registro_32("Rd: ", bus1_2_3[12:17])
+
+	print_registro_32("Rd: ", bus1_2_3)
 
 	print "Buses de control"
-	print_registro_32("Execute bus: ", bus2_2_3[10:21])
-	print_registro_32("Memory bus: ", bus2_2_3[21:30])
-	print_registro_32("Writeback bus: ", bus2_2_3[30:])
+#	print_registro_32("Execute bus: ", bus2_2_3[10:21])
+#	print_registro_32("Memory bus: ", bus2_2_3[21:30])
+#	print_registro_32("Writeback bus: ", bus2_2_3[30:32])
+
+	print_registro_32("Execute bus: ", bus2_2_3)
 
 	print "---Latches Intermedios EX/MEM---"
 
@@ -141,12 +146,14 @@ def showAllRegisters():
 	print_registro_32("Branch target: ", branch_3_4)
 	print_registro_32("Registro 2: ", reg2_3_4)
 
-	print_registro_32("Zero flag: ", bus1_3_4[31])
-	print_registro_32("Write register: ", bus1_3_4[26:31])
+#	print_registro_32("Zero flag: ", bus1_3_4[31])
+#	print_registro_32("Write register: ", bus1_3_4[26:31])
 	
 	print "Buses de control"
-	print_registro_32("Memory bus: ", bus1_3_4[15:24])
-	print_registro_32("Writeback bus: ", bus1_3_4[24:26])
+#	print_registro_32("Memory bus: ", bus1_3_4[15:24])
+#	print_registro_32("Writeback bus: ", bus1_3_4[24:26])
+
+ 	print_registro_32("Writeback bus: ", bus1_3_4)
 
 	print "---Latches Intermedios MEM/WB---"
 
@@ -157,10 +164,12 @@ def showAllRegisters():
 	print_registro_32("Read data: ", read_data)
 	print_registro_32("ALU out: ", alu_out_4_5)
 
-	print_registro_32("Write register: ", bus1_4_5[25:30])
+#	print_registro_32("Write register: ", bus1_4_5[25:30])
 
 	print "Buses de control"
-	print_registro_32("Writeback bus: ", bus1_4_5[30:])
+#	print_registro_32("Writeback bus: ", bus1_4_5[30:])
+
+	print_registro_32("Writeback bus: ", bus1_4_5)
 
 	print "---Ciclos de clock empleados---"
 	ciclos = read32()
@@ -197,16 +206,19 @@ if __name__ == '__main__':
 
 	ser = serialConnect(10)
 
-	ret = ser.write(StartSignal)
-	# ret = ser.write(1)
-
-	print "Abriendo el archivo " + file
-
-	lineas = openFile(ser)
-
-	print "Envio del programa ensamblador finalizado"
+#	ret = ser.write(StartSignal)
+#	# ret = ser.write(1)
+#
+#	print "Abriendo el archivo " + file
+#
+#	lineas = openFile(ser)
+#
+#	print "Envio del programa ensamblador finalizado"
 
 	print helpMessage
+
+#	while True:
+#		showAllRegisters()
 
 	while True:
 

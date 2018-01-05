@@ -27,7 +27,7 @@ module baud_rate_gen(
 );
 
 parameter BAUD_RATE = 9600;
-parameter CLK_RATE = 100000000;
+parameter CLK_RATE = 40000000;
 localparam NUM_TICKS = 16;
 
 parameter RATE_CLK_OUT = CLK_RATE / (BAUD_RATE * NUM_TICKS);
