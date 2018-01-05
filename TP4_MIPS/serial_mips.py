@@ -44,17 +44,17 @@ def concat_bin(byte_4, byte_3, byte_2, byte_1):
 
 	return (ord(byte_4) << 24) + (ord(byte_3) << 16) + (ord(byte_2) << 8) + ord(byte_1)
 
-def print_registro_32(mensaje, registro):
-	print mensaje,
+def print_registro_32(mensaje, registro, msb = 31, lsb = 0):
+	
+	bitInicial = 31 - msb
+	nroBits = (31 - lsb) + 1
 
-	if b:
-		print bin(registro).lstrip('-0b').zfill(32),
-	if d:
-		print int(registro).lstrip('-0b').zfill(32),
-	if h:
-		print hex(registro).lstrip('-0b').zfill(32),
+	reg =  bin(registro).replace('0b','').zfill(32)[bitInicial:nroBits]
 
-	print # para el newline
+	binario = str(bin(int(reg,2)))
+	decimal = str(int(reg,2))
+	hexa = str(hex(int(reg,2)))
+	print "mensaje" + binario.rjust(36) + decimal.rjust(14) + hexa.rjust(12)
 
 def serialConnect(lim):
 	# for i in xrange(1,lim):
@@ -121,17 +121,17 @@ def showAllRegisters():
 	print_registro_32("Sign extend: ", sign_extend_2_3)
 	print_registro_32("Branch target: ", branch_2_3)
 	
-	print_registro_32("Shamt: ", bin(bus1_2_3)[27:32])
-	print_registro_32("Rt: ", bin(bus1_2_3)[22:27])
-	print_registro_32("Rs: ", bin(bus1_2_3)[17:22])
-	print_registro_32("Rd: ", bin(bus1_2_3)[12:17])
+	print_registro_32("Shamt: ", bus1_2_3, msb=31, lsb=27)
+	print_registro_32("Rt: ", bus1_2_3, msb=26, lsb=22)
+	print_registro_32("Rs: ", bus1_2_3, msb=21, lsb=17)
+	print_registro_32("Rd: ", bus1_2_3, msb=16, lsb=12)
 
 	# print_registro_32("Rd: ", bus1_2_3)
 
 	print "Buses de control"
-	print_registro_32("Execute bus: ", bin(bus2_2_3)[10:21])
-	print_registro_32("Memory bus: ", bin(bus2_2_3)[21:30])
-	print_registro_32("Writeback bus: ", bin(bus2_2_3)[30:32])
+	print_registro_32("Execute bus: ", bus2_2_3, msb=20, lsb=10)
+	print_registro_32("Memory bus: ", bus2_2_3, msb=29, lsb=21)
+	print_registro_32("Writeback bus: ", bus2_2_3, msb=31, lsb=30)
 
 	# print_registro_32("Execute bus: ", bus2_2_3)
 
@@ -146,12 +146,12 @@ def showAllRegisters():
 	print_registro_32("Branch target: ", branch_3_4)
 	print_registro_32("Registro 2: ", reg2_3_4)
 
-	print_registro_32("Zero flag: ", bin(bus1_3_4)[31])
-	print_registro_32("Write register: ", bin(bus1_3_4)[26:31])
+	print_registro_32("Zero flag: ", bus1_3_4, msb=31, lsb=31)
+	print_registro_32("Write register: ", bus1_3_4, msb=30, lsb=26)
 	
 	print "Buses de control"
-	print_registro_32("Memory bus: ", bin(bus1_3_4)[15:24])
-	print_registro_32("Writeback bus: ", bin(bus1_3_4)[24:26])
+	print_registro_32("Memory bus: ", bus1_3_4, msb=23, lsb=15)
+	print_registro_32("Writeback bus: ", bus1_3_4, msb=25, lsb=24)
 
  	# print_registro_32("Writeback bus: ", bus1_3_4)
 
@@ -164,10 +164,10 @@ def showAllRegisters():
 	print_registro_32("Read data: ", read_data)
 	print_registro_32("ALU out: ", alu_out_4_5)
 
-	print_registro_32("Write register: ", bin(bus1_4_5)[25:30])
+	print_registro_32("Write register: ", bus1_4_5, msb=29, lsb=25)
 
 	print "Buses de control"
-	print_registro_32("Writeback bus: ", bin(bus1_4_5)[30:])
+	print_registro_32("Writeback bus: ", bus1_4_5, msb=31, lsb=30)
 
 	# print_registro_32("Writeback bus: ", bus1_4_5)
 
