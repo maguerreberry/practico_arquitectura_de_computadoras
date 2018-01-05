@@ -127,19 +127,19 @@ module decode #(
 			.stall_flag(mux_control)
 			);
 
-	always @(posedge clk) 
+	always @(posedge clk, posedge reset) 
 	begin
 		if (reset) begin
-			out_pc_branch = 0;
-			out_sign_extend = 0;
-			out_rt = 0;
-			out_rd = 0;
-			out_rs = 0;
-			out_shamt = 0;
-			execute_bus = 0;
-			memory_bus = 0;
-			writeBack_bus = 0;
-			out_halt_flag_d = 0;
+			out_pc_branch <= 0;
+			out_sign_extend <= 0;
+			out_rt <= 0;
+			out_rd <= 0;
+			out_rs <= 0;
+			out_shamt <= 0;
+			execute_bus <= 0;
+			memory_bus <= 0;
+			writeBack_bus <= 0;
+			out_halt_flag_d <= 0;
 		end
 
 		else begin

@@ -106,7 +106,7 @@ module instruction_fetch #(
 			); 
 
 
-	always @(posedge clk) 
+	always @(posedge clk, posedge reset) 
 	begin
 		if(reset) begin
 			out_pc_branch <= 0;

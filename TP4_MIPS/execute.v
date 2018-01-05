@@ -125,17 +125,17 @@ module execute #(
 			.out_mux(mux2_alu_forwarding)
 			);
 
-	always @(posedge clk) 
+	always @(posedge clk, posedge reset) 
 	begin
 		if (reset) begin
-			out_pc_branch = 0;
-			out_alu = 0;
-			zero_flag = 0;
-			out_reg2 = 0;
-			out_write_reg = 0;
-			memory_bus_out = 0;
-			writeBack_bus_out = 0;
-			out_halt_flag_e = 0;			
+			out_pc_branch <= 0;
+			out_alu <= 0;
+			zero_flag <= 0;
+			out_reg2 <= 0;
+			out_write_reg <= 0;
+			memory_bus_out <= 0;
+			writeBack_bus_out <= 0;
+			out_halt_flag_e <= 0;			
 		end
 
 		else begin

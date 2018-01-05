@@ -210,12 +210,12 @@ module top_modular#(
 	maquina_estados #(
 		.len(LEN),
 		.cant_instrucciones(64),
-		.nb_Latches_1_2(nb_Latches_1_2),
-		.nb_Latches_2_3(nb_Latches_2_3),
-		.nb_Latches_3_4(nb_Latches_3_4),
-		.nb_Latches_4_5(nb_Latches_4_5),
-		.cant_regs(32),
-		.cant_mem_datos(16),
+		.nb_Latches_1_2(1),
+		.nb_Latches_2_3(1),
+		.nb_Latches_3_4(1),
+		.nb_Latches_4_5(1),
+		.cant_regs(3),
+		.cant_mem_datos(1),
 		.LEN_DATA(8)
 		)
 		u_maquina_estados(
@@ -259,7 +259,7 @@ module top_modular#(
 		u_uart(
 			.CLK_100MHZ(clk),
 			.reset(reset),
-			.tx_start((select_uart_puente & estamos_en_test_bench) ? tx_start_debug : connect_uart_tx_start),
+			.tx_start(connect_uart_tx_start),
 			.rx(connect_rx_debug),
 			.data_in((1 & estamos_en_test_bench) ? uart_in_debug : connect_uart_data_in),
 

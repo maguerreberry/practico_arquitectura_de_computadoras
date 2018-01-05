@@ -31,7 +31,7 @@ module pc#(
     output reg [len-1:0] Out = 0
     );
 
-    always @(posedge clk)
+    always @(posedge clk, posedge reset)
     begin
         if(reset) begin
             Out = {len{1'b 0}}; 

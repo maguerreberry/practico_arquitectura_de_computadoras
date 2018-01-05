@@ -276,7 +276,7 @@ module top_mips#(
 
 			.out_mem_wire(connect_out_mem_wire), // para debug
 			.halt_flag_m(connect_halt_flag_3_4),
-			.wire_halt_flag_m(connect_halt_flag_4_5)
+			.out_halt_flag_m(connect_halt_flag_4_5)
 			);
 
 endmodule

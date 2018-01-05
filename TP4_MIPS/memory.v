@@ -46,7 +46,7 @@ module memory #(
 	output reg [NB-1:0] out_write_reg,
 
 	output [len-1:0] out_mem_wire,
-	output wire_halt_flag_m
+	output reg out_halt_flag_m
     );
 
 	wire 	MemWrite,
@@ -62,7 +62,6 @@ module memory #(
 	reg [len-1:0] 	connect_mux_in_mem;	
 	wire [len-1:0]	connect_out_mem;
 	wire [len-1:0]	connect_out_mem_debug;
-	reg out_halt_flag_m;
 
 
 
@@ -81,7 +80,6 @@ module memory #(
 	assign pc_src = Branch && ((BranchNotEqual) ? (~zero_flag) : (zero_flag));	// la señal de Branch se activa con ambas intrucciones de branch, la otra señal te indica cual de las 2 fue
 
 	assign out_mem_wire = connect_out_mem_debug;
-	assign wire_halt_flag_m = reset ? 0 : out_halt_flag_m;
 
 	ram_datos #(
 		.RAM_WIDTH(32),
@@ -98,16 +96,16 @@ module memory #(
 			.douta_wire(connect_out_mem_debug)
 			);
 
-	always @(posedge clk) 
+	always @(posedge clk, posedge reset) 
 	begin
 
 		if(reset)
 		begin
-			read_data = 0;
-		    out_writeBack_bus = 0;
-			out_addr_mem = 0;
-			out_write_reg = 0;
-			out_halt_flag_m = 0;
+			read_data <= 0;
+		    out_writeBack_bus <= 0;
+			out_addr_mem <= 0;
+			out_write_reg <= 0;
+			out_halt_flag_m <= 0;
 		end
 
 		else begin
