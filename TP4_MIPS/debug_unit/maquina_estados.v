@@ -135,8 +135,8 @@ module maquina_estados #(
           ciclos = 0;
           reset_mips = 0;
           // state = IDLE;
-          //state = WAITING;
-          state = CONTINUOS;
+          state = WAITING;
+          // state = CONTINUOS;
 
           sub_state = SUB_INIT;
           index = 0;

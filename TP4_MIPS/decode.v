@@ -92,7 +92,6 @@ module decode #(
 			.execute_bus(connect_execute_bus),
 			.memory_bus(connect_memory_bus),
 			.writeBack_bus(connect_writeBack_bus),
-			.reset(reset),
 			.opcode_lsb(in_instruccion[5:0])
 			);
 

@@ -41,17 +41,16 @@ module ram_instrucciones #(
     end
   endgenerate
 
-  always @(reset)
-  begin
-    ram_data = 0;
-  end
-
   always @(posedge wea) begin
       BRAM[addra] <= dina;
   end
 
-  always @(posedge clka)
+  always @(posedge clka, posedge reset)
   begin
+    if(reset) begin
+          ram_data <= 0;
+    end
+    else begin
       if (ena)
       begin
         if(flush)
@@ -59,6 +58,7 @@ module ram_instrucciones #(
         else
           ram_data <= BRAM[addra];
       end
+    end
   end
 
   // assign douta = BRAM[addra >> 2];
