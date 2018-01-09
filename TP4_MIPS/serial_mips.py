@@ -96,9 +96,9 @@ def showAllRegisters():
 
 	print "---Latches Intermedios IF/ID---"
 	branch_1_2 = read32()
-	pc_out_1_2 = read32()
+	instruccion = read32()
 
-	print_registro_32("PC siguiente: ", pc_out_1_2)
+	print_registro_32("Instruccion: ", instruccion)
 	print_registro_32("Branch target: ", branch_1_2)
 	print
 

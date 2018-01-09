@@ -112,7 +112,7 @@ module top_mips#(
 	assign halt_flag = connect_halt_flag_4_5;
 
 	assign Latches_1_2 = {	// 2 registros
-		connect_out_pc, // 32 bits
+		connect_instruccion, // 32 bits
 		connect_in_pc_branch_1_2 // 32 bits
 	};
 	assign Latches_2_3 = {	// 4 registros
