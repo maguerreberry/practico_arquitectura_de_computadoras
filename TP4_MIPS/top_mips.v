@@ -139,7 +139,8 @@ module top_mips#(
 		connect_reg2 // 32 bits
 	};
 	assign Latches_4_5 = {	// 3 registros
-		{25{1'b 0}}, // 25 bits
+		{24{1'b 0}}, // 24 bits
+		connect_halt_flag_4_5, // 1 bit
 		connect_write_reg_4_2, // 5 bits
 		connect_out_writeBack_bus, // 2 bits
 		connect_out_addr_mem, // 32 bits

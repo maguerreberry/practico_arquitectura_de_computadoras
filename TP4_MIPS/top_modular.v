@@ -46,8 +46,8 @@ module top_modular#(
 	input CLK100MHZ,
 	input SWITCH_RESET,
 	input UART_TXD_IN,
-	output [2:0] led,
 	output UART_RXD_OUT,
+	output [2:0] led,
 	output [5:0] led_state
 
 	// puertos para el test bench
@@ -253,8 +253,8 @@ module top_modular#(
 	uart #(
 		.NBITS(8),
 		.NUM_TICKS(16),
-		.BAUD_RATE(38400),
-		.CLK_RATE(30000000)
+		.BAUD_RATE(9600),
+		.CLK_RATE(40000000)
 		)
 		u_uart(
 			.CLK_100MHZ(clk),
