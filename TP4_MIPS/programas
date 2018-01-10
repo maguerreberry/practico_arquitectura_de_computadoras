@@ -505,3 +505,38 @@ FFFFFFFF
 
 Instrucciones utilizadas:
 J, JR, NOR, ADDI, ANDI, ORI, XORI
+
+nor t1, t2, t3
+jump pc = 3
+addi t2, t2, 1 (no se ejecuta)
+nor t4, t3, t4
+ori t0, t0, 10
+andi t5, t3, 4
+jr t0
+xori t6, t5, 3 (no se ejecuta)
+xori t6, t5, 5
+addi t2, t2, 1
+
+Resultado esperado:
+
+t1 = -4
+t4 = -8
+t0 = 8
+t5 = 0
+t6 = 5
+t2 = 3
+
+430827
+8000005
+20420001
+20420002
+20420003
+642027
+3400000A
+30650004
+8
+38A60003
+38A60005
+20420001
+FFFFFFFF
+
