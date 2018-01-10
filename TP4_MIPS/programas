@@ -258,7 +258,7 @@ r1 = r2 + r3
 	resultado esperado:
 	r2 = 1
 	r4 = r2 & r5 = 1
-	r3 = r2 | r6 = 	
+	r3 = r2 | r6 = 7
 	r1 = r2 + r3 = 8
 
 8C020001
@@ -307,7 +307,7 @@ test set on less than
 
 ------------------------------------------
 
-test set on less than inmmidiate
+test set on less than inmmediate
 
 001010 00010 00011 0000000000000010
 
@@ -375,6 +375,11 @@ r2 += 4
 
 r3 += 1
 
+resultado esperado:
+r1 = 11
+r2 = 2
+r3 = 4
+
 20210001
 20210002
 20210003
@@ -386,3 +391,117 @@ r3 += 1
 20420004
 20630001
 FFFFFFFF
+
+------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------TEST TODAS LAS INSTRUCCIONES-------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------
+
+1) Test cortocircuito 3 
+
+	r1 = r2 + r3
+	r4 = r1 - r5
+	r6 = r1 & r7
+	r8 = r1 | r9
+	r10 = r1 ^ r11
+
+	resultado esperado:
+	r1 = 5
+	r4 = 0
+	r6 = 5
+	r8 = 13 (D)
+	r10 = 14 (E)
+
+	Tests: cortocircuito a primer operando de la alu, desde instruccion i+1 e i+2.
+	Instrucciones usadas: 
+	ADDU, SUBU, AND, OR, XOR
+
+430821
+252023
+273024
+294025
+2B5026
+FFFFFFFF
+
+2) Test cortocircuito 4
+
+	r1 = r2 + r3
+	r4 = [r1]
+
+	resultado esperado:
+	r1 = 5
+	r4 = 5
+
+	Tests: cortocircuito a load. Instrucciones usadas:
+	LW
+
+430821
+8C240000
+FFFFFFFF
+
+3) Test branch flush pipeline
+
+r1 += 1
+r1 += 2
+r1 += 3
+r1 += 4
+
+beq r0, r0, pc+5 (salta a la ultima instruccion)
+
+r2 += 1
+r2 += 2
+r2 += 3
+r2 += 4
+
+r3 += 1
+
+resultado esperado:
+r1 = 11
+r2 = 2
+r3 = 4
+
+Tests: ejecuta un salto entre varias instrucciones. Limpia el pipeline de las instrucciones que involucran r2, y ejecuta la que usa a r3.
+Instrucciones usadas: BEQ
+
+20210001
+20210002
+20210003
+20210004
+10000004
+20420001
+20420002
+20420003
+20420004
+20630001
+FFFFFFFF
+
+4) test hazard detection 2 (caso del load)
+
+r2 = [r0 + 1]
+r4 = r2 & r5
+r3 = r2 | r6
+r1 = r2 + r3
+
+	resultado esperado:
+	r2 = 1
+	r4 = r2 & r5 = 1
+	r3 = r2 | r6 = 7
+	r1 = r2 + r3 = 8
+
+	Tests: deteccion de riesgos. Se realiza un stall entre la primer y segunda instruccion (entre el load y la and).
+	Instrucciones utilizadas:
+	LB, AND, OR, ADDU
+
+80020001
+452024
+461825
+430821
+FFFFFFFF
+
+5) Test jump, jump register
+
+Instrucciones utilizadas:
+J, JR, NOR, ADDI, ANDI, ORI, XORI
