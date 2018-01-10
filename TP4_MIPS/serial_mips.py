@@ -58,8 +58,8 @@ def print_registro_32(mensaje, registro, msb = 31, lsb = 0):
 
 def serialConnect(lim):
 
-	# port = '/dev/ttyUSB1'
-	port = 'COM14'
+	port = '/dev/ttyUSB1'
+	# port = 'COM14'
 	ser = serial.Serial(port, baudrate = 9600)
 	print "FPGA encontrada en puerto " + port
 	return ser
@@ -193,6 +193,18 @@ def showAllRegisters():
 
 	return bus1_4_5 & (1 << 7)
 
+def read_all():
+	bus1_4_5 = 0
+
+	for ii in range(0,15+posiciones_memoria+nro_registros):
+		if ii == 13:
+			bus1_4_5 = read32()
+		else:
+			read32()
+
+	return bus1_4_5 & (1 << 7)
+
+
 
 ########################## main ##########################
 
@@ -242,18 +254,18 @@ if __name__ == '__main__':
 			ret = ser.write(chr(StepByStepSignal))
 
 			while True:
-				command = raw_input()
+				command = raw_input('Step? (\'x\' para cancelar)')
 
-				if command == "s":
+				if command == "x":
+					ret = ser.write(chr(StepSignal))
+					while (not read_all()):
+						ret = ser.write(chr(StepSignal))
+					break
+				else:
 					ret = ser.write(chr(StepSignal))
 					if(showAllRegisters()):
 						print 'Ejecucion finalizada'
 						break
-				elif command == "x":
-					break
-
-				else:
-					print "ERROR, entrada incorrecta"
 
 		elif modo == "r":
 			print "Reprogramando FPGA..."
