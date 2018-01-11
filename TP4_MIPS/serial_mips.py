@@ -17,7 +17,7 @@ StepSignal         = 0b00000110
 
 # file = "practico_arquitectura_de_computadoras/TP4_MIPS/program.hex"
 file = "program.hex"
-resetFile = "reset.hex"
+reset = "reset.hex"
 
 helpMessage =  """
 Comandos disponibles:
@@ -275,7 +275,7 @@ if __name__ == '__main__':
 
 		elif modo == "r":
 			print "Reprogramando FPGA..."
-			tecla = raw_input("Presione r para resetear registros y memoria de datos, \n o cualquier tecla para iniciar la carga del programa ensamblador por UART")
+			tecla = raw_input("Presione r para resetear registros y memoria de datos, \n o cualquier tecla para iniciar la carga del programa ensamblador por UART: ")
 			ret = ser.write(chr(ReProgramSignal))
 			ret = ser.write(chr(StartSignal))
 
