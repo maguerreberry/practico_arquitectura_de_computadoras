@@ -663,3 +663,39 @@ C000005
 38A60005
 20420001
 FFFFFFFF
+
+9) Test branch not equal flush pipeline
+
+r1 += 1
+r1 += 2
+r1 += 3
+r1 += 4
+
+bneq r0, r1, pc+5 (salta a la ultima instruccion)
+
+r2 += 1
+r2 += 2
+r2 += 3
+r2 += 4
+
+r3 += 1
+
+resultado esperado:
+r1 = 11
+r2 = 2
+r3 = 4
+
+Tests: ejecuta un salto entre varias instrucciones. Limpia el pipeline de las instrucciones que involucran r2, y ejecuta la que usa a r3.
+Instrucciones usadas: BNEQ
+
+20210001
+20210002
+20210003
+20210004
+14000004
+20420001
+20420002
+20420003
+20420004
+20630001
+FFFFFFFF
