@@ -619,3 +619,47 @@ A0030003
 94060002
 90070002
 FFFFFFFF
+
+8) Test jump, jump register
+
+Instrucciones utilizadas:
+JAL, JALR, NOR, ADDI, ANDI, ORI, XORI
+
+nor t1, t2, t3
+jump and link pc = 3
+addi t2, t2, 1 (si se ejecuta)
+addi t2, t2, 2 (no se ejecuta)
+addi t2, t2, 3 (no se ejecuta)
+ori t0, t0, 11
+nor t4, t3, t4
+andi t5, t3, 4
+jand link register t0
+xori t6, t5, 3 (si se ejecuta)
+xori t6, t5, 5 (no se ejecuta)
+addi t2, t2, 1
+
+Resultado esperado:
+
+t0 = 11
+t1 = -4
+t2 = 4
+t4 = -8
+t5 = 0
+t6 = 3
+t7 = 10
+t31 = 3
+
+
+430827
+C000005
+20420001
+20420002
+20420003
+3400000B
+642027
+30650004
+3809
+38A60003
+38A60005
+20420001
+FFFFFFFF

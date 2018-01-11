@@ -29,6 +29,11 @@ Mostrar comandos disponibles: h
 
 ########################## funciones ##########################
 
+def complemento_a_2(num, bits=32):
+	if(num >= 1 << bits-1):
+		return num - ( 1 << bits)
+	else:
+		return num
 
 def read32():
 	# leo primero el byte menos significativo
@@ -52,7 +57,7 @@ def print_registro_32(mensaje, registro, msb = 31, lsb = 0):
 	reg =  bin(registro).replace('0b','').zfill(32)[bitInicial:nroBits]
 
 	binario = str(bin(int(reg,2)))
-	decimal = str(int(reg,2))
+	decimal = str(complemento_a_2(int(reg,2)))
 	hexa = str(hex(int(reg,2)))
 	print mensaje.ljust(22) + binario.rjust(36) + decimal.rjust(14) + hexa.rjust(12)
 
