@@ -17,6 +17,7 @@ StepSignal         = 0b00000110
 
 # file = "practico_arquitectura_de_computadoras/TP4_MIPS/program.hex"
 file = "program.hex"
+resetFile = "reset.hex"
 
 helpMessage =  """
 Comandos disponibles:
@@ -69,7 +70,7 @@ def serialConnect(lim):
 	print "FPGA encontrada en puerto " + port
 	return ser
 
-def openFile(ser):
+def openFile(ser, file):
 	try:
 		f = open(file, 'r')
 	except Exception as e:
@@ -232,7 +233,7 @@ if __name__ == '__main__':
 
 	print "Abriendo el archivo " + file
 
-	instrucciones = openFile(ser)
+	instrucciones = openFile(ser, file)
 
 	print "Envio del programa ensamblador finalizado"
 
@@ -274,12 +275,18 @@ if __name__ == '__main__':
 
 		elif modo == "r":
 			print "Reprogramando FPGA..."
-			raw_input("Presione una tecla para iniciar la carga del programa ensamblador por UART")
+			tecla = raw_input("Presione r para resetear registros y memoria de datos, \n o cualquier tecla para iniciar la carga del programa ensamblador por UART")
 			ret = ser.write(chr(ReProgramSignal))
 			ret = ser.write(chr(StartSignal))
-			print "Abriendo el archivo " + file
-			instrucciones = openFile(ser)
-			print "Envio del programa ensamblador finalizado"
+
+			if(tecla == 'r'):
+				print "Abriendo el archivo " + reset
+				instrucciones = openFile(ser, reset)
+				print "Envio del programa ensamblador finalizado"
+			else:
+				print "Abriendo el archivo " + file
+				instrucciones = openFile(ser, file)
+				print "Envio del programa ensamblador finalizado"
 
 		elif modo == "x":
 			print "Desconectando puerto serie y finalizando script..."
