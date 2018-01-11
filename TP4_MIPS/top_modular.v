@@ -162,11 +162,11 @@ module top_modular#(
 
 
 	top_mips #(
-	.LEN(32),
+	.LEN(LEN),
 	.NB($clog2(LEN)),
-	.len_exec_bus(11),
-	.len_mem_bus(9),
-	.len_wb_bus(2),
+	.len_exec_bus(len_exec_bus),
+	.len_mem_bus(len_mem_bus),
+	.len_wb_bus(len_wb_bus),
 	.nb_Latches_1_2(nb_Latches_1_2),
 	.nb_Latches_2_3(nb_Latches_2_3),
 	.nb_Latches_3_4(nb_Latches_3_4),

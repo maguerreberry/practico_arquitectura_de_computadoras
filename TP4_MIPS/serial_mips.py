@@ -121,9 +121,9 @@ def showAllRegisters():
 		# print_registro_32("Rd: ", bus1_2_3)
 
 	print "Buses de control"
-	print_registro_32("Execute bus: ", bus2_2_3, msb=22, lsb=12)
-	print_registro_32("Memory bus: ", bus2_2_3, msb=11, lsb=3)
-	print_registro_32("Writeback bus: ", bus2_2_3, msb=2, lsb=0)
+	print_registro_32("Execute bus: ", bus2_2_3, msb=21, lsb=11)
+	print_registro_32("Memory bus: ", bus2_2_3, msb=10, lsb=2)
+	print_registro_32("Writeback bus: ", bus2_2_3, msb=1, lsb=0)
 	print
 
 	# print_registro_32("Execute bus: ", bus2_2_3)
