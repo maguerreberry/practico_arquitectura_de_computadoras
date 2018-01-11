@@ -29,6 +29,7 @@ module decode #(
 	)(
 	input clk,
 	input reset,
+	input hard_reset,
 	input [len-1:0] in_pc_branch,
 	input [len-1:0] in_instruccion,
 	input RegWrite,
@@ -103,6 +104,7 @@ module decode #(
 		u_registers(
 			.clk(clk),
 			.reset(reset),
+			.hard_reset(hard_reset),
 			.RegWrite(RegWrite),
 			.read_register_1(in_instruccion[25:21]),
 			.read_register_2(in_instruccion[20:16]),
@@ -126,9 +128,9 @@ module decode #(
 			.stall_flag(mux_control)
 			);
 
-	always @(posedge clk, posedge reset) 
+	always @(posedge clk, posedge reset, posedge hard_reset) 
 	begin
-		if (reset) begin
+		if (reset | hard_reset) begin
 			out_pc_branch <= 0;
 			out_sign_extend <= 0;
 			out_rt <= 0;

@@ -58,12 +58,12 @@ module top_modular#(
     );
         
     wire clk, 
-         reset, 
+         hard_reset, 
          clk_mips, 
          ctrl_clk_mips, 
          reset_mips;
              
-    assign reset = SWITCH_RESET; 
+    assign hard_reset = SWITCH_RESET; 
 
     wire [LEN-1:0] connect_in_pc_branch_1_2,
 				   connect_in_pc_branch_2_3,
@@ -142,7 +142,7 @@ module top_modular#(
 
 	assign led[0] = connect_uart_tx_start;	
 	assign led[1] = connect_halt;
-	assign led[2] = reset;
+	assign led[2] = hard_reset;
 
 	wire [5:0] connect_state_out;
 
@@ -154,7 +154,7 @@ module top_modular#(
     	// Clock out ports
     	.clk_out1(clk),     // output clk_out1
     	// Status and control signals
-    	.reset(reset), // input reset
+    	.reset(hard_reset), // input reset
     	.locked(),       // output locked
         // Clock in ports
     	.clk_in1(CLK100MHZ)      // input clk_in1
@@ -174,7 +174,8 @@ module top_modular#(
 	)
 	u_top_mips(
 		.clk(clk_mips),
-		.reset(reset | reset_mips),
+		.reset(reset_mips),
+		.hard_reset(hard_reset),
 
 		//para debug
 		.debug_flag(connect_debug_mode),
@@ -220,7 +221,7 @@ module top_modular#(
 		)
 		u_maquina_estados(
 		    .clk(clk),
-		    .reset(reset),
+		    .reset(hard_reset),
 		    .halt(connect_halt),
 		    .pc(connect_pc_debug),
 		    .Latches_1_2(connect_Latches_1_2),
@@ -258,7 +259,7 @@ module top_modular#(
 		)
 		u_uart(
 			.CLK_100MHZ(clk),
-			.reset(reset),
+			.reset(hard_reset),
 			.tx_start(connect_uart_tx_start),
 			.rx(connect_rx_debug),
 			.data_in((1 & estamos_en_test_bench) ? uart_in_debug : connect_uart_data_in),
