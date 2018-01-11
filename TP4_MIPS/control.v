@@ -201,7 +201,7 @@ module control#(
 			begin //JUMP
 				execute_bus[len_exec_bus-1:4] <= 7'b0000010;
 				aluop <= 3'b000;
-				memory_bus <= 9'b000000100;
+				memory_bus <= 9'b000000000;
 				writeBack_bus <= 2'b00;
 			end
 			6'b000011 :
