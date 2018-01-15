@@ -290,6 +290,7 @@ if __name__ == '__main__':
 
 		elif modo == "x":
 			print "Desconectando puerto serie y finalizando script..."
+			ret = ser.write(chr(ReProgramSignal))
 			break
 
 		elif modo == "h":
