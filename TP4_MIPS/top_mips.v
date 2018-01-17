@@ -41,6 +41,7 @@ module top_mips#(
 	input [LEN-1:0] in_addr_mem_inst,
 	input [LEN-1:0] in_ins_to_mem,
 	input wea_ram_inst,
+	input ctrl_clk_mips,
 
 	output [LEN-1:0] out_reg1_recolector,
 	output [LEN-1:0] out_mem_wire,
@@ -146,6 +147,7 @@ module top_mips#(
 		)
 		u_instruction_fetch(
 			.clk(clk),
+			.ctrl_clk_mips(ctrl_clk_mips),
 			.reset(reset),
 			.in_pc_src({connect_flag_jump, connect_flag_jump_register, connect_branch_flag}),
 			.in_pc_jump(connect_in_pc_jump),
@@ -169,6 +171,7 @@ module top_mips#(
 		)
 		u_decode(
 			.clk(clk),
+			.ctrl_clk_mips(ctrl_clk_mips),
 			.reset(reset),
 			.in_pc_branch(connect_in_pc_branch_1_2),
 			.in_instruccion(debug_flag ? {{6{1'b0}}, in_addr_debug[4:0], {21{1'b0}}} : connect_instruccion),
@@ -208,6 +211,7 @@ module top_mips#(
 		)
 		u_execute(
 			.clk(clk),
+			.ctrl_clk_mips(ctrl_clk_mips),
 			.reset(reset),
 		
 			.in_pc_branch(connect_in_pc_branch_2_3),
@@ -251,6 +255,7 @@ module top_mips#(
 		)
 		u_memory(
 			.clk(clk),
+			.ctrl_clk_mips(ctrl_clk_mips),
 			.reset(reset),
 			.in_addr_mem(debug_flag ? in_addr_debug : connect_alu_out),
 			.write_data(connect_write_data_3_4),

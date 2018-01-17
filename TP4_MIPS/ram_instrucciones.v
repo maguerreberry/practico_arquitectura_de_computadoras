@@ -13,6 +13,7 @@ module ram_instrucciones #(
   input [RAM_WIDTH-1:0] addra,            // Address bus, width determined from RAM_DEPTH
   input [RAM_WIDTH-1:0] dina,           // RAM input data
   input clka,                             // Clock
+	input ctrl_clk_mips,
   input ena,                              // RAM Enable, for additional power savings, disable port when not in use
   input flush,
   input reset,
@@ -42,23 +43,24 @@ module ram_instrucciones #(
   endgenerate
 
   always @(posedge wea) begin
-      BRAM[addra] <= dina;
+	BRAM[addra] <= dina;
   end
 
   always @(posedge clka, posedge reset)
   begin
-    if(reset) begin
-          ram_data <= 0;
-    end
-    else begin
-      if (ena)
-      begin
-        if(flush)
-          ram_data <= 0;
-        else
-          ram_data <= BRAM[addra];
-      end
-    end
+		if(reset) begin
+			ram_data <= 0;
+		end
+		else if (ctrl_clk_mips) begin
+			if (ena)
+			begin
+				if(flush)
+				ram_data <= 0;
+				else
+				ram_data <= BRAM[addra];
+			end
+		end
+	end
   end
 
   // assign douta = BRAM[addra >> 2];

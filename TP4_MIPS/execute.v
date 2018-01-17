@@ -28,6 +28,7 @@ module execute #(
 	parameter len_wb_bus = 2
 	)(
 	input clk,
+	input ctrl_clk_mips,
 	input reset,
 
 	input [len-1:0] in_pc_branch,
@@ -138,7 +139,7 @@ module execute #(
 			out_halt_flag_e <= 0;			
 		end
 
-		else begin
+		else if (ctrl_clk_mips) begin
 			out_halt_flag_e <= halt_flag_e;
 
 			if (flush) 

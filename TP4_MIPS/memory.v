@@ -27,6 +27,7 @@ module memory #(
 	parameter len_wb_bus = 2
 	)(
 	input clk,
+	input ctrl_clk_mips,
 	input reset,
 	input [len-1:0] in_addr_mem,
 	input [len-1:0] write_data,
@@ -90,6 +91,7 @@ module memory #(
 			.addra(in_addr_mem),
 			.dina(connect_mux_in_mem),
 			.clka(clk),
+			.ctrl_clk_mips(ctrl_clk_mips),
 			.wea(MemWrite),
 			.ena(MemRead),
 			.douta(connect_out_mem),
@@ -108,7 +110,7 @@ module memory #(
 			out_halt_flag_m <= 0;
 		end
 
-		else begin
+		else if (ctrl_clk_mips) begin
 			out_halt_flag_m <= halt_flag_m;
 
 			out_writeBack_bus <= in_writeBack_bus;

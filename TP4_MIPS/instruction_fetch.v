@@ -24,6 +24,7 @@ module instruction_fetch #(
 	parameter len = 32
 	) (
 	input clk,
+	input ctrl_clk_mips,
 	input reset,
 	input [2:0] in_pc_src,
 	input [len-1:0] in_pc_jump,
@@ -71,6 +72,7 @@ module instruction_fetch #(
 		u_pc(
 			.In((connect_wire_douta)?(connect_pc_sumador_mem):(connect_mux_pc)),
 			.clk(clk),
+			.ctrl_clk_mips(ctrl_clk_mips),
 			.reset(reset),
 			.enable(stall_flag),
 			.Out(connect_pc_sumador_mem)
@@ -87,6 +89,7 @@ module instruction_fetch #(
 		u_ram_instrucciones(
 			.addra(debug_flag ? in_addr_debug : connect_pc_sumador_mem),
 			.clka(clk),
+			.ctrl_clk_mips(ctrl_clk_mips),
 			.reset(reset),
 			.ena(stall_flag),
 			.wea(wea_ram_inst),
@@ -113,7 +116,7 @@ module instruction_fetch #(
 			out_halt_flag_if <= 0;			
 		end
 
-		else begin
+		else if (ctrl_clk_mips) begin
 			out_halt_flag_if <= connect_wire_douta;
 
 			if (stall_flag | flush) 

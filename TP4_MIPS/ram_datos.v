@@ -13,6 +13,7 @@ module ram_datos #(
   input [clogb2(RAM_DEPTH-1)-1:0] addra,  // Address bus, width determined from RAM_DEPTH
   input [RAM_WIDTH-1:0] dina,           // RAM input data
   input clka,                           // Clock
+  input ctrl_clk_mips,
   input wea,                            // Write enable
   input ena,                            // RAM Enable, for additional power savings, disable port when not in use
   output [RAM_WIDTH-1:0] douta,         // RAM output data
@@ -43,10 +44,12 @@ module ram_datos #(
 
   always @(negedge clka)
   begin
-    if (wea)
-      BRAM[addra] <= dina;
-    if (ena)
-      ram_data <= BRAM[addra];
+    if (ctrl_clk_mips) begin
+		if (wea)
+			BRAM[addra] <= dina;
+		if (ena)
+			ram_data <= BRAM[addra];
+    end
   end
 
   //  The following code generates HIGH_PERFORMANCE (use output register) or LOW_LATENCY (no output register)

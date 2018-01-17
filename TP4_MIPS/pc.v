@@ -27,6 +27,7 @@ module pc#(
     input clk,
     input reset,
     input enable,
+    input ctrl_clk_mips,
 
     output reg [len-1:0] Out = 0
     );
@@ -36,13 +37,14 @@ module pc#(
         if(reset) begin
             Out = {len{1'b 0}}; 
         end
+		else if (ctrl_clk_mips) begin
+            if (enable) begin
+                Out = In;
+            end
 
-        else if (enable) begin
-	   		Out = In;
-        end
-
-        else begin
-            Out = Out;
+            else begin
+                Out = Out;
+            end
         end
 	end
 

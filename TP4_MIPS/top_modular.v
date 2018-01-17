@@ -133,7 +133,7 @@ module top_modular#(
 
 	assign connect_write_data_5_2 = (connect_out_writeBack_bus[0]) ? connect_read_data : connect_out_addr_mem;
 
-	assign clk_mips = (ctrl_clk_mips) ? (!clk) : (1'b 0);
+	// assign clk_mips = (ctrl_clk_mips) ? (!clk) : (1'b 0);
 
 	assign connect_rx_debug = (1 & estamos_en_test_bench) ? connect_tx_debug : UART_TXD_IN;
 	assign UART_RXD_OUT = connect_tx_debug;
@@ -153,6 +153,7 @@ module top_modular#(
    (
     	// Clock out ports
     	.clk_out1(clk),     // output clk_out1
+    	.clk_out2(clk_mips),     // output clk_out2
     	// Status and control signals
     	.reset(reset), // input reset
     	.locked(),       // output locked
@@ -182,6 +183,7 @@ module top_modular#(
 		.in_addr_mem_inst(connect_addr_mem_inst),
 		.in_ins_to_mem(connect_ins_to_mem),
 		.wea_ram_inst(connect_wea_ram_inst),
+		.ctrl_clk_mips(ctrl_clk_mips),
 
 		.out_reg1_recolector(connect_regs_recolector_mips),
 		.out_mem_wire(connect_mem_datos_recolector_mips),

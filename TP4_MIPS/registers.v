@@ -26,6 +26,7 @@ module registers#(
 	parameter NB = $clog2(lenght)
 	)(
 	input clk,
+	input ctrl_clk_mips,
 	input reset,
 	input RegWrite,
 	input [NB-1:0] read_register_1,
@@ -57,7 +58,7 @@ module registers#(
 			read_data_2 = 0;
 		end
 
-		else begin
+		else if(ctrl_clk_mips) begin
 			read_data_1 <= registers_mips[read_register_1];
 			read_data_2 <= registers_mips[read_register_2];
 		end
@@ -65,9 +66,11 @@ module registers#(
 
 	always @(negedge clk)
 	begin
-		if (RegWrite) 
-		begin
-			registers_mips[write_register] <= write_data;				
+		if (ctrl_clk_mips) begin
+			if (RegWrite) 
+			begin
+				registers_mips[write_register] <= write_data;				
+			end
 		end
 	end
 
