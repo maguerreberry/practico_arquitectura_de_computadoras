@@ -64,7 +64,7 @@ def print_registro_32(mensaje, registro, msb = 31, lsb = 0):
 
 def serialConnect(lim):
 
-	port = '/dev/ttyUSB1'
+	port = '/dev/ttyUSB2'
 	# port = 'COM14'
 	ser = serial.Serial(port, baudrate = 9600)
 	print "FPGA encontrada en puerto " + port

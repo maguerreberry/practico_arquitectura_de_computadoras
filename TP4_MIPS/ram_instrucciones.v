@@ -60,7 +60,6 @@ module ram_instrucciones #(
 				ram_data <= BRAM[addra];
 			end
 		end
-	end
   end
 
   // assign douta = BRAM[addra >> 2];
