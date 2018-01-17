@@ -46,17 +46,11 @@ module top_mips#(
 	output [LEN-1:0] out_mem_wire,
 	output [LEN-1:0] out_pc,
 	output halt_flag,
-    output [(nb_Latches_1_2*8)-1:0] Latches_1_2, // pensar la longitud pq queda demasiados cables
-    output [(nb_Latches_2_3*8)-1:0] Latches_2_3, // pensar la longitud pq queda demasiados cables
-    output [(nb_Latches_3_4*8)-1:0] Latches_3_4, // pensar la longitud pq queda demasiados cables
-    output [(nb_Latches_4_5*8)-1:0] Latches_4_5 // pensar la longitud pq queda demasiados cables
+    output [(nb_Latches_1_2*8)-1:0] Latches_1_2,
+    output [(nb_Latches_2_3*8)-1:0] Latches_2_3,
+    output [(nb_Latches_3_4*8)-1:0] Latches_3_4,
+    output [(nb_Latches_4_5*8)-1:0] Latches_4_5 
 	);
-	// input CLK100MHZ,
-	// input SWITCH_RESET
- //    );    
- //    wire clk, reset;    
- //    assign clk = CLK100MHZ,
- //           reset = SWITCH_RESET; 
 
     wire [LEN-1:0] connect_in_pc_branch_1_2,
 				   connect_in_pc_branch_2_3,
